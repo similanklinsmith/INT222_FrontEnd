@@ -1,0 +1,256 @@
+<template>
+  <div class="card-component">
+    <div class="product-img">
+      <div class="like-icon" @click="toggleWishList">
+        <i class="icon fas fa-heart"></i>
+      </div>
+
+      <img :src="product.product_img" alt="" @click="showDetails(product)" />
+      <!-- ../../src/assets/images/brand-logos/uniqlo-logo.jpg -->
+    </div>
+    <div class="product-purchase">
+      <div class="add-to-cart">
+        Add to cart
+        <i class="fas fa-cart-plus"></i>
+      </div>
+    </div>
+    <div class="product-info">
+      <div class="product-brand">
+        {{ product.product_brand }}
+      </div>
+      <div class="product-name">
+        {{ product.product_name }}
+      </div>
+      <div class="product-price">฿{{ product.product_price }}</div>
+      <div class="product-colors">
+        <div
+          class="color"
+          v-for="color in product.colors"
+          :key="color.color_code"
+          :style="{ backgroundColor: color.color_code }"
+        >
+          <span class="tooltiptext">{{ color.color_name }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  name: "Card",
+  props: ["product"],
+  data() {
+    return {
+      allColors: [],
+      urlProductCard: "http://localhost:3000/products/" + this.product.id,
+      productCard:{}
+    };
+  },
+  methods: {
+    toggleWishList() {
+      // this.product.isWishList = !this.product.isWishList
+      const editProduct = {
+        product_name: this.productCard.product_name, 
+        product_desc: this.productCard.product_desc, 
+        product_price: this.productCard.product_price, //
+        product_brand: this.productCard.product_brand, //
+        product_type: this.productCard.product_type, //
+        date: this.productCard.date, //
+        colors: this.productCard.colors, //
+        isWishList: !this.productCard.isWishList, //
+        product_img: this.productCard.product_img,
+      };
+      const jsonProduct = JSON.stringify(editProduct, {
+        type: "application/json",
+      });
+      fetch(this.urlProductCard, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: jsonProduct,
+      }).catch((err) => console.log(err));
+      this.$emit("toggleWishList", this.product.id);
+    },
+    showDetails(product) {
+      this.$router.push({
+        name: "Product",
+        params: {
+          id: product.id,
+          // product_name: product.product_name,
+          // product_brand: product.product_brand,
+          // product_price: product.product_price,
+          // product_img: product.product_img,
+          // product_desc: product.product_desc,
+          // colors: this.getAllColors,
+          // date: product.date,
+          // product_type: product.product_type,
+          // isWishList: product.isWishList
+        },
+      });
+    },
+  },
+  mounted() {
+    fetch(this.urlProductCard)
+      .then((res) => res.json())
+      .then((data) => (this.productCard = data))
+      .catch((err) => console.log(err.message));
+  },
+  computed: {
+    getAllColors() {
+      for (let index = 0; index < this.product.colors.length; index++) {
+        this.allColors.push(this.product.colors[index].color_code);
+      }
+      return this.allColors;
+    },
+  },
+};
+</script>
+
+<style scoped>
+/* card-component-style */
+.card-component {
+  width: 100%;
+}
+
+.product-img {
+  width: 100%;
+  height: 40rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.icon {
+  width: 3.6rem;
+  height: 3.6rem;
+  z-index: 999;
+  position: absolute;
+  top: 0%;
+  right: 0%;
+  margin: 2.4rem 2.4rem 0 0;
+  cursor: pointer;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 50%;
+}
+
+.product-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: 0.2s all ease-in-out;
+}
+
+.product-img img:hover {
+  transform: scale(1.05);
+}
+
+.product-info {
+  color: #333;
+  margin-top: 0.8rem;
+  padding: 1.2rem 2.4rem;
+}
+
+.product-brand {
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  background-color: rgba(110, 110, 110, 0.1);
+  border-radius: 1rem;
+  width: 30%;
+  margin: 0 35% 1.2rem 35%;
+  padding: 0.2rem;
+  color: rgba(110, 110, 110, 0.75);
+  text-transform: uppercase;
+}
+
+.product-name {
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  word-spacing: 0.2rem;
+}
+
+.product-price {
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 1.4rem;
+}
+
+.product-colors {
+  display: flex;
+  width: 80%;
+  margin: 0 10%;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.color {
+  width: 1.2rem;
+  height: 1.2rem;
+  /* background-color: #eb435f; */
+  border: 1px solid rgba(110, 110, 110, 0.5);
+}
+
+.product-purchase {
+  width: 100%;
+  background-color: #333;
+  height: 3.6rem;
+  cursor: pointer;
+  transition: 0.2s all ease-in-out;
+  color: #fff;
+  text-align: center;
+}
+
+.product-purchase:hover {
+  background-color: #555;
+}
+
+.add-to-cart {
+  font-size: 1.4rem;
+  padding: 1rem;
+}
+
+.fa-cart-plus {
+  margin-left: 0.8rem;
+}
+
+.color:hover .tooltiptext {
+  visibility: visible;
+}
+.tooltiptext {
+  visibility: hidden;
+  background-color: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.6rem 0.4rem;
+  position: absolute;
+  z-index: 1;
+  font-size: 1rem;
+}
+
+/* below 480px */
+@media (max-width: 30em) {
+  .product-brand {
+    width: 60%;
+    margin: 0 20% 1.2rem 20%;
+  }
+  .color {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+}
+
+/* below 375px */
+@media (max-width: 24em) {
+  .product-brand {
+    width: 25%;
+    margin: 0 37.5% 1.2rem 37.5%;
+  }
+}
+</style>

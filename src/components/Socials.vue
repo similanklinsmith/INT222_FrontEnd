@@ -17,6 +17,7 @@ export default {
   display: flex;
   flex-direction: column;
   row-gap: 0.8rem;
+  overflow: hidden;
 }
 
 .icon{
@@ -29,6 +30,13 @@ export default {
 
 .icon:hover{
   transform: scale(1.2);
-  color: #eb435f;
+  color: #bc364c;
+}
+
+/* below 588px */
+@media (max-width: 37em) {
+  .socials{
+    display: none;
+  }
 }
 </style>

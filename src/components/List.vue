@@ -1,0 +1,198 @@
+<template>
+  <div class="list">
+    <div
+      class="tab-color"
+      :style="[
+        user.role == 'admin'
+          ? { backgroundColor: '#ffd700' }
+          : user.role == 'deputy admin'
+          ? { backgroundColor: '#FF6347' }
+          : { backgroundColor: '#9400D3' },
+      ]"
+    ></div>
+    <div class="profile-info">
+      <div class="name">
+        {{ user.name }}
+        <div
+          class="role"
+          :style="[
+            user.role == 'admin'
+              ? { backgroundColor: '#ffd700' }
+              : user.role == 'deputy admin'
+              ? { backgroundColor: '#FF6347' }
+              : { backgroundColor: '#9400D3' },
+          ]"
+        >
+          {{ user.role }}
+        </div>
+      </div>
+      <div class="email">
+        <i class="icon fas fa-envelope"></i>
+        <span>{{ user.email }}</span>
+      </div>
+      <div class="password">
+        <i class="icon fas fa-key"></i> <span>{{ user.password }}</span>
+      </div>
+      <div class="action-btn">
+        <div class="btn">
+          <span class="delete-text">delete</span
+          ><i class="delete fas fa-trash-alt"></i>
+        </div>
+        <div class="btn">
+          <span class="edit-text">edit</span><i class="edit fas fa-pen"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  name: "List",
+  props: ["user"],
+};
+</script>
+<style scoped>
+.list {
+  width: 100%;
+  background-color: white;
+  height: 16rem;
+  position: relative;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  transition: 0.3s all ease-in-out;
+}
+
+.list:hover {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.tab-color {
+  width: 1rem;
+  background-color: #ffd700;
+  height: 100%;
+  left: 0;
+  position: absolute;
+}
+
+.profile-info {
+  margin: 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  word-spacing: 0.6rem;
+  letter-spacing: 0.2rem;
+  color: #333;
+  display: inline;
+  position: relative;
+}
+
+.role {
+  display: inline;
+  font-size: 1.2rem;
+  padding: 0.24rem 0.4rem;
+  letter-spacing: 0;
+  word-spacing: 0;
+  border-radius: 0.2rem;
+  color: white;
+  position: absolute;
+  right: 0%;
+  text-transform: capitalize;
+}
+
+.email,
+.password {
+  font-size: 1.4rem;
+}
+
+.icon {
+  color: rgba(85, 85, 85, 0.35);
+  margin-right: 0.8rem;
+}
+
+.email span,
+.password span {
+  color: #555;
+}
+
+.action-btn {
+  display: flex;
+  gap: 1.2rem;
+  align-self: flex-end;
+}
+
+.action-btn .btn {
+  background-color: red;
+  width: 8.6rem;
+  height: 3.6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.25s all ease-in-out;
+}
+
+.action-btn .btn:hover {
+  background-color: rgb(151, 0, 0);
+}
+
+.action-btn .btn:last-child {
+  box-shadow: inset 0 0 0 1px #333;
+  background-color: transparent;
+  color: #333;
+}
+
+.action-btn .btn:last-child:hover {
+  box-shadow: inset 0 0 0 1px #333;
+  background-color: #333;
+  color: #fff !important;
+}
+
+.action-btn .delete-text {
+  font-size: 1.4rem;
+  margin-right: 0.4rem;
+  color: #fff;
+}
+
+.action-btn .edit-text {
+  font-size: 1.4rem;
+  margin-right: 0.4rem;
+}
+
+.action-btn .delete {
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.action-btn .edit {
+  font-size: 1.2rem;
+}
+/* below 850px */
+@media (max-width: 53em) {
+  .profile-info {
+    margin: 1.6rem 2.4rem;
+  }
+  .name {
+    font-size: 1.4rem;
+  }
+  .role {
+    font-size: 1rem;
+  }
+}
+
+/* below 680px */
+@media (max-width: 43em) {
+  .profile-info {
+    margin: 2rem 3.6rem;
+  }
+  .role {
+    font-size: 1.2rem;
+  }
+  .name {
+    font-size: 2rem;
+  }
+}
+</style>
