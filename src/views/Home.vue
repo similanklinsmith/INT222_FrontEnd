@@ -83,12 +83,48 @@
             <div class="small-circle"></div>
           </div>
           <div class="gallery-category">
-            <div class="cards grid grid--3-cols">
-              <div class="card">
-                <img src="../../src/assets/images/hero-image-2.jpg" alt="" />
+            <div class="cards grid grid--2-cols">
+              <div class="card" v-if="categories[0].selected">
+                <splide :options="options">
+                  <splide-slide v-for="slide in slides1" :key="slide">
+                    <img :src="slide" alt="" />
+                  </splide-slide>
+                </splide>
               </div>
-              <div class="card">
-                <img src="../../src/assets/images/hero-image-4.jpg" alt="" />
+              <div class="card" v-if="categories[1].selected">
+                <splide :options="options">
+                  <splide-slide v-for="slide in slides2" :key="slide">
+                    <img :src="slide" alt="" />
+                  </splide-slide>
+                </splide>
+              </div>
+              <div class="card" v-if="categories[2].selected">
+                <splide :options="options">
+                  <splide-slide v-for="slide in slides3" :key="slide">
+                    <img :src="slide" alt="" />
+                  </splide-slide>
+                </splide>
+              </div>
+              <div class="card" v-if="categories[3].selected">
+                <splide :options="options">
+                  <splide-slide v-for="slide in slides4" :key="slide">
+                    <img :src="slide" alt="" />
+                  </splide-slide>
+                </splide>
+              </div>
+              <div class="card" v-if="categories[4].selected">
+                <splide :options="options">
+                  <splide-slide v-for="slide in slides5" :key="slide">
+                    <img :src="slide" alt="" />
+                  </splide-slide>
+                </splide>
+              </div>
+              <div class="card" v-if="categories[5].selected">
+                <splide :options="options">
+                  <splide-slide v-for="slide in slides6" :key="slide">
+                    <img :src="slide" alt="" />
+                  </splide-slide>
+                </splide>
               </div>
               <div class="categories">
                 <div class="tertiary-header">Category:</div>
@@ -189,20 +225,55 @@
 <script>
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
+import { Splide, SplideSlide } from "@splidejs/vue-splide";
 export default {
   name: "Home",
   components: {
     Socials,
     Footer,
+    Splide,
+    SplideSlide,
   },
-  //   mounted(){
-  //     $(window).on("load",function(){
-  //      $(".loader-wrapper").fadeOut("slow");
-  // });
-  //   },
   data() {
     return {
+      options: {
+        rewind: true,
+        // width: 800,
+        gap: "2rem",
+        autoplay: "playing"
+      },
       cursorMember: 1,
+      cursorCategory: 1,
+      slides1: [
+        require("../../src/assets/images/men/men3.jpg"),
+        require("../../src/assets/images/men/men1.jpg"),
+        require("../../src/assets/images/men/men2.jpg"),
+      ],
+      slides2: [
+        require("../../src/assets/images/women/women1.jpg"),
+        require("../../src/assets/images/women/women2.jpg"),
+        require("../../src/assets/images/women/women3.jpg"),
+      ],
+      slides3: [
+        require("../../src/assets/images/kids/kid1.jpg"),
+        require("../../src/assets/images/kids/kid2.jpg"),
+        require("../../src/assets/images/kids/kid3.jpg"),
+      ],
+      slides4: [
+        require("../../src/assets/images/bags/bag1.jpg"),
+        require("../../src/assets/images/bags/bag2.jpg"),
+        require("../../src/assets/images/bags/bag3.jpg"),
+      ],
+      slides5: [
+        require("../../src/assets/images/accessories/acc1.jpg"),
+        require("../../src/assets/images/accessories/acc2.jpg"),
+        require("../../src/assets/images/accessories/acc3.jpg"),
+      ],
+      slides6: [
+        require("../../src/assets/images/shoes/shoes1.jpg"),
+        require("../../src/assets/images/shoes/shoes2.jpg"),
+        require("../../src/assets/images/shoes/shoes3.jpg"),
+      ],
       categories: [
         {
           id: 1,
@@ -221,7 +292,7 @@ export default {
         },
         {
           id: 4,
-          text: "Unisex",
+          text: "Bags/Purse",
           selected: false,
         },
         {
@@ -271,6 +342,7 @@ export default {
   },
   methods: {
     selected(id) {
+      this.cursorCategory = id - 1;
       for (let index = 0; index < this.categories.length; index++) {
         if (this.categories[index].selected === true) {
           this.categories[index].selected = false;
@@ -308,22 +380,16 @@ export default {
       let info = document.querySelector(".info");
       let profileImg = document.querySelector(".profile-img");
       if (window.pageYOffset > newArrivals.offsetTop / 2) {
-        // news.style.transform = "scale(1)";
         news.style.opacity = 1;
       } else if (window.pageYOffset <= newArrivals.offsetTop / 2) {
         news.style.opacity = 0;
-        // news.style.transform = "scale(1.25)";
       }
       if (window.pageYOffset >= about.offsetTop / 2) {
         info.style.opacity = 1;
-        // info.style.transform = "translateX(0rem)";
-        // profileImg.style.transform = "translateX(0rem)";
         profileImg.style.opacity = "1";
       } else if (window.pageYOffset <= about.offsetTop / 2) {
         info.style.opacity = 0;
-        // info.style.transform = "translateX(4.8rem)";
         profileImg.style.opacity = 0;
-        // profileImg.style.transform = "translateX(-4.8rem)";
       }
     });
   },
@@ -637,6 +703,11 @@ NEW SECION
 .cards {
   width: 80%;
   margin: 3.6rem 10%;
+  height: 48rem;
+}
+
+.cards.grid--2-cols {
+  grid-template-columns: 2fr 1fr;
 }
 
 .card {
@@ -648,7 +719,7 @@ NEW SECION
 
 .card img {
   width: 100%;
-  height: 100%;
+  height: 48rem;
   object-fit: cover;
   transition: 0.3s all ease-in-out;
 }
@@ -929,13 +1000,14 @@ ABOUT SECION
     /* justify-content: space-around; */
     justify-content: center;
     gap: 1rem;
+    padding: 1rem 0;
   }
   .categories .see-more a {
     font-size: 1.4rem !important;
     position: relative;
   }
-  .grid--3-cols {
-    grid-template-columns: 1fr 1fr;
+  .grid--2-cols {
+    grid-template-columns: 1fr !important;
     gap: 0.6rem;
   }
   .categories {
@@ -955,6 +1027,16 @@ ABOUT SECION
     font-size: 1.4rem;
     justify-items: center;
   }
+  /* .card img {
+  width: 80%;
+  height: 36rem;
+  object-fit: cover;
+  transition: 0.3s all ease-in-out;
+} */
+.cards {
+  height: 100%;
+}
+
 }
 
 /* below 588px */
@@ -1040,6 +1122,9 @@ ABOUT SECION
   /* .container {
     padding: 0 1.6rem;
   } */
+  .icon-scroll{
+    display: none;
+  }
   .header {
     font-weight: 700;
     font-size: 4.2rem;
