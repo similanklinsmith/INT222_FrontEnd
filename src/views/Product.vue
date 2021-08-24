@@ -35,7 +35,9 @@
                 v-for="color in product.colors"
                 :key="color"
                 :style="{ backgroundColor: color.color_code }"
-              ></div>
+              >
+                        <span class="tooltiptext">{{ color.color_name }}</span>
+              </div>
             </div>
             <div class="prod_desc">
               {{ product.product_desc }}
@@ -278,6 +280,21 @@ export default {
   height: 3.2rem;
   border: 1px solid rgba(85, 85, 85, 0.55);
   background-color: #fff;
+}
+
+.color:hover .tooltiptext {
+  visibility: visible;
+}
+.tooltiptext {
+  visibility: hidden;
+  background-color: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.6rem 0.4rem;
+  position: absolute;
+  z-index: 1;
+  font-size: 1.2rem;
 }
 .like-icon {
   z-index: 99;

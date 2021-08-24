@@ -7,6 +7,7 @@ import AddProduct from '../views/AddProduct.vue'
 import EditProduct from '../views/EditProduct.vue'
 import Users from '../views/Users.vue'
 import WishList from '../views/WishList.vue'
+import '@splidejs/splide/dist/css/themes/splide-default.min.css';
 
 const routes = [
   {

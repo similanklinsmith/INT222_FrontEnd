@@ -196,7 +196,7 @@ export default {
         isWishList: false, //
         product_img: this.prod_img,
       };
-      console.log(this.selected_colors);
+      // console.log(this.selected_colors);
       const jsonProduct = JSON.stringify(newProduct, {
         type: "application/json",
       });
@@ -489,7 +489,7 @@ textarea:focus {
   .add-img {
     width: 50%;
     margin: 0 25%;
-    height: 24rem;
+        height: 36rem;
   }
 }
 </style>

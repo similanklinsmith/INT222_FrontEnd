@@ -2,23 +2,29 @@
   <div class="EditProduct">
     <div class="edit-product-section">
       <div class="container">
-        <!-- component -->
-        <!-- <Form :colors="colors" :editProduct="editProduct"></Form> -->
-        <!-- --- -->
         <div class="Form">
           <div>
             <div class="sub-heading">make it better</div>
             <div class="secondary-header">Edit product</div>
           </div>
-
-          <form action="#" class="form">
+          <form @submit.prevent="editProductConfirm" action="#" class="form">
             <div class="display-img">
-              <label class="add-img" for="upload">
-                <input type="file" accept="image/*" id="upload" name="upload" />
+              <label class="add-img" for="upload" v-if="preview_img == ''">
+                <input
+                  @change="uploadImage"
+                  type="file"
+                  accept="image/*"
+                  id="upload"
+                  name="upload"
+                />
                 <i class="fas fa-plus-square"></i>
               </label>
+              <img :src="preview_img" alt="" v-else />
+              <div class="img-name" v-if="name_img != ''">
+                {{ name_img }}
+                <span @click="changeImg"><i class="fas fa-times"></i></span>
+              </div>
             </div>
-
             <div class="info-form">
               <div class="col-left">
                 <div class="prod-name">
@@ -74,7 +80,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="col-right">
                 <div class="prod-date">
                   <label for="date">Manufactured date</label>
@@ -99,9 +104,9 @@
                     />
                   </div>
                 </div>
-                <div class="btn btn--full">
+                <button class="btn btn--full" type="submit">
                   Edit product
-                </div>
+                </button>
               </div>
             </div>
           </form>
@@ -138,8 +143,65 @@ export default {
       edit_brands: "",
       edit_types: "",
       edit_date: "",
+      edit_img: "",
       edit_colors: [],
+      former_colors: [],
+      // preview image
+      preview_img: "",
+      name_img: "",
     };
+  },
+  methods: {
+    uploadImage(e) {
+      const image = e.target.files[0];
+      this.name_img = image.name;
+      const reader = new FileReader();
+      reader.readAsDataURL(image);
+      reader.onload = (e) => {
+        this.preview_img = e.target.result;
+        this.edit_img = e.target.result;
+      };
+    },
+    changeImg() {
+      this.prod_img = "";
+      this.preview_img = "";
+      this.name_img = "";
+    },
+    editProductConfirm() {
+      const editProduct = {
+        product_name: this.edit_name, //
+        product_desc: this.edit_desc, //
+        product_price: this.edit_price, //
+        product_brand: this.edit_brands, //
+        product_type: this.edit_types, //
+        date: this.edit_date, //
+        colors: this.edit_colors, //
+        product_img: this.edit_img,
+      };
+      // console.log(this.selected_colors);
+      const jsonProduct = JSON.stringify(editProduct, {
+        type: "application/json",
+      });
+      fetch(this.urlProductShow, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: jsonProduct,
+      }).catch((err) => console.log(err));
+
+      (this.edit_name = ""),
+        (this.edit_desc = ""),
+        (this.edit_price = ""),
+        (this.edit_brands = ""),
+        (this.edit_types = ""),
+        (this.edit_date = ""),
+        (this.edit_colors = []),
+        (this.edit_img = ""),
+        (this.preview_img = ""),
+        (this.name_img = "");
+        this.$router.push('/stores')
+    },
   },
   mounted() {
     window.scrollTo(0, 0);
@@ -158,20 +220,25 @@ export default {
           (this.edit_brands = data.product_brand),
           (this.edit_types = data.product_type),
           (this.edit_date = data.date),
-          (this.edit_colors = data.colors);
-          // console.log(this.edit_colors)
-                const checkboxInput = document.getElementsByClassName("checkbox");
-                console.log(checkboxInput[index].value)
-      for (let index = 0; index < checkboxInput.length; index++) {
-        if (checkboxInput[index].value) {
-          console.log(checkboxInput[index].value)
-          checkboxInput.checked = true;
+          (this.edit_colors = data.colors),
+          (this.edit_img = data.product_img),
+          (this.preview_img = data.product_img),
+          (this.name_img = data.product_img.name);
+        // console.log(this.edit_colors)
+      })
+      .then(() => {
+        for (let index = 0; index < this.edit_colors.length; index++) {
+          this.former_colors.push(this.edit_colors[index].color_code);
         }
-        
-      }
+        const checkboxInput = document.getElementsByClassName("checkbox");
+        for (let index = 0; index < checkboxInput.length; index++) {
+          if (checkboxInput[index].value == this.former_colors[index]) {
+            checkboxInput[index].checked = true;
+            continue;
+          }
+        }
       })
       .catch((err) => console.log(err.message));
-
   },
 };
 </script>
@@ -212,8 +279,37 @@ export default {
   justify-content: center;
 }
 
+.display-img {
+  width: 100%;
+  position: relative;
+}
+
+.display-img img {
+  object-fit: cover;
+  width: 80%;
+  margin: 0 10%;
+}
+
 .display-img input {
   display: none;
+}
+
+.display-img .img-name {
+  font-size: 1.2rem;
+  width: 80%;
+  margin: 1.2rem 10%;
+  text-align: center;
+}
+
+.display-img .img-name .fa-times {
+  margin-left: 1.4rem;
+  font-size: 110%;
+  cursor: pointer;
+  transition: 0.15s ease-in-out all;
+}
+
+.display-img .img-name .fa-times:hover {
+  color: red;
 }
 
 .add-img {
@@ -411,7 +507,7 @@ textarea:focus {
   .add-img {
     width: 50%;
     margin: 0 25%;
-    height: 24rem;
+    height: 36rem;
   }
 }
 </style>
