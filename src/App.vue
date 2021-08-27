@@ -10,7 +10,9 @@
         <router-link to="/add-product">Add</router-link>
         <router-link to="/users">Users</router-link>
         <router-link class="sign" to="/sign-up">Sign up</router-link>
-        <router-link to="/wish-list"><i class="far fa-heart"></i></router-link>
+        <router-link to="/wish-list" class="wishlist"><i class="far fa-heart"></i>
+        <!-- <span class="number">{{ numberOfWishlist.length }}</span> -->
+        </router-link>
         <!-- <router-link to="/about"><i class="fas fa-sun"></i></router-link> -->
       </div>
       <div
@@ -55,16 +57,25 @@ export default {
   data() {
     return {
       isShow: false,
+      productUrl: "http://localhost:3000/products",
+      products: [],
     };
   },
   computed:{
     isMobileSign(){
       return window.innerWidth;
+    },
+    numberOfWishlist(){
+      return this.products.filter((product) => {
+        return product.isWishList;
+      });
     }
   },
   mounted() {
-    // console.log( window.innerWidth);
-    // console.log(this.$route.name)
+    fetch(this.productUrl)
+      .then((res) => res.json())
+      .then((data) => (this.products = data))
+      .catch((err) => console.log(err.message));
     $(document).ready(function() {
       $(window).scroll(function() {
         if (this.scrollY > 1) {
@@ -190,6 +201,14 @@ export default {
 
 .menu-bar {
   display: none;
+}
+.wishlist{
+  position: relative;
+}
+.wishlist .number{
+  font-size: 1rem;
+  top: 0%;
+  position:absolute;
 }
 
 @media (max-width: 84em) {

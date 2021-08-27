@@ -154,18 +154,13 @@ export default {
   methods: {
     uploadImage(e) {
       const image = e.target.files[0];
-      this.name_img = image.name;
+      this.name_img =  e.target.files[0].name;
       const reader = new FileReader();
       reader.readAsDataURL(image);
       reader.onload = (e) => {
         this.preview_img = e.target.result;
         this.edit_img = e.target.result;
       };
-    },
-    changeImg() {
-      this.prod_img = "";
-      this.preview_img = "";
-      this.name_img = "";
     },
     editProductConfirm() {
       const editProduct = {
@@ -201,6 +196,7 @@ export default {
         (this.preview_img = ""),
         (this.name_img = "");
         this.$router.push('/stores')
+        // this.$router.go(-1)
     },
   },
   mounted() {

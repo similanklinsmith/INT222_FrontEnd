@@ -82,19 +82,7 @@
               <label for="colors">COLOR</label>
               <select name="colors" id="colors" v-model="selectedColor">
                 <option value="">none</option>
-                <option value="#FF4219">red</option>
-                <option value="#FF4219">orange</option>
-                <option value="#FF4219">yellow</option>
-                <option value="#FF4219">green</option>
-                <option value="#FF4219">sky</option>
-                <option value="#FF4219">blue</option>
-                <option value="#FF4219">violet</option>
-                <option value="#FF4219">pink</option>
-                <option value="#FF4219">cream</option>
-                <option value="#FF4219">brown</option>
-                <option value="#FF4219">gray</option>
-                <option value="#FF4219">white</option>
-                <option value="#FF4219">black</option>
+                <option :value="color" v-for="color in colors" :key="color">{{ color.color_name }}</option>
                 <!-- <option value="colors.color_code">{{colors.color_name}}</option> -->
               </select>
             </div>
@@ -166,11 +154,13 @@ export default {
   data() {
     return {
       productUrl: "http://localhost:3000/products",
+      urlColors: "http://localhost:3000/colors",
       products: [],
+      colors:[],
       searchInput: "",
       selectColorProduct: [],
       selectedBrand: "",
-      selectedColor: "",
+      selectedColor: [],
       cursor: 1,
       slotImages: [
         {
@@ -192,10 +182,10 @@ export default {
     };
   },
   methods: {
-    handleDelete(id){
-      this.products = this.products.filter(product => {
+    handleDelete(id) {
+      this.products = this.products.filter((product) => {
         return product.id != id;
-      })
+      });
     },
     addWishList(id) {
       // console.log(id);
@@ -236,18 +226,6 @@ export default {
       this.cursor = id;
       this.slotImages[this.cursor - 1].show = true;
     },
-    queryColors() {
-      for (let index = 0; index < this.products.length; index++) {
-        for (let i = 0; i < this.products[index].colors.length; i++) {
-          if (this.products[index].colors[i].color_code == this.selectedColor) {
-            // console.log(
-            //   this.products[index].colors[i].color_code == this.selectedColor
-            // );
-            return this.selectColorProduct.push(this.products[index]);
-          }
-        }
-      }
-    },
   },
   mounted() {
     window.scrollTo(0, 0);
@@ -255,20 +233,33 @@ export default {
       .then((res) => res.json())
       .then((data) => (this.products = data))
       .catch((err) => console.log(err.message));
+    fetch(this.urlColors)
+      .then((res) => res.json())
+      .then((data) => (this.colors = data))
+      .catch((err) => console.log(err.message));
   },
   computed: {
     queryProducts() {
+      console.log(this.selectedColor)
       return this.products.filter((product) => {
         return (
           product.product_brand
             .toLowerCase()
             .includes(this.selectedBrand.toLowerCase()) &&
           product.product_name.toLowerCase().includes(this.searchInput)
+          // (product.colors == this.selectedColor)
         );
-        // return product.product_brand
-        //   .toLowerCase()
-        //   .includes(this.selectedBrand.toLowerCase());
       });
+    },
+    queryColors() {
+      for (let index = 0; index < this.products.length; index++) {
+        for (let i = 0; i < this.products[index].colors.length; i++) {
+          if (this.products[index].colors[i].color_code == this.selectedColor) {
+            this.selectColorProduct.push(this.products[index]);
+          }
+        }
+      }
+      return this.selectColorProduct;
     },
   },
 };
@@ -750,6 +741,9 @@ export default {
   }
   .card-grid.grid--4-cols {
     grid-template-columns: 1fr;
+  }
+  .not-found {
+    text-align: center;
   }
 }
 </style>

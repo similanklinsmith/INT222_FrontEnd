@@ -3,7 +3,6 @@
     <section class="section section-header">
       <div class="space"></div>
       <div class="hero">
-        <!-- <div class="big-circle"></div> -->
         <div class="header-text">
           <div class="sub-heading">new collection</div>
           <div class="hero-header">
@@ -144,7 +143,6 @@
             </div>
           </div>
         </div>
-        <!-- component -->
         <div class="get-app">
           <div class="new-header-text">
             Get the
@@ -160,9 +158,57 @@
       </div>
     </section>
 
+    <section class="section section-testimonials">
+      <div class="container">
+        <div class="sub-heading">Testimonials</div>
+        <div class="secondary-header">Into new world</div>
+        <div class="grid">
+          <div class="testimonials">
+            <figure class="testimonial">
+              <img
+                class="testimonial-img"
+                alt="Photo of customer Dave Bryson"
+                src="../../src/assets/images/hero-image.jpg"
+              />
+              <blockquote class="testimonial-text">
+                "Inexpensive, healthy and great-tasting meals, without even
+                having to order manually! It feels truly magical."
+              </blockquote>
+              <p class="testimonial-name">&mdash; Dave Bryson</p>
+            </figure>
+
+            <figure class="testimonial">
+              <img
+                class="testimonial-img"
+                alt="Photo of customer Ben Hadley"
+                src="../../src/assets/images/hero-image.jpg"
+              />
+              <blockquote class="testimonial-text">
+                "The AI algorithm is crazy good, it chooses the right meals for
+                me every time. It's amazing not to worry about food anymore!"
+              </blockquote>
+              <p class="testimonial-name">&mdash; Ben Hadley</p>
+            </figure>
+
+            <figure class="testimonial">
+              <img
+                class="testimonial-img"
+                alt="Photo of customer Steve Miller"
+                src="../../src/assets/images/hero-image.jpg"
+              />
+              <blockquote class="testimonial-text">
+                "Omnifood is a life saver! I just started a company, so there's
+                no time for cooking. I couldn't live without my daily meals
+                now!"
+              </blockquote>
+              <p class="testimonial-name">&mdash; Steve Miller</p>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section section-about" id="section-about">
-      <!-- <div class="small-circle"></div>
-      <div class="circle"></div> -->
       <div class="container">
         <div class="sub-heading">Let's talk</div>
         <div class="secondary-header">About us</div>
@@ -238,9 +284,8 @@ export default {
     return {
       options: {
         rewind: true,
-        // width: 800,
         gap: "2rem",
-        autoplay: "playing"
+        autoplay: "playing",
       },
       cursorMember: 1,
       cursorCategory: 1,
@@ -309,9 +354,9 @@ export default {
       members: [
         {
           id: 1,
-          name: "Sunwoo",
-          lastname: "Kim",
-          positions: ["Main Rapper", "Lead Dancer"],
+          name: "Noparat",
+          lastname: "Prasongdee",
+          positions: ["Database", "Devops"],
           text:
             "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid nihil beatae temporibus assumenda delectus sit",
           image: require("../../src/assets/images/hero-image-4.jpg"),
@@ -319,9 +364,9 @@ export default {
         },
         {
           id: 2,
-          name: "Juyeon",
-          lastname: "Lee",
-          positions: ["Main Rapper", "Lead Dancer"],
+          name: "Similan",
+          lastname: "Klinsmith",
+          positions: ["UX/UI", "Front-end"],
           text:
             "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid nihil beatae temporibus assumenda delectus sit",
           image: require("../../src/assets/images/hero-image-4.jpg"),
@@ -329,9 +374,9 @@ export default {
         },
         {
           id: 3,
-          name: "Hyunjae",
-          lastname: "Lee",
-          positions: ["Main Rapper", "Lead Dancer"],
+          name: "Praepanwa",
+          lastname: "Tedprasit",
+          positions: ["Backend", "Devops"],
           text:
             "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid nihil beatae temporibus assumenda delectus sit",
           image: require("../../src/assets/images/hero-image-4.jpg"),
@@ -379,6 +424,7 @@ export default {
       let about = document.querySelector(".section-about");
       let info = document.querySelector(".info");
       let profileImg = document.querySelector(".profile-img");
+      let testimonial = document.querySelector(".testimonial");
       if (window.pageYOffset > newArrivals.offsetTop / 2) {
         news.style.opacity = 1;
       } else if (window.pageYOffset <= newArrivals.offsetTop / 2) {
@@ -390,6 +436,11 @@ export default {
       } else if (window.pageYOffset <= about.offsetTop / 2) {
         info.style.opacity = 0;
         profileImg.style.opacity = 0;
+      }
+      if (window.pageYOffset >= testimonial.offsetTop / 2) {
+        testimonial.style.opacity = 1;
+      } else {
+        testimonial.style.opacity = 1;
       }
     });
   },
@@ -842,6 +893,58 @@ NEW SECION
 }
 
 /*--------------------------- 
+TESTIMONIALS SECION
+--------------------------- */
+.section-testimonials {
+  margin-top: 9.6rem;
+  position: relative;
+  margin-bottom: 4.8rem;
+  background-color: #c4c0bd;
+  padding: 3.6rem 0;
+}
+.testimonials {
+  margin: 3.2rem 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 1.2rem 2.4rem;
+  gap: 1.8rem;
+}
+.testimonial {
+  width: 100%;
+  background: #e7e3e0;
+  padding: 1.8rem 2.4rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+    rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  transition: 0.2s all ease-in-out;
+}
+
+.testimonial:hover {
+  transform: scale(1.025);
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+.testimonial-text {
+  font-size: 1.6rem;
+  width: 100%;
+  margin: 1.2rem 0;
+  line-height: 2;
+  font-weight: 300;
+}
+.testimonial-name {
+  font-size: 1.2rem;
+  text-align: right;
+}
+.testimonial-img {
+  width: 5.4rem;
+  height: 5.4rem;
+  border-radius: 50%;
+}
+.testimonial-img img {
+  width: 100%;
+  object-fit: cover;
+}
+
+/*--------------------------- 
 ABOUT SECION
 --------------------------- */
 .section-about {
@@ -1033,12 +1136,17 @@ ABOUT SECION
   object-fit: cover;
   transition: 0.3s all ease-in-out;
 } */
-.cards {
-  height: 100%;
+  .cards {
+    height: 100%;
+  }
 }
 
+/* below 750px */
+@media (max-width: 47em) {
+  .testimonials {
+    grid-template-columns: 1fr;
+  }
 }
-
 /* below 588px */
 @media (max-width: 37em) {
   .space {
@@ -1122,7 +1230,7 @@ ABOUT SECION
   /* .container {
     padding: 0 1.6rem;
   } */
-  .icon-scroll{
+  .icon-scroll {
     display: none;
   }
   .header {
@@ -1214,6 +1322,19 @@ ABOUT SECION
     margin: 0;
     width: 100%;
     padding: 3.6rem 1.8rem;
+  }
+  .testimonial-img {
+    display: none;
+  }
+  .testimonial {
+    padding: 1.2rem 2rem;
+  }
+  .testimonial-text {
+    font-size: 1.4rem;
+    line-height: 1.6;
+  }
+  .testimonial-name {
+    font-size: 1rem;
   }
 }
 </style>

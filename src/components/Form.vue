@@ -1,92 +1,106 @@
 <template>
   <div class="Form">
-
-      <div class="display-img">
-        <label class="add-img" for="upload">
-          <input type="file" accept="image/*" id="upload" name="upload" />
-          <i class="fas fa-plus-square"></i>
-        </label>
-      </div>
-
-      <div class="info-form">
-        <div class="col-left">
-          <div class="prod-name">
-            <label for="name">Product name</label>
-            <input type="text" v-model="prod_name" placeholder="Fits T-shirt" />
-          </div>
-          <div class="prod-desc">
-            <label for="desc">Description</label>
-            <textarea
-              name="desc"
-              id="desc"
-              v-model="prod_desc"
-              cols="30"
-              rows="10"
-              placeholder="This shirt is made up with finess silks..."
-            ></textarea>
-          </div>
-          <div class="prod-price">
-            <label for="price">Price</label>
-            <input
-              type="text"
-              id="price"
-              name="price"
-              v-model.number="prod_price"
-              placeholder="599"
-            />
-          </div>
-          <div class="prod-brand-type">
-            <div class="prod-brand">
-              <label for="brands">Brand</label>
-              <select name="brands" id="brands" v-model="prod_brands">
-                <option value="">none</option>
-                <option value="ZARA">ZARA</option>
-                <option value="H&amp;M">H&amp;M</option>
-                <option value="UNIQLO">UNIQLO</option>
-                <option value="CCOO">CC-OO</option>
-              </select>
+                  <div class="display-img">
+              <label class="add-img" for="upload" v-if="preview_img == ''">
+                <input
+                  @change="uploadImage"
+                  type="file"
+                  accept="image/*"
+                  id="upload"
+                  name="upload"
+                />
+                <i class="fas fa-plus-square"></i>
+              </label>
+              
+              <img :src="preview_img" alt="" v-else />
+              <div class="img-name" v-if="name_img != ''">{{ name_img }} <span @click="changeImg"><i class="fas fa-times"></i></span></div>
             </div>
 
-            <div class="prod-type">
-              <label for="types">Type</label>
-              <select name="types" id="types" v-model="prod_types">
-                <option value="">none</option>
-                <option value="Shirt">Shirt</option>
-                <option value="Pants">Pants</option>
-                <option value="Jeans">Jeans</option>
-                <option value="Sweater">Sweater</option>
-              </select>
-            </div>
-          </div>
-        </div>
+            <div class="info-form">
+              <div class="col-left">
+                <div class="prod-name">
+                  <label for="name">Product name</label>
+                  <input
+                    type="text"
+                    v-model="prod_name"
+                    placeholder="Fits T-shirt"
+                  />
+                </div>
+                <div class="prod-desc">
+                  <label for="desc">Description</label>
+                  <textarea
+                    name="desc"
+                    id="desc"
+                    v-model="prod_desc"
+                    cols="30"
+                    rows="10"
+                    placeholder="This shirt is made up with finess silks..."
+                  ></textarea>
+                </div>
+                <div class="prod-price">
+                  <label for="price">Price</label>
+                  <input
+                    type="text"
+                    id="price"
+                    name="price"
+                    v-model.number="prod_price"
+                    placeholder="599"
+                  />
+                </div>
+                <div class="prod-brand-type">
+                  <div class="prod-brand">
+                    <label for="brands">Brand</label>
+                    <select name="brands" id="brands" v-model="prod_brands">
+                      <option value="">none</option>
+                      <option value="ZARA">ZARA</option>
+                      <option value="H&amp;M">H&amp;M</option>
+                      <option value="UNIQLO">UNIQLO</option>
+                      <option value="CCOO">CC-OO</option>
+                    </select>
+                  </div>
 
-        <div class="col-right">
-          <div class="prod-date">
-            <label for="date">Manufactured date</label>
-            <input type="date" name="date" id="date" v-model="prod_date" />
-          </div>
-          <div class="prod-colors">
-            <label for="name">Colors</label>
-            <div class="list-of-colors">
-              <input
-                class="checkbox"
-                type="checkbox"
-                v-for="color in colors"
-                :key="color.color_code"
-                v-model="selected_colors"
-                :style="{ backgroundColor: color.color_code }"
-              />
+                  <div class="prod-type">
+                    <label for="types">Type</label>
+                    <select name="types" id="types" v-model="prod_types">
+                      <option value="">none</option>
+                      <option value="Shirt">Shirt</option>
+                      <option value="Pants">Pants</option>
+                      <option value="Jeans">Jeans</option>
+                      <option value="Sweater">Sweater</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-right">
+                <div class="prod-date">
+                  <label for="date">Manufactured date</label>
+                  <input
+                    type="date"
+                    name="date"
+                    id="date"
+                    v-model="prod_date"
+                  />
+                </div>
+                <div class="prod-colors">
+                  <label for="name">Colors</label>
+                  <div class="list-of-colors">
+                    <input
+                      class="checkbox"
+                      type="checkbox"
+                      v-for="color in colors"
+                      :key="color.color_code"
+                      v-model="selected_colors"
+                      :value="color"
+                      :style="{ backgroundColor: color.color_code }"
+                    />
+                  </div>
+                </div>
+                <button class="btn btn--full" type="submit">
+                  Add product
+                </button>
+              </div>
             </div>
-          </div>
-          <div
-            v-if="currentRoute.includes('add-product')"
-            class="btn btn--full"
-            @click="addProductHandle"
-          >
-            Add product
-          </div>
-        </div>
-      </div>
   </div>
 </template>
 <script>
