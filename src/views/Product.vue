@@ -82,39 +82,12 @@ export default {
       this.$router.go(-1);
     },
     deleteProduct() {
-      fetch(this.urlProductShow, {
-        method: "DELETE",
-      })
-        .then(() => this.$emit("deleteProduct", this.product.id))
-        .catch((err) => console.log(err.message));
-      this.$router.go(-1);
+      this.$store.dispatch('deleteProduct',this.product.id)
+      this.$router.push("/stores");
     },
     toggleWishList() {
       this.product.isWishList = !this.product.isWishList;
-      const editProduct = {
-        product_name: this.product.product_name,
-        product_desc: this.product.product_desc,
-        product_price: this.product.product_price, //
-        product_brand: this.product.product_brand, //
-        product_type: this.product.product_type, //
-        date: this.product.date, //
-        colors: this.product.colors, //
-        isWishList: !this.product.isWishList, //
-        product_img: this.product.product_img,
-      };
-      // console.log(this.product);
-      const jsonProduct = JSON.stringify(editProduct, {
-        type: "application/json",
-      });
-      fetch(this.urlProductShow, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: jsonProduct,
-      })
-      .catch((err) => console.log(err));
-      // this.$emit("toggleWishList", this.product.id);
+      this.$store.dispatch('setProductWishList',this.product)
     },
   },
   mounted() {
@@ -123,7 +96,6 @@ export default {
       .then((res) => res.json())
       .then((data) => (this.product = data))
       .catch((err) => console.log(err.message));
-    // console.log(this.isWishList)
   },
 };
 </script>

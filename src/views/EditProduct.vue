@@ -99,7 +99,7 @@
                       v-for="color in colors"
                       :key="color.color_code"
                       v-model="edit_colors"
-                      :value="color.color_code"
+                      :value="color"
                       :style="{ backgroundColor: color.color_code }"
                     />
                   </div>
@@ -164,26 +164,18 @@ export default {
     },
     editProductConfirm() {
       const editProduct = {
+        id: this.editId, //
         product_name: this.edit_name, //
         product_desc: this.edit_desc, //
         product_price: this.edit_price, //
         product_brand: this.edit_brands, //
         product_type: this.edit_types, //
+        isWishList: this.editProduct.isWishList, //
         date: this.edit_date, //
         colors: this.edit_colors, //
         product_img: this.edit_img,
       };
-      // console.log(this.selected_colors);
-      const jsonProduct = JSON.stringify(editProduct, {
-        type: "application/json",
-      });
-      fetch(this.urlProductShow, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: jsonProduct,
-      }).catch((err) => console.log(err));
+      this.$store.dispatch('editProduct',editProduct).catch((err) => console.log(err));
 
       (this.edit_name = ""),
         (this.edit_desc = ""),
@@ -206,10 +198,12 @@ export default {
       .then((res) => res.json())
       .then((data) => (this.colors = data))
       .catch((err) => console.log(err.message));
+
     // fetch product
     fetch(this.urlProductShow)
       .then((res) => res.json())
       .then((data) => {
+        (this.editProduct = data),
         (this.edit_name = data.product_name),
           (this.edit_desc = data.product_desc),
           (this.edit_price = data.product_price),

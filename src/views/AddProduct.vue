@@ -101,7 +101,7 @@
                     <input
                       class="checkbox"
                       type="checkbox"
-                      v-for="color in colors"
+                      v-for="color in allColors"
                       :key="color.color_code"
                       v-model="selected_colors"
                       :value="color"
@@ -119,8 +119,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="big-circle"></div>
-    <div class="small-circle"></div> -->
     <Socials class="socials"></Socials>
     <Footer class="footer"></Footer>
   </div>
@@ -128,6 +126,7 @@
 <script>
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
+import { mapGetters, mapActions } from 'vuex';
 // import Form from "@/components/Form.vue";
 export default {
   components: {
@@ -138,9 +137,9 @@ export default {
   data() {
     return {
       urlColors: "http://localhost:3000/colors",
-      urlProducts: "http://localhost:3000/products",
+      // urlProducts: "http://localhost:3000/products",
       // color list
-      colors: [],
+      // colors: [],
       //add product
       product_img: "",
       prod_name: "",
@@ -156,6 +155,7 @@ export default {
       name_img:""
     };
   },
+  computed: mapGetters(["getColors"]),
   computed: {
     addColor() {
       for (let index = 0; index < this.selected_color.length; index++) {
@@ -165,6 +165,9 @@ export default {
         });
       }
     },
+    allColors(){
+      return this.$store.getters.getColors
+    }
   },
   mounted() {
     window.scrollTo(0, 0);
@@ -174,6 +177,7 @@ export default {
       .catch((err) => console.log(err.message));
   },
   methods: {
+    ...mapActions(["getColorToStore"]),
     uploadImage(e) {
       const image = e.target.files[0];
       this.name_img = image.name;
@@ -186,28 +190,17 @@ export default {
     },
     addProduct() {
       const newProduct = {
-        product_name: this.prod_name, //
-        product_desc: this.prod_desc, //
-        product_price: this.prod_price, //
-        product_brand: this.prod_brands, //
-        product_type: this.prod_types, //
-        date: this.prod_date, //
-        colors: this.selected_colors, //
-        isWishList: false, //
+        product_name: this.prod_name, 
+        product_desc: this.prod_desc, 
+        product_price: this.prod_price, 
+        product_brand: this.prod_brands, 
+        product_type: this.prod_types, 
+        date: this.prod_date, 
+        colors: this.selected_colors, 
+        isWishList: false, 
         product_img: this.prod_img,
       };
-      // console.log(this.selected_colors);
-      const jsonProduct = JSON.stringify(newProduct, {
-        type: "application/json",
-      });
-      fetch(this.urlProducts, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: jsonProduct,
-      }).catch((err) => console.log(err));
-
+      this.$store.dispatch('addProduct',newProduct).catch((err) => console.log(err));
       (this.prod_name = ""),
         (this.prod_desc = ""),
         (this.prod_price = ""),
@@ -225,6 +218,9 @@ export default {
       this.name_img = ""
     }
   },
+    created() {
+    this.getColorToStore();
+  }
 };
 </script>
 <style scoped>

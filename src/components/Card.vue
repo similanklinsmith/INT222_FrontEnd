@@ -48,44 +48,26 @@ export default {
   },
   methods: {
     toggleWishList() {
-      // this.product.isWishList = !this.product.isWishList
       const editProduct = {
+        id: this.productCard.id, 
         product_name: this.productCard.product_name, 
         product_desc: this.productCard.product_desc, 
-        product_price: this.productCard.product_price, //
-        product_brand: this.productCard.product_brand, //
-        product_type: this.productCard.product_type, //
-        date: this.productCard.date, //
-        colors: this.productCard.colors, //
-        isWishList: !this.productCard.isWishList, //
+        product_price: this.productCard.product_price, 
+        product_brand: this.productCard.product_brand, 
+        product_type: this.productCard.product_type, 
+        date: this.productCard.date, 
+        colors: this.productCard.colors, 
+        isWishList: !this.productCard.isWishList, 
         product_img: this.productCard.product_img,
       };
-      const jsonProduct = JSON.stringify(editProduct, {
-        type: "application/json",
-      });
-      fetch(this.urlProductCard, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: jsonProduct,
-      }).catch((err) => console.log(err));
-      this.$emit("toggleWishList", this.product.id);
+      // this.$store.dispatch('setProductWishList',editProduct)
+      this.$emit("toggleWishList", editProduct);
     },
     showDetails(product) {
       this.$router.push({
         name: "Product",
         params: {
-          id: product.id,
-          // product_name: product.product_name,
-          // product_brand: product.product_brand,
-          // product_price: product.product_price,
-          // product_img: product.product_img,
-          // product_desc: product.product_desc,
-          // colors: this.getAllColors,
-          // date: product.date,
-          // product_type: product.product_type,
-          // isWishList: product.isWishList
+          id: product.id
         },
       });
     },

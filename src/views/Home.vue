@@ -5,6 +5,8 @@
       <div class="hero">
         <div class="header-text">
           <div class="sub-heading">new collection</div>
+          <!-- {{ $store.getters.getCount }} -->
+          <!-- <button @click="add">sss</button> -->
           <div class="hero-header">
             <h3 class="header">
               Create <br />your own <br />
@@ -386,6 +388,9 @@ export default {
     };
   },
   methods: {
+    // add(){
+    //   this.$store.dispatch('addAction');
+    // },
     selected(id) {
       this.cursorCategory = id - 1;
       for (let index = 0; index < this.categories.length; index++) {

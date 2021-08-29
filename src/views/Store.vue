@@ -119,7 +119,7 @@
               :key="product.id"
               :product="product"
               @deleteProduct="handleDelete"
-              @toggleWishList="addWishList(product.id)"
+              @toggleWishList="addWishList(product)"
               :style="
                 product.isWishList == true
                   ? { color: '#eb435f' }
@@ -144,6 +144,7 @@
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
 import Card from "@/components/Card.vue";
+import { mapGetters, mapActions } from 'vuex';
 export default {
   name: "Stores",
   components: {
@@ -182,38 +183,17 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["getProductsToStore"]),
     handleDelete(id) {
       this.products = this.products.filter((product) => {
         return product.id != id;
       });
     },
-    addWishList(id) {
-      // console.log(id);
-      for (let index = 0; index < this.products.length; index++) {
-        if (this.products[index].id == id) {
-          this.products[index].isWishList = !this.products[index].isWishList;
-          // console.log(this.productUrl+"/"+this.products[index].id)
-          // const editProduct = {
-          //   product_name: this.products[index].product_name,
-          //   product_desc: this.products[index].product_desc,
-          //   product_price: this.products[index].product_price, //
-          //   product_brand: this.products[index].product_brand, //
-          //   product_type: this.products[index].product_type, //
-          //   date: this.products[index].date, //
-          //   colors: this.products[index].colors, //
-          //   isWishList: !this.products[index].isWishList, //
-          //   product_img: this.products[index].product_img,
-          // };
-          // const jsonProduct = JSON.stringify(editProduct, {
-          //   type: "application/json",
-          // });
-          // fetch(this.productUrl+"/"+this.products[index].id, {
-          //   method: "PUT",
-          //   headers: {
-          //     "Content-type": "application/json",
-          //   },
-          //   body: jsonProduct,
-          // }).catch((err) => console.log(err));
+    addWishList(product) {
+      for (let index = 0; index < this.getAllproducts.length; index++) {
+        if (this.getAllproducts[index].id == product.id) {
+          this.getAllproducts[index].isWishList = !this.getAllproducts[index].isWishList;
+          this.$store.dispatch("setProductWishList", product)
         }
       }
     },
@@ -229,6 +209,7 @@ export default {
   },
   mounted() {
     window.scrollTo(0, 0);
+    // this.products = this.$store.dispatch('getProductsToStore');
     fetch(this.productUrl)
       .then((res) => res.json())
       .then((data) => (this.products = data))
@@ -238,10 +219,14 @@ export default {
       .then((data) => (this.colors = data))
       .catch((err) => console.log(err.message));
   },
+  computed: mapGetters(["getProducts"]),
   computed: {
+    getAllproducts(){
+      return this.$store.getters.getProducts
+    },
     queryProducts() {
-      console.log(this.selectedColor)
-      return this.products.filter((product) => {
+      // console.log(this.selectedColor)
+      return this.getAllproducts.filter((product) => {
         return (
           product.product_brand
             .toLowerCase()
