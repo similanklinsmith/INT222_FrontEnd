@@ -10,7 +10,7 @@
             v-for="product in queryWishList"
             :key="product.id"
             :product="product"
-            @toggleWishList="addWishList(product)"
+            @toggleWishList="deleteWishList"
             :style="
               product.isWishList == true
                 ? { color: '#eb435f' }
@@ -43,35 +43,50 @@ export default {
   },
   data() {
     return {
-      // productUrl: "http://localhost:3000/products",
-      // products: [],
+      productUrl: "http://localhost:3000/products",
+      products: [],
+      wishlistUrl: "http://localhost:3000/wishlist",
+      wishlists: [],
+      showProduct: [],
     };
   },
   mounted() {
     window.scrollTo(0, 0);
-    // fetch(this.productUrl)
-    //   .then((res) => res.json())
-    //   .then((data) => (this.products = data))
-    //   .catch((err) => console.log(err.message));
+    fetch(this.productUrl)
+      .then((res) => res.json())
+      .then((data) => (this.products = data))
+      .catch((err) => console.log(err.message));
+    fetch(this.wishlistUrl)
+      .then((res) => res.json())
+      .then((data) => (this.wishlists = data))
+      .catch((err) => console.log(err.message));
   },
   methods: {
-    addWishList(product) {
-      for (let index = 0; index < this.getAllproducts.length; index++) {
-        if (this.getAllproducts[index].id == product.id) {
-          this.getAllproducts[index].isWishList = !this.getAllproducts[index].isWishList;
-          this.$store.dispatch("setProductWishList", product)
-        }
-      }
+    deleteWishList(selectWishlist) {
+      // const index = this.wishlists.findIndex((wishlist) => wishlist.product_id == selectWishlist);
+      // const wishlistId = this.wishlists[index].id;
+      // console.log(wishlistId)
+      console.log(selectWishlist.product_id)
+      this.$store.dispatch("deleteWishlist", selectWishlist.product_id);
+      // for (let index = 0; index < this.products.length; index++) {
+      //   if (this.products[index].id == product.id) {
+      //     this.products[index].isWishList = !this.products[index].isWishList;
+
+      //   }
+      // }
     },
   },
   computed: {
-    getAllproducts(){
-      return this.$store.getters.getProducts
+    getAllproducts() {
+      return this.$store.getters.getProducts;
     },
+    // queryWishList() {
+    //   return this.products.filter((product) => {
+    //     return product.isWishList;
+    //   });
+    // },
     queryWishList() {
-      return this.getAllproducts.filter((product) => {
-        return product.isWishList;
-      });
+      return this.products.filter(product => this.wishlists.findIndex(wishlist => wishlist.product_id == product.id) > -1)
     },
   },
 };

@@ -61,10 +61,12 @@
                     <label for="brands">Brand</label>
                     <select name="brands" id="brands" v-model="edit_brands">
                       <option value="">none</option>
-                      <option value="ZARA">ZARA</option>
-                      <option value="H&amp;M">H&amp;M</option>
-                      <option value="UNIQLO">UNIQLO</option>
-                      <option value="CCOO">CC-OO</option>
+                      <option
+                        v-for="brand in allBrands"
+                        :key="brand.id"
+                        :value="brand.brand_name"
+                        >{{ brand.brand_name }}</option
+                      >
                     </select>
                   </div>
 
@@ -72,10 +74,12 @@
                     <label for="types">Type</label>
                     <select name="types" id="types" v-model="edit_types">
                       <option value="">none</option>
-                      <option value="Shirt">Shirt</option>
-                      <option value="Pants">Pants</option>
-                      <option value="Jeans">Jeans</option>
-                      <option value="Sweater">Sweater</option>
+                      <option
+                        v-for="category in allCategories"
+                        :key="category.id"
+                        :value="category.category_name"
+                        >{{ category.category_name }}</option
+                      >
                     </select>
                   </div>
                 </div>
@@ -113,8 +117,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="big-circle"></div>
-    <div class="small-circle"></div> -->
     <Socials class="socials"></Socials>
     <Footer class="footer"></Footer>
   </div>
@@ -122,6 +124,7 @@
 <script>
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
+import { mapGetters, mapActions } from "vuex";
 // import Form from "@/components/Form.vue";
 export default {
   components: {
@@ -152,9 +155,14 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "getColorToStore",
+      "getBrandsToStore",
+      "getCategoriesToStore",
+    ]),
     uploadImage(e) {
       const image = e.target.files[0];
-      this.name_img =  e.target.files[0].name;
+      this.name_img = e.target.files[0].name;
       const reader = new FileReader();
       reader.readAsDataURL(image);
       reader.onload = (e) => {
@@ -164,18 +172,20 @@ export default {
     },
     editProductConfirm() {
       const editProduct = {
-        id: this.editId, //
-        product_name: this.edit_name, //
-        product_desc: this.edit_desc, //
-        product_price: this.edit_price, //
-        product_brand: this.edit_brands, //
-        product_type: this.edit_types, //
-        isWishList: this.editProduct.isWishList, //
-        date: this.edit_date, //
-        colors: this.edit_colors, //
+        id: this.editId,
+        product_name: this.edit_name,
+        product_desc: this.edit_desc,
+        price: this.edit_price,
+        product_brand: this.edit_brands,
+        product_type: this.edit_types,
+        // isWishList: this.editProduct.isWishList,
+        release_date: this.edit_date,
+        colors: this.edit_colors,
         product_img: this.edit_img,
       };
-      this.$store.dispatch('editProduct',editProduct).catch((err) => console.log(err));
+      this.$store
+        .dispatch("editProduct", editProduct)
+        .catch((err) => console.log(err));
 
       (this.edit_name = ""),
         (this.edit_desc = ""),
@@ -187,56 +197,66 @@ export default {
         (this.edit_img = ""),
         (this.preview_img = ""),
         (this.name_img = "");
-        this.$router.push('/stores')
-        // this.$router.go(-1)
+      this.$router.push("/stores");
+    },
+  },
+  computed: mapGetters(["getColors", "getBrands", "getCategories"]),
+  computed: {
+    allColors() {
+      return this.$store.getters.getColors;
+    },
+    allBrands() {
+      return this.$store.getters.getBrands;
+    },
+    allCategories() {
+      return this.$store.getters.getCategories;
     },
   },
   mounted() {
     window.scrollTo(0, 0);
-    // fetch color
     fetch(this.urlColors)
       .then((res) => res.json())
       .then((data) => (this.colors = data))
       .catch((err) => console.log(err.message));
-
     // fetch product
     fetch(this.urlProductShow)
       .then((res) => res.json())
       .then((data) => {
         (this.editProduct = data),
-        (this.edit_name = data.product_name),
+          (this.edit_name = data.product_name),
           (this.edit_desc = data.product_desc),
-          (this.edit_price = data.product_price),
+          (this.edit_price = data.price),
           (this.edit_brands = data.product_brand),
           (this.edit_types = data.product_type),
-          (this.edit_date = data.date),
+          (this.edit_date = data.release_date),
           (this.edit_colors = data.colors),
           (this.edit_img = data.product_img),
           (this.preview_img = data.product_img),
           (this.name_img = data.product_img.name);
-        // console.log(this.edit_colors)
       })
       .then(() => {
         for (let index = 0; index < this.edit_colors.length; index++) {
-          this.former_colors.push(this.edit_colors[index].color_code);
+          this.former_colors.push(this.edit_colors[index]);
         }
+        console.log(this.former_colors)
         const checkboxInput = document.getElementsByClassName("checkbox");
         for (let index = 0; index < checkboxInput.length; index++) {
           if (checkboxInput[index].value == this.former_colors[index]) {
-            checkboxInput[index].checked = true;
+              checkboxInput[index].checked = true;
             continue;
           }
         }
       })
       .catch((err) => console.log(err.message));
   },
+  created() {
+    this.getColorToStore();
+    this.getBrandsToStore();
+    this.getCategoriesToStore();
+  },
 };
 </script>
 <style scoped>
-/* .EditProduct {
-  position: relative;
-} */
-
 .edit-product-section {
   margin: 2.4rem 0 6.4rem 0;
 }

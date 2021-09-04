@@ -1,7 +1,7 @@
 <template>
   <div class="card-component">
     <div class="product-img">
-      <div class="like-icon" @click="toggleWishList">
+      <div class="like-icon" @click="toggleWishList" :style="heart ? {color : '#eb435f'} : {color : 'grey'}">
         <i class="icon fas fa-heart"></i>
       </div>
 
@@ -21,7 +21,7 @@
       <div class="product-name">
         {{ product.product_name }}
       </div>
-      <div class="product-price">฿{{ product.product_price }}</div>
+      <div class="product-price">฿{{ product.price }}</div>
       <div class="product-colors">
         <div
           class="color"
@@ -41,33 +41,39 @@ export default {
   props: ["product"],
   data() {
     return {
+      heart: false,
       allColors: [],
       urlProductCard: "http://localhost:3000/products/" + this.product.id,
-      productCard:{}
+      productCard: {},
     };
   },
   methods: {
     toggleWishList() {
-      const editProduct = {
-        id: this.productCard.id, 
-        product_name: this.productCard.product_name, 
-        product_desc: this.productCard.product_desc, 
-        product_price: this.productCard.product_price, 
-        product_brand: this.productCard.product_brand, 
-        product_type: this.productCard.product_type, 
-        date: this.productCard.date, 
-        colors: this.productCard.colors, 
-        isWishList: !this.productCard.isWishList, 
-        product_img: this.productCard.product_img,
+      // const editProduct = {
+      //   id: this.productCard.id,
+      //   product_name: this.productCard.product_name,
+      //   product_desc: this.productCard.product_desc,
+      //   price: this.productCard.price,
+      //   product_brand: this.productCard.product_brand,
+      //   product_type: this.productCard.product_type,
+      //   date: this.productCard.date,
+      //   colors: this.productCard.colors,
+      //   isWishList: !this.productCard.isWishList,
+      //   product_img: this.productCard.product_img,
+      // };
+      // this.$emit("toggleWishList", editProduct);
+      this.heart = !this.heart
+      console.log(this.heart)
+      const wishlist = {
+        product_id : this.productCard.id
       };
-      // this.$store.dispatch('setProductWishList',editProduct)
-      this.$emit("toggleWishList", editProduct);
+      this.$emit("toggleWishList", wishlist);
     },
     showDetails(product) {
       this.$router.push({
         name: "Product",
         params: {
-          id: product.id
+          id: product.id,
         },
       });
     },

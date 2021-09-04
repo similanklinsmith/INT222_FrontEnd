@@ -19,7 +19,7 @@
           <div class="back-btn" @click="goBack">
             <i class="fas fa-chevron-left"></i>
           </div>
-          <form class="form">
+          <form class="form" @submit.prevent="signIn">
             <div class="form-header">
               Sign in
             </div>
@@ -30,6 +30,7 @@
                 name="email"
                 id="email"
                 placeholder="example@mail.com"
+                v-model="email"
               />
             </div>
             <div class="input-password">
@@ -39,10 +40,11 @@
                 name="password"
                 id="password"
                 placeholder="*******"
+                v-model="password"
               />
             </div>
             <a href="#" class="forgot">Forgot your password?</a>
-            <a href="#" class="btn btn--full">Sign in</a>
+            <button class="btn btn--full" type="submit">Sign in</button>
             <div class="mobile sign-btn" @click="isSignUp = true">Sign up</div>
           </form>
         </div>
@@ -127,6 +129,8 @@ export default {
   data() {
     return {
       isSignUp: false,
+      email: "",
+      password: ""
     };
   },
   mounted() {
@@ -136,6 +140,12 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
+    signIn(){
+      this.$store.dispatch('retrieveToken',{
+        email: this.email,
+        password: this.password
+      })
+    }
   },
 };
 </script>

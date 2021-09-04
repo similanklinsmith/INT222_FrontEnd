@@ -2,9 +2,6 @@
   <div class="AddProduct">
     <div class="add-product-section">
       <div class="container">
-        <!-- component -->
-        <!-- <Form :colors="colors"></Form> -->
-        <!-- --- -->
         <div class="Form">
           <div>
             <div class="sub-heading">more &amp; more</div>
@@ -24,9 +21,12 @@
                 />
                 <i class="fas fa-plus-square"></i>
               </label>
-              
+
               <img :src="preview_img" alt="" v-else />
-              <div class="img-name" v-if="name_img != ''">{{ name_img }} <span @click="changeImg"><i class="fas fa-times"></i></span></div>
+              <div class="img-name" v-if="name_img != ''">
+                {{ name_img }}
+                <span @click="changeImg"><i class="fas fa-times"></i></span>
+              </div>
             </div>
 
             <div class="info-form">
@@ -65,10 +65,12 @@
                     <label for="brands">Brand</label>
                     <select name="brands" id="brands" v-model="prod_brands">
                       <option value="">none</option>
-                      <option value="ZARA">ZARA</option>
-                      <option value="H&amp;M">H&amp;M</option>
-                      <option value="UNIQLO">UNIQLO</option>
-                      <option value="CCOO">CC-OO</option>
+                      <option
+                        v-for="brand in allBrands"
+                        :key="brand.id"
+                        :value="brand.brand_name"
+                        >{{ brand.brand_name }}</option
+                      >
                     </select>
                   </div>
 
@@ -76,10 +78,12 @@
                     <label for="types">Type</label>
                     <select name="types" id="types" v-model="prod_types">
                       <option value="">none</option>
-                      <option value="Shirt">Shirt</option>
-                      <option value="Pants">Pants</option>
-                      <option value="Jeans">Jeans</option>
-                      <option value="Sweater">Sweater</option>
+                      <option
+                        v-for="category in allCategories"
+                        :key="category.id"
+                        :value="category.category_name"
+                        >{{ category.category_name }}</option
+                      >
                     </select>
                   </div>
                 </div>
@@ -116,6 +120,7 @@
             </div>
             <!-- ----- -->
           </form>
+          <!-- <Form></Form> -->
         </div>
       </div>
     </div>
@@ -126,20 +131,16 @@
 <script>
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
-import { mapGetters, mapActions } from 'vuex';
-// import Form from "@/components/Form.vue";
+import { mapGetters, mapActions } from "vuex";
+import Form from "@/components/Form.vue";
 export default {
   components: {
     Socials,
     Footer,
-    // Form,
+    Form,
   },
   data() {
     return {
-      urlColors: "http://localhost:3000/colors",
-      // urlProducts: "http://localhost:3000/products",
-      // color list
-      // colors: [],
       //add product
       product_img: "",
       prod_name: "",
@@ -152,32 +153,30 @@ export default {
       prod_img: "",
       //preview image
       preview_img: "",
-      name_img:""
+      name_img: "",
     };
   },
-  computed: mapGetters(["getColors"]),
+  computed: mapGetters(["getColors", "getBrands", "getCategories"]),
   computed: {
-    addColor() {
-      for (let index = 0; index < this.selected_color.length; index++) {
-        this.prod_color.push({
-          color_code: this.selected_color[index],
-          color_name: this.selected_color[index],
-        });
-      }
+    allColors() {
+      return this.$store.getters.getColors;
     },
-    allColors(){
-      return this.$store.getters.getColors
-    }
+    allBrands() {
+      return this.$store.getters.getBrands;
+    },
+    allCategories() {
+      return this.$store.getters.getCategories;
+    },
   },
   mounted() {
     window.scrollTo(0, 0);
-    fetch(this.urlColors)
-      .then((res) => res.json())
-      .then((data) => (this.colors = data))
-      .catch((err) => console.log(err.message));
   },
   methods: {
-    ...mapActions(["getColorToStore"]),
+    ...mapActions([
+      "getColorToStore",
+      "getBrandsToStore",
+      "getCategoriesToStore",
+    ]),
     uploadImage(e) {
       const image = e.target.files[0];
       this.name_img = image.name;
@@ -190,17 +189,19 @@ export default {
     },
     addProduct() {
       const newProduct = {
-        product_name: this.prod_name, 
-        product_desc: this.prod_desc, 
-        product_price: this.prod_price, 
-        product_brand: this.prod_brands, 
-        product_type: this.prod_types, 
-        date: this.prod_date, 
-        colors: this.selected_colors, 
-        isWishList: false, 
+        product_name: this.prod_name,
+        product_desc: this.prod_desc,
+        price: this.prod_price,
+        product_brand: this.prod_brands,
+        product_type: this.prod_types,
+        release_date: this.prod_date,
+        colors: this.selected_colors,
+        // isWishList: false,
         product_img: this.prod_img,
       };
-      this.$store.dispatch('addProduct',newProduct).catch((err) => console.log(err));
+      this.$store
+        .dispatch("addProduct", newProduct)
+        .catch((err) => console.log(err));
       (this.prod_name = ""),
         (this.prod_desc = ""),
         (this.prod_price = ""),
@@ -212,30 +213,23 @@ export default {
         (this.preview_img = ""),
         (this.name_img = "");
     },
-    changeImg(){
-      this.prod_img = ""
-      this.preview_img = ""
-      this.name_img = ""
-    }
+    changeImg() {
+      this.prod_img = "";
+      this.preview_img = "";
+      this.name_img = "";
+    },
   },
-    created() {
+  created() {
     this.getColorToStore();
-  }
+    this.getBrandsToStore();
+    this.getCategoriesToStore();
+  },
 };
 </script>
 <style scoped>
 .add-product-section {
   margin: 2.4rem 0 6.4rem 0;
 }
-
-/* .small-circle {
-  top: 25%;
-  left: -5%;
-}
-
-.big-circle {
-  right: -5%;
-} */
 
 .Form {
   width: 100%;
@@ -272,21 +266,21 @@ export default {
   display: none;
 }
 
-.display-img .img-name{
+.display-img .img-name {
   font-size: 1.2rem;
   width: 80%;
   margin: 1.2rem 10%;
   text-align: center;
 }
 
-.display-img .img-name .fa-times{
+.display-img .img-name .fa-times {
   margin-left: 1.4rem;
   font-size: 110%;
   cursor: pointer;
   transition: 0.15s ease-in-out all;
 }
 
-.display-img .img-name .fa-times:hover{
+.display-img .img-name .fa-times:hover {
   color: red;
 }
 
@@ -313,13 +307,7 @@ export default {
 
 .info-form {
   width: 100%;
-  /* height: 48rem; ตอนเเก้ responsive ให้เปลี่ยนเป็น auto แทน */
   background-color: #fff;
-  /* display: flex; */
-  /* flex-direction: column; */
-  /* flex-wrap: wrap; responsive => no-wrap */
-  /* row-gap: 2rem; */
-  /* column-gap: 3.6rem; */
   padding: 3.6rem 4.8rem;
   box-shadow: rgba(70, 50, 50, 0.08) 0px 4px 6px -1px,
     rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
@@ -364,12 +352,6 @@ input {
   gap: 0.4rem;
   flex-wrap: wrap;
 }
-/* 
-input[type="checkbox"] {
-  width: 2.4rem;
-  height: 2.4rem;
-  background-color: #555;
-} */
 
 input.checkbox {
   width: 2.4rem;
@@ -485,7 +467,7 @@ textarea:focus {
   .add-img {
     width: 50%;
     margin: 0 25%;
-        height: 36rem;
+    height: 36rem;
   }
 }
 </style>

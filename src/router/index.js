@@ -8,6 +8,7 @@ import EditProduct from '../views/EditProduct.vue'
 import Users from '../views/Users.vue'
 import WishList from '../views/WishList.vue'
 import NotFound from '../views/NotFound.vue'
+import ColorsBrands from '../views/ColorsBrands.vue'
 import '@splidejs/splide/dist/css/themes/splide-default.min.css';
 
 const routes = [
@@ -45,13 +46,18 @@ const routes = [
   },
   {
     path: '/users',
-    name: '๊Users',
+    name: 'Users',
     component: Users,
   },
   {
     path: '/wish-list',
     name: 'WishList',
     component: WishList,
+  },
+  {
+    path: '/management',
+    name: 'ColorsBrands',
+    component: ColorsBrands,
   },
   {
     path: '/:catchall(.*)',

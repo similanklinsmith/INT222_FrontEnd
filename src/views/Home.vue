@@ -5,8 +5,6 @@
       <div class="hero">
         <div class="header-text">
           <div class="sub-heading">new collection</div>
-          <!-- {{ $store.getters.getCount }} -->
-          <!-- <button @click="add">sss</button> -->
           <div class="hero-header">
             <h3 class="header">
               Create <br />your own <br />
@@ -36,22 +34,22 @@
           <img
             class="logo"
             src="../../src/assets/images/brand-logos/uniqlo-logo.jpg"
-            alt=""
+            alt="UNIQLO Logo"
           />
           <img
             class="logo"
             src="../../src/assets/images/brand-logos/CC-OO.jpg"
-            alt=""
+            alt="CC-OO Logo"
           />
           <img
             class="logo"
             src="../../src/assets/images/brand-logos/zara-logo.jpg"
-            alt=""
+            alt="ZARA Logo"
           />
           <img
             class="logo"
             src="../../src/assets/images/brand-logos/HM.jpg"
-            alt=""
+            alt="H&amp;M Logo"
           />
         </div>
       </div>
@@ -68,7 +66,7 @@
                 class="new-header-img"
                 id="new-header-img"
                 src="../../src/assets/images/section-new-header.jpg"
-                alt=""
+                alt="Header Image of Beautiful model"
               />
             </div>
             <div class="new-ads">
@@ -88,42 +86,42 @@
               <div class="card" v-if="categories[0].selected">
                 <splide :options="options">
                   <splide-slide v-for="slide in slides1" :key="slide">
-                    <img :src="slide" alt="" />
+                    <img :src="slide" alt="Product Images for Men" />
                   </splide-slide>
                 </splide>
               </div>
               <div class="card" v-if="categories[1].selected">
                 <splide :options="options">
                   <splide-slide v-for="slide in slides2" :key="slide">
-                    <img :src="slide" alt="" />
+                    <img :src="slide" alt="Product Images for Women" />
                   </splide-slide>
                 </splide>
               </div>
               <div class="card" v-if="categories[2].selected">
                 <splide :options="options">
                   <splide-slide v-for="slide in slides3" :key="slide">
-                    <img :src="slide" alt="" />
+                    <img :src="slide" alt="Product Images for Kids" />
                   </splide-slide>
                 </splide>
               </div>
               <div class="card" v-if="categories[3].selected">
                 <splide :options="options">
                   <splide-slide v-for="slide in slides4" :key="slide">
-                    <img :src="slide" alt="" />
+                    <img :src="slide" alt="Bags/Purse Images" />
                   </splide-slide>
                 </splide>
               </div>
               <div class="card" v-if="categories[4].selected">
                 <splide :options="options">
                   <splide-slide v-for="slide in slides5" :key="slide">
-                    <img :src="slide" alt="" />
+                    <img :src="slide" alt="Accessory Images" />
                   </splide-slide>
                 </splide>
               </div>
               <div class="card" v-if="categories[5].selected">
                 <splide :options="options">
                   <splide-slide v-for="slide in slides6" :key="slide">
-                    <img :src="slide" alt="" />
+                    <img :src="slide" alt="Shoes Images" />
                   </splide-slide>
                 </splide>
               </div>
@@ -173,8 +171,8 @@
                 src="../../src/assets/images/hero-image.jpg"
               />
               <blockquote class="testimonial-text">
-                "Inexpensive, healthy and great-tasting meals, without even
-                having to order manually! It feels truly magical."
+                "Have huge number of product catalogs, there are many kinds of
+                fashion. I really love to use this site so much."
               </blockquote>
               <p class="testimonial-name">&mdash; Dave Bryson</p>
             </figure>
@@ -186,8 +184,8 @@
                 src="../../src/assets/images/hero-image.jpg"
               />
               <blockquote class="testimonial-text">
-                "The AI algorithm is crazy good, it chooses the right meals for
-                me every time. It's amazing not to worry about food anymore!"
+                "This site is not only having freaking cool and awesome UI
+                design, but also having lot of Fashioned Clothes."
               </blockquote>
               <p class="testimonial-name">&mdash; Ben Hadley</p>
             </figure>
@@ -199,9 +197,9 @@
                 src="../../src/assets/images/hero-image.jpg"
               />
               <blockquote class="testimonial-text">
-                "Omnifood is a life saver! I just started a company, so there's
-                no time for cooking. I couldn't live without my daily meals
-                now!"
+                "NerdyStyle is a life saver! I just started a company, so
+                there's no time for updating my fashion. I couldn't live without
+                this website!"
               </blockquote>
               <p class="testimonial-name">&mdash; Steve Miller</p>
             </figure>
@@ -219,7 +217,7 @@
             class="profile-img"
             v-if="members[cursorMember - 1].show == true"
           >
-            <img :src="members[cursorMember - 1].image" alt="" />
+            <img :src="members[cursorMember - 1].image" alt="Image of member" />
           </div>
           <div
             class="profile info"
@@ -464,7 +462,7 @@ HEADER SECION
 .section-header {
   margin: 0 0 9.6rem 0;
   max-width: 100%;
-  height: 66rem;
+  height: 72rem;
   display: grid;
   grid-template-columns: 3fr 4fr;
   position: relative;
@@ -1235,9 +1233,13 @@ ABOUT SECION
   /* .container {
     padding: 0 1.6rem;
   } */
-  .icon-scroll {
-    display: none;
+  .section-header {
+    background-image: none;
+    height: 48rem;
   }
+  /* .icon-scroll {
+    display: none;
+  } */
   .header {
     font-weight: 700;
     font-size: 4.2rem;
@@ -1340,6 +1342,12 @@ ABOUT SECION
   }
   .testimonial-name {
     font-size: 1rem;
+  }
+}
+/* below 370px */
+@media (max-width: 23em) {
+  .section-header {
+    height: 64rem;
   }
 }
 </style>

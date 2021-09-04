@@ -27,8 +27,8 @@
               {{ product.product_name }}
               <span class="brand">{{ product.product_brand }}</span>
             </div>
-            <div class="prod_date">({{ product.date }})</div>
-            <div class="prod_price">฿{{ product.product_price }}</div>
+            <div class="prod_date">({{ product.release_date }})</div>
+            <div class="prod_price">฿{{ product.price }}</div>
             <div class="prod_colors">
               <div
                 class="color"
@@ -36,7 +36,7 @@
                 :key="color"
                 :style="{ backgroundColor: color.color_code }"
               >
-                        <span class="tooltiptext">{{ color.color_name }}</span>
+                <span class="tooltiptext">{{ color.color_name }}</span>
               </div>
             </div>
             <div class="prod_desc">
@@ -82,12 +82,14 @@ export default {
       this.$router.go(-1);
     },
     deleteProduct() {
-      this.$store.dispatch('deleteProduct',this.product.id)
-      this.$router.push("/stores");
+      if (confirm("Do you really want to delete? 😲")) {
+        this.$store.dispatch("deleteProduct", this.product.id);
+        this.$router.push("/stores");
+      }
     },
     toggleWishList() {
       this.product.isWishList = !this.product.isWishList;
-      this.$store.dispatch('setProductWishList',this.product)
+      this.$store.dispatch("setProductWishList", this.product);
     },
   },
   mounted() {

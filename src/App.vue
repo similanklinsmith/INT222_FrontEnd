@@ -7,11 +7,29 @@
         <router-link to="/">Home</router-link>
         <a href="/#section-about">About</a>
         <router-link to="/stores">Stores</router-link>
-        <router-link to="/add-product">Add</router-link>
-        <router-link to="/users">Users</router-link>
+        <div class="dropdown">
+          <ul>
+            <li>
+              Management<i class="fas fa-angle-down"></i>
+              <ul>
+                <li><router-link to="/add-product">Products</router-link></li>
+                <li>
+                  <router-link to="/management"
+                    >Colors &amp; Brands</router-link
+                  >
+                </li>
+                <li>
+                  <router-link to="/users">Users</router-link>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <!-- <router-link to="/add-product">Add</router-link> -->
         <router-link class="sign" to="/sign-up">Sign up</router-link>
-        <router-link to="/wish-list" class="wishlist"><i class="far fa-heart"></i>
-        <!-- <span class="number">{{ numberOfWishlist.length }}</span> -->
+        <router-link to="/wish-list" class="wishlist"
+          ><i class="far fa-heart"></i>
+          <!-- <span class="number">{{ numberOfWishlist.length }}</span> -->
         </router-link>
         <!-- <router-link to="/about"><i class="fas fa-sun"></i></router-link> -->
       </div>
@@ -29,18 +47,23 @@
       >
         <i class="fas fa-times"></i>
       </div>
-      <div class="menu-bar" v-show="isShow" >
+      <div class="menu-bar" v-show="isShow">
         <router-link to="/" @click="isShow = !isShow">Home</router-link>
         <a href="/#section-about" @click="isShow = !isShow">About</a>
         <router-link to="/stores" @click="isShow = !isShow">Stores</router-link>
         <router-link to="/add-product" @click="isShow = !isShow"
-          >Add</router-link
+          >Product</router-link
+        >
+        <router-link to="/add-product" @click="isShow = !isShow"
+          >Colors &amp; Brands</router-link
         >
         <router-link to="/users" @click="isShow = !isShow">Users</router-link>
         <router-link class="sign" to="/sign-up" @click="isShow = !isShow"
           >Sign up</router-link
         >
-         <router-link to="/wish-list" @click="isShow = !isShow">Wish List</router-link>
+        <router-link to="/wish-list" @click="isShow = !isShow"
+          >Wish List</router-link
+        >
       </div>
     </div>
   </div>
@@ -61,15 +84,18 @@ export default {
       products: [],
     };
   },
-  computed:{
-    isMobileSign(){
+  computed: {
+    isMobileSign() {
       return window.innerWidth;
     },
-    numberOfWishlist(){
-      return this.products.filter((product) => {
+    getAllproducts() {
+      return this.$store.state.products;
+    },
+    numberOfWishlist() {
+      return this.getAllproducts.filter((product) => {
         return product.isWishList;
       });
-    }
+    },
   },
   mounted() {
     fetch(this.productUrl)
@@ -127,6 +153,44 @@ export default {
 
 .logo span {
   color: #eb435f;
+}
+
+.fa-angle-down {
+  padding-top: 0.2rem;
+  margin-left: 0.6rem;
+  font-weight: 300;
+}
+.dropdown ul {
+  list-style: none;
+}
+.dropdown > ul > li {
+  position: relative;
+}
+.dropdown ul ul {
+  position: absolute;
+  display: none;
+}
+.dropdown ul li:hover > ul {
+  display: block;
+  z-index: 999;
+  margin-top: 0.2rem;
+  background-color: #e7e3e0;
+  width: 14rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
+    rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+}
+.dropdown ul li > ul li {
+  padding: 2.4rem 0;
+  border-top: 1px solid rgba(85, 85, 85, 0.25);
+  width: 90%;
+  margin: 0 5%;
+}
+.dropdown ul li:hover > ul li:first-child {
+  border-top: none;
+}
+.dropdown ul li:hover > ul li a {
+  width: 90%;
+  margin: 0 5%;
 }
 
 .nav-links {
@@ -202,13 +266,13 @@ export default {
 .menu-bar {
   display: none;
 }
-.wishlist{
+.wishlist {
   position: relative;
 }
-.wishlist .number{
+.wishlist .number {
   font-size: 1rem;
   top: 0%;
-  position:absolute;
+  position: absolute;
 }
 
 @media (max-width: 84em) {
@@ -252,9 +316,9 @@ export default {
     padding-left: 0rem;
     font-size: 2rem;
   }
-    .menu-bar {
+  .menu-bar {
     row-gap: 1.8rem;
-    }
+  }
 }
 
 @media (max-width: 29em) {

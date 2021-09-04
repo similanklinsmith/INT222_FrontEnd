@@ -72,28 +72,40 @@
               <label for="brands">BRAND</label>
               <select name="brands" id="brands" v-model="selectedBrand">
                 <option value="">none</option>
-                <option value="ZARA">ZARA</option>
-                <option value="H&amp;M">H&amp;M</option>
-                <option value="UNIQLO">UNIQLO</option>
-                <option value="CCOO">CC-OO</option>
+                <option
+                  v-for="brand in allBrands"
+                  :key="brand.id"
+                  :value="brand.brand_name"
+                  >{{ brand.brand_name }}</option
+                >
               </select>
             </div>
             <div class="text-filter">
               <label for="colors">COLOR</label>
-              <select name="colors" id="colors" v-model="selectedColor">
+              <select name="colors" id="colors"  v-model="selectedColor">
                 <option value="">none</option>
-                <option :value="color" v-for="color in colors" :key="color">{{ color.color_name }}</option>
-                <!-- <option value="colors.color_code">{{colors.color_name}}</option> -->
+                <option
+                  v-for="color in allColors"
+                  :key="color"
+                  :value="color.color_name"
+                  >{{ color.color_name }}</option
+                >
               </select>
             </div>
             <div class="text-filter">
               <label for="product-types">PRODUCT TYPE</label>
-              <select name="product-types" id="product-types">
+              <select
+                name="product-types"
+                id="product-types"
+                v-model="selectedCategory"
+              >
                 <option value="">none</option>
-                <option value="ZARA">ZARA</option>
-                <option value="H&amp;M">H&amp;M</option>
-                <option value="UNIQLO">UNIQLO</option>
-                <option value="CCOO">CC-OO</option>
+                <option
+                  v-for="category in allCategories"
+                  :key="category.id"
+                  :value="category.category_name"
+                  >{{ category.category_name }}</option
+                >
               </select>
             </div>
           </div>
@@ -119,15 +131,15 @@
               :key="product.id"
               :product="product"
               @deleteProduct="handleDelete"
-              @toggleWishList="addWishList(product)"
-              :style="
+              @toggleWishList="addWishList"
+            ></Card>
+            <!-- :style="
                 product.isWishList == true
                   ? { color: '#eb435f' }
                   : { color: 'grey' }
-              "
-            ></Card>
+              " -->
             <div class="not-found" v-if="queryProducts.length == 0">
-              <span>{{ searchInput }}</span> is Not found
+              <span>{{ searchInput }} {{ selectedBrand }} {{ selectedCategory }}</span> is Not found
             </div>
           </transition-group>
         </div>
@@ -144,7 +156,7 @@
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
 import Card from "@/components/Card.vue";
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Stores",
   components: {
@@ -157,11 +169,12 @@ export default {
       productUrl: "http://localhost:3000/products",
       urlColors: "http://localhost:3000/colors",
       products: [],
-      colors:[],
+      colors: [],
       searchInput: "",
       selectColorProduct: [],
       selectedBrand: "",
-      selectedColor: [],
+      selectedColor: "",
+      selectedCategory: "",
       cursor: 1,
       slotImages: [
         {
@@ -183,19 +196,30 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["getProductsToStore"]),
+    ...mapActions([
+      "getProductsToStore",
+      "getColorToStore",
+      "getBrandsToStore",
+      "getCategoriesToStore",
+    ]),
+
+    // handleDelete(id) {
+    //   this.products = this.products.filter((product) => {
+    //     return product.id != id;
+    //   });
+    // },
     handleDelete(id) {
-      this.products = this.products.filter((product) => {
+      this.getAllproducts = this.getAllproducts.filter((product) => {
         return product.id != id;
       });
     },
     addWishList(product) {
-      for (let index = 0; index < this.getAllproducts.length; index++) {
-        if (this.getAllproducts[index].id == product.id) {
-          this.getAllproducts[index].isWishList = !this.getAllproducts[index].isWishList;
-          this.$store.dispatch("setProductWishList", product)
-        }
-      }
+      this.$store.dispatch("addToWishList", product);
+      // for (let index = 0; index < this.getAllproducts.length; index++) {
+      //   if (this.getAllproducts[index].id == product.id) {
+      //     // this.getAllproducts[index].isWishList = !this.getAllproducts[index].isWishList;
+      //   }
+      // }
     },
     changeImage(id) {
       for (let index = 0; index < this.slotImages.length; index++) {
@@ -208,31 +232,45 @@ export default {
     },
   },
   mounted() {
+    // this.$store.dispatch("getProductsToStore");
     window.scrollTo(0, 0);
-    // this.products = this.$store.dispatch('getProductsToStore');
-    fetch(this.productUrl)
-      .then((res) => res.json())
-      .then((data) => (this.products = data))
-      .catch((err) => console.log(err.message));
-    fetch(this.urlColors)
-      .then((res) => res.json())
-      .then((data) => (this.colors = data))
-      .catch((err) => console.log(err.message));
+    // this.handleDelete;
+    // fetch(this.productUrl)
+    //   .then((res) => res.json())
+    //   .then((data) => (this.products = data))
+    //   .catch((err) => console.log(err.message));
+    // fetch(this.urlColors)
+    //   .then((res) => res.json())
+    //   .then((data) => (this.colors = data))
+    //   .catch((err) => console.log(err.message));
   },
-  computed: mapGetters(["getProducts"]),
+  computed: mapGetters([
+    "getProducts",
+    "getColors",
+    "getBrands",
+    "getCategories",
+  ]),
   computed: {
-    getAllproducts(){
-      return this.$store.getters.getProducts
+    getAllproducts() {
+      return this.$store.getters.getProducts;
+    },
+    allColors() {
+      return this.$store.getters.getColors;
+    },
+    allBrands() {
+      return this.$store.getters.getBrands;
+    },
+    allCategories() {
+      return this.$store.getters.getCategories;
     },
     queryProducts() {
-      // console.log(this.selectedColor)
       return this.getAllproducts.filter((product) => {
         return (
           product.product_brand
             .toLowerCase()
             .includes(this.selectedBrand.toLowerCase()) &&
-          product.product_name.toLowerCase().includes(this.searchInput)
-          // (product.colors == this.selectedColor)
+          product.product_name.toLowerCase().includes(this.searchInput) &&
+          product.product_type.includes(this.selectedCategory)
         );
       });
     },
@@ -246,6 +284,12 @@ export default {
       }
       return this.selectColorProduct;
     },
+  },
+  created() {
+    this.getColorToStore();
+    this.getBrandsToStore();
+    this.getCategoriesToStore();
+    this.getProductsToStore();
   },
 };
 </script>
