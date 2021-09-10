@@ -12,6 +12,10 @@ export default createStore({
     brandUrl: "http://localhost:3000/brands",
     categoryUrl: "http://localhost:3000/categories",
     wishlistUrl: "http://localhost:3000/wishlist",
+
+    // account
+    accounts: [],
+    accountUrl: "http://localhost:3000/accounts",
   },
   mutations: {
     // products
@@ -116,6 +120,11 @@ export default createStore({
     GET_CATEGORIES(state, categories) {
       state.categories = categories;
     },
+
+    // accounts
+    ADD_ACCOUNT(state, newAccount) {
+      state.accounts.push(newAccount);
+    },
   },
   actions: {
     getProductsToStore(context) {
@@ -146,15 +155,26 @@ export default createStore({
     // },
 
     addProduct(context, newProduct) {
+      // addProduct(context, newProduct, image)
       const jsonProduct = JSON.stringify(newProduct, {
         type: "application/json",
       });
+      // หลังจากเชื่อม BE
+      // const jsonProduct = JSON.stringify(newProduct);
+      // const blob = new Blob([jsonProduct], {
+      //   type: "application/json",
+      // });
+      // ต้องรับ parameters 2 ตัวคือ product ก้อนนึงเเล้วก็ image
+      // const formData = new FormData();
+      // formData.append("imageFile", image);
+      // formData.append("newProduct", blob);
       fetch(this.state.productUrl, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
         },
         body: jsonProduct,
+        // body: formData
       })
         .then((res) => res.json())
         .then((data) => {
@@ -164,9 +184,18 @@ export default createStore({
     },
 
     editProduct(context, editProduct) {
+      // editProduct(context, editProduct, image)
       const jsonProduct = JSON.stringify(editProduct, {
         type: "application/json",
       });
+      // หลังเชื่อม BE
+      // const jsonEditProduct = JSON.stringify(editProduct);
+      // const blob = new Blob([jsonEditProduct], {
+      //   type: 'application/json'
+      // });
+      // const formData = new FormData();
+      // formData.append("imageFile", image);
+      // formData.append("editedProduct",blob);
       fetch(this.state.productUrl + "/" + editProduct.id, {
         method: "PUT",
         headers: {
@@ -341,7 +370,23 @@ export default createStore({
         .catch((err) => console.log(err.message));
     },
 
-    // sign-in
+    createAccount(context, newAccount) {
+      const jsonAccount = JSON.stringify(newAccount, {
+        type: "application/json",
+      });
+      fetch(this.state.accountUrl, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: jsonAccount,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          context.commit("ADD_ACCOUNT", data);
+        })
+        .catch((err) => console.log(err));
+    },
   },
   getters: {
     // product getters

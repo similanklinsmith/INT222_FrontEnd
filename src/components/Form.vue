@@ -11,7 +11,13 @@
         />
         <i class="fas fa-plus-square"></i>
       </label>
-
+      <div
+        class="img-name"
+        v-if="!prodImageIsValid"
+        :style="{ color: '#eb435f' }"
+      >
+        *required image
+      </div>
       <img :src="preview_img" alt="" v-else />
       <div class="img-name" v-if="name_img != ''">
         {{ name_img }}
@@ -22,50 +28,77 @@
     <div class="info-form">
       <div class="col-left">
         <div class="prod-name">
-          <label for="name">Product name</label>
-          <input type="text" v-model="prod_name" placeholder="Fits T-shirt" />
+          <label for="name"
+            >Product name <span v-if="!prodNameIsValid">*required</span></label
+          >
+          <input
+            type="text"
+            v-model="form.prod_name"
+            placeholder="Fits T-shirt"
+          />
         </div>
         <div class="prod-desc">
-          <label for="desc">Description</label>
+          <label for="desc"
+            >Description <span v-if="!prodNameIsValid">*required</span></label
+          >
           <textarea
             name="desc"
             id="desc"
-            v-model="prod_desc"
+            v-model="form.prod_desc"
             cols="30"
             rows="10"
             placeholder="This shirt is made up with finess silks..."
           ></textarea>
         </div>
         <div class="prod-price">
-          <label for="price">Price</label>
+          <label for="price"
+            >Price
+            <span v-if="!prodNameIsValid"
+              >*required/positive number</span
+            ></label
+          >
           <input
             type="text"
             id="price"
             name="price"
-            v-model.number="prod_price"
+            v-model.number="form.prod_price"
             placeholder="599"
           />
         </div>
         <div class="prod-brand-type">
           <div class="prod-brand">
             <label for="brands">Brand</label>
-            <select name="brands" id="brands" v-model="prod_brands">
+            <select
+              name="brands"
+              id="brands"
+              v-model="form.prod_brands"
+              :style="!prodBrandIsValid ? { color: '#eb435f' } : {}"
+            >
               <option value="">none</option>
-              <option value="ZARA">ZARA</option>
-              <option value="H&amp;M">H&amp;M</option>
-              <option value="UNIQLO">UNIQLO</option>
-              <option value="CCOO">CC-OO</option>
+              <option
+                v-for="brand in allBrands"
+                :key="brand.id"
+                :value="brand.brand_name"
+                >{{ brand.brand_name }}</option
+              >
             </select>
           </div>
 
           <div class="prod-type">
             <label for="types">Type</label>
-            <select name="types" id="types" v-model="prod_types">
+            <select
+              name="types"
+              id="types"
+              v-model="form.prod_types"
+              :style="!prodTypeIsValid ? { color: '#eb435f' } : {}"
+            >
               <option value="">none</option>
-              <option value="Shirt">Shirt</option>
-              <option value="Pants">Pants</option>
-              <option value="Jeans">Jeans</option>
-              <option value="Sweater">Sweater</option>
+              <option
+                v-for="category in allCategories"
+                :key="category.id"
+                :value="category.category_name"
+                >{{ category.category_name }}</option
+              >
             </select>
           </div>
         </div>
@@ -73,24 +106,44 @@
 
       <div class="col-right">
         <div class="prod-date">
-          <label for="date">Manufactured date</label>
-          <input type="date" name="date" id="date" v-model="prod_date" />
+          <label for="date"
+            >Manufactured date
+            <span v-if="!prodDateIsValid">*required</span></label
+          >
+          <input
+            type="date"
+            name="date"
+            id="date"
+            v-model="form.prod_date"
+            :style="!prodDateIsValid ? { color: '#eb435f' } : {}"
+          />
         </div>
         <div class="prod-colors">
-          <label for="name">Colors</label>
+          <label for="name"
+            >Colors
+            <span v-if="!prodColorsIsValid">*required at least one</span></label
+          >
           <div class="list-of-colors">
             <input
               class="checkbox"
               type="checkbox"
               v-for="color in allColors"
               :key="color.color_code"
-              v-model="selected_colors"
+              v-model="form.selected_colors"
               :value="color"
               :style="{ backgroundColor: color.color_code }"
             />
           </div>
         </div>
-        <button class="btn btn--full" type="submit">
+        <button
+          :style="[
+            formIsValid
+              ? { backgroundColor: '#333' }
+              : { backgroundColor: '#707070', cursor: 'not-allowed' },
+          ]"
+          class="btn btn--full"
+          type="submit"
+        >
           Add product
         </button>
       </div>
@@ -179,14 +232,6 @@ export default {
 };
 </script>
 <style scoped>
-.form {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  width: 100%;
-  /* padding: 3.6rem 4.8rem; */
-  margin: 4.8rem 0;
-}
-
 .input-img {
   width: 80%;
   margin: 0 10%;
@@ -196,8 +241,37 @@ export default {
   justify-content: center;
 }
 
+.display-img {
+  width: 100%;
+  position: relative;
+}
+
+.display-img img {
+  object-fit: cover;
+  width: 80%;
+  margin: 0 10%;
+}
+
 .display-img input {
   display: none;
+}
+
+.display-img .img-name {
+  font-size: 1.2rem;
+  width: 80%;
+  margin: 1.2rem 10%;
+  text-align: center;
+}
+
+.display-img .img-name .fa-times {
+  margin-left: 1.4rem;
+  font-size: 110%;
+  cursor: pointer;
+  transition: 0.15s ease-in-out all;
+}
+
+.display-img .img-name .fa-times:hover {
+  color: red;
 }
 
 .add-img {
@@ -223,13 +297,7 @@ export default {
 
 .info-form {
   width: 100%;
-  /* height: 48rem; ตอนเเก้ responsive ให้เปลี่ยนเป็น auto แทน */
   background-color: #fff;
-  /* display: flex; */
-  /* flex-direction: column; */
-  /* flex-wrap: wrap; responsive => no-wrap */
-  /* row-gap: 2rem; */
-  /* column-gap: 3.6rem; */
   padding: 3.6rem 4.8rem;
   box-shadow: rgba(70, 50, 50, 0.08) 0px 4px 6px -1px,
     rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
@@ -259,6 +327,11 @@ label {
   margin-bottom: 1.2rem;
 }
 
+label span {
+  font-size: 1rem;
+  color: #eb435f;
+}
+
 input {
   width: auto;
   border: none;
@@ -274,12 +347,6 @@ input {
   gap: 0.4rem;
   flex-wrap: wrap;
 }
-/* 
-input[type="checkbox"] {
-  width: 2.4rem;
-  height: 2.4rem;
-  background-color: #555;
-} */
 
 input.checkbox {
   width: 2.4rem;
@@ -359,7 +426,7 @@ textarea:focus {
 
 .btn--full {
   margin-top: 2.4rem;
-  background-color: #333;
+  /* background-color: #333; */
   color: white;
   transition: 0.3s all ease-in-out;
 }
@@ -395,7 +462,7 @@ textarea:focus {
   .add-img {
     width: 50%;
     margin: 0 25%;
-    height: 24rem;
+    height: 36rem;
   }
 }
 </style>

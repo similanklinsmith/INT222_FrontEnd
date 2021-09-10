@@ -55,7 +55,7 @@ const routes = [
     component: WishList,
   },
   {
-    path: '/management',
+    path: '/colors+brands',
     name: 'ColorsBrands',
     component: ColorsBrands,
   },

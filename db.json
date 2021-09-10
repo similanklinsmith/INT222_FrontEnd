@@ -292,9 +292,9 @@
       "id": 14
     },
     {
-      "color_code": "#F295FF",
+      "id": 15,
       "color_name": "pastel violet",
-      "id": 17
+      "color_code": "#F295FF"
     }
   ],
   "wishlist": [
@@ -309,6 +309,21 @@
     {
       "product_id": 8,
       "id": 3
+    },
+    {
+      "product_id": 10,
+      "id": 4
+    }
+  ],
+  "accounts": [
+    {
+      "first_name": "INT222",
+      "last_name": "asdf",
+      "username": "admin",
+      "email": "deep2fasdf5952@gmail.com",
+      "password": "asdfasdfasdf",
+      "role": "member",
+      "id": 1
     }
   ]
 }

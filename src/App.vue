@@ -14,7 +14,7 @@
               <ul>
                 <li><router-link to="/add-product">Products</router-link></li>
                 <li>
-                  <router-link to="/management"
+                  <router-link to="/colors+brands"
                     >Colors &amp; Brands</router-link
                   >
                 </li>
@@ -54,7 +54,7 @@
         <router-link to="/add-product" @click="isShow = !isShow"
           >Product</router-link
         >
-        <router-link to="/add-product" @click="isShow = !isShow"
+        <router-link to="/colors+brands" @click="isShow = !isShow"
           >Colors &amp; Brands</router-link
         >
         <router-link to="/users" @click="isShow = !isShow">Users</router-link>
