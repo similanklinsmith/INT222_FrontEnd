@@ -21,7 +21,13 @@
                 />
                 <i class="fas fa-plus-square"></i>
               </label>
-
+              <div
+                class="img-name"
+                v-if="!prodImageIsValid"
+                :style="{ color: '#eb435f' }"
+              >
+                *required image
+              </div>
               <img :src="preview_img" alt="" v-else />
               <div class="img-name" v-if="name_img != ''">
                 {{ name_img }}
@@ -32,38 +38,54 @@
             <div class="info-form">
               <div class="col-left">
                 <div class="prod-name">
-                  <label for="name">Product name</label>
+                  <label for="name"
+                    >Product name
+                    <span v-if="!prodNameIsValid">*required</span></label
+                  >
                   <input
                     type="text"
-                    v-model="prod_name"
+                    v-model="form.prod_name"
                     placeholder="Fits T-shirt"
                   />
                 </div>
                 <div class="prod-desc">
-                  <label for="desc">Description</label>
+                  <label for="desc"
+                    >Description
+                    <span v-if="!prodNameIsValid">*required</span></label
+                  >
                   <textarea
                     name="desc"
                     id="desc"
-                    v-model="prod_desc"
+                    v-model="form.prod_desc"
                     cols="30"
                     rows="10"
                     placeholder="This shirt is made up with finess silks..."
                   ></textarea>
                 </div>
                 <div class="prod-price">
-                  <label for="price">Price</label>
+                  <label for="price"
+                    >Price
+                    <span v-if="!prodNameIsValid"
+                      >*required/positive number</span
+                    ></label
+                  >
                   <input
                     type="text"
                     id="price"
                     name="price"
-                    v-model.number="prod_price"
+                    v-model.number="form.prod_price"
                     placeholder="599"
                   />
                 </div>
                 <div class="prod-brand-type">
                   <div class="prod-brand">
                     <label for="brands">Brand</label>
-                    <select name="brands" id="brands" v-model="prod_brands">
+                    <select
+                      name="brands"
+                      id="brands"
+                      v-model="form.prod_brands"
+                      :style="!prodBrandIsValid ? { color: '#eb435f' } : {}"
+                    >
                       <option value="">none</option>
                       <option
                         v-for="brand in allBrands"
@@ -76,7 +98,12 @@
 
                   <div class="prod-type">
                     <label for="types">Type</label>
-                    <select name="types" id="types" v-model="prod_types">
+                    <select
+                      name="types"
+                      id="types"
+                      v-model="form.prod_types"
+                      :style="!prodTypeIsValid ? { color: '#eb435f' } : {}"
+                    >
                       <option value="">none</option>
                       <option
                         v-for="category in allCategories"
@@ -91,36 +118,52 @@
 
               <div class="col-right">
                 <div class="prod-date">
-                  <label for="date">Manufactured date</label>
+                  <label for="date"
+                    >Manufactured date
+                    <span v-if="!prodDateIsValid">*required</span></label
+                  >
                   <input
                     type="date"
                     name="date"
                     id="date"
-                    v-model="prod_date"
+                    v-model="form.prod_date"
+                    :style="!prodDateIsValid ? { color: '#eb435f' } : {}"
                   />
                 </div>
                 <div class="prod-colors">
-                  <label for="name">Colors</label>
+                  <label for="name"
+                    >Colors
+                    <span v-if="!prodColorsIsValid"
+                      >*required at least one</span
+                    ></label
+                  >
                   <div class="list-of-colors">
                     <input
                       class="checkbox"
                       type="checkbox"
                       v-for="color in allColors"
                       :key="color.color_code"
-                      v-model="selected_colors"
+                      v-model="form.selected_colors"
                       :value="color"
                       :style="{ backgroundColor: color.color_code }"
                     />
                   </div>
                 </div>
-                <button class="btn btn--full" type="submit">
+                <button
+                  :style="[
+                    formIsValid
+                      ? { backgroundColor: '#333' }
+                      : { backgroundColor: '#707070', cursor: 'not-allowed' },
+                  ]"
+                  class="btn btn--full"
+                  type="submit"
+                >
                   Add product
                 </button>
               </div>
             </div>
             <!-- ----- -->
           </form>
-          <!-- <Form></Form> -->
         </div>
       </div>
     </div>
@@ -141,16 +184,17 @@ export default {
   },
   data() {
     return {
-      //add product
-      product_img: "",
-      prod_name: "",
-      prod_desc: "",
-      prod_price: null,
-      prod_brands: "",
-      prod_types: "",
-      prod_date: "",
-      selected_colors: [],
-      prod_img: "",
+      form: {
+        //add product
+        prod_name: "",
+        prod_desc: "",
+        prod_price: null,
+        prod_brands: "",
+        prod_types: "",
+        prod_date: "",
+        selected_colors: [],
+        prod_img: "",
+      },
       //preview image
       preview_img: "",
       name_img: "",
@@ -166,6 +210,46 @@ export default {
     },
     allCategories() {
       return this.$store.getters.getCategories;
+    },
+
+    // validations
+    prodImageIsValid() {
+      return !!this.form.prod_img;
+    },
+    prodNameIsValid() {
+      return !!this.form.prod_name;
+    },
+    prodDescIsValid() {
+      return !!this.form.prod_desc;
+    },
+    prodPriceIsValid() {
+      return (
+        typeof this.form.prod_price == "number" && this.form.prod_price > 0
+      );
+    },
+    prodBrandIsValid() {
+      return !!this.form.prod_brands;
+    },
+    prodTypeIsValid() {
+      return !!this.form.prod_types;
+    },
+    prodDateIsValid() {
+      return !!this.form.prod_date;
+    },
+    prodColorsIsValid() {
+      return this.form.selected_colors.length != 0;
+    },
+    formIsValid() {
+      return (
+        this.prodNameIsValid &&
+        this.prodImageIsValid &&
+        this.prodDescIsValid &&
+        this.prodPriceIsValid &&
+        this.prodBrandIsValid &&
+        this.prodTypeIsValid &&
+        this.prodDateIsValid &&
+        this.prodColorsIsValid
+      );
     },
   },
   mounted() {
@@ -184,37 +268,68 @@ export default {
       reader.readAsDataURL(image);
       reader.onload = (e) => {
         this.preview_img = e.target.result;
-        this.prod_img = e.target.result;
+        this.form.prod_img = e.target.result;
       };
     },
     addProduct() {
-      const newProduct = {
-        product_name: this.prod_name,
-        product_desc: this.prod_desc,
-        price: this.prod_price,
-        product_brand: this.prod_brands,
-        product_type: this.prod_types,
-        release_date: this.prod_date,
-        colors: this.selected_colors,
-        // isWishList: false,
-        product_img: this.prod_img,
-      };
-      this.$store
-        .dispatch("addProduct", newProduct)
-        .catch((err) => console.log(err));
-      (this.prod_name = ""),
-        (this.prod_desc = ""),
-        (this.prod_price = ""),
-        (this.prod_brands = ""),
-        (this.prod_types = ""),
-        (this.prod_date = ""),
-        (this.selected_colors = []),
-        (this.prod_img = ""),
-        (this.preview_img = ""),
-        (this.name_img = "");
+      if (this.formIsValid) {
+        const newProduct = {
+          product_name: this.form.prod_name,
+          product_desc: this.form.prod_desc,
+          price: this.form.prod_price,
+          product_brand: this.form.prod_brands,
+          product_type: this.form.prod_types,
+          release_date: this.form.prod_date,
+          colors: this.form.selected_colors,
+          product_img: this.form.prod_img, //ค่อย comment อันนี้ตอนเชื่อม BE
+          // image: this.form.name_img,
+        };
+        this.$store
+          .dispatch("addProduct", newProduct)
+          // this.$store
+          //   .dispatch("addProduct", newProduct, this.preview_img)
+          .catch((err) => console.log(err));
+        (this.form.prod_name = ""),
+          (this.form.prod_desc = ""),
+          (this.form.prod_price = ""),
+          (this.form.prod_brands = ""),
+          (this.form.prod_types = ""),
+          (this.form.prod_date = ""),
+          (this.form.selected_colors = []),
+          (this.form.prod_img = ""),
+          (this.preview_img = ""),
+          (this.name_img = "");
+      } else {
+      }
+      // const newProduct = {
+      //   product_name: this.prod_name,
+      //   product_desc: this.prod_desc,
+      //   price: this.prod_price,
+      //   product_brand: this.prod_brands,
+      //   product_type: this.prod_types,
+      //   release_date: this.prod_date,
+      //   colors: this.selected_colors,
+      //   product_img: this.prod_img, //ค่อย comment อันนี้ตอนเชื่อม BE
+      //   // image: this.name_img,
+      // };
+      // this.$store
+      //   .dispatch("addProduct", newProduct)
+      // // this.$store
+      // //   .dispatch("addProduct", newProduct, this.preview_img)
+      //   .catch((err) => console.log(err));
+      // (this.prod_name = ""),
+      //   (this.prod_desc = ""),
+      //   (this.prod_price = ""),
+      //   (this.prod_brands = ""),
+      //   (this.prod_types = ""),
+      //   (this.prod_date = ""),
+      //   (this.selected_colors = []),
+      //   (this.prod_img = ""),
+      //   (this.preview_img = ""),
+      //   (this.name_img = "");
     },
     changeImg() {
-      this.prod_img = "";
+      this.form.prod_img = "";
       this.preview_img = "";
       this.name_img = "";
     },
@@ -337,6 +452,11 @@ label {
   margin-bottom: 1.2rem;
 }
 
+label span {
+  font-size: 1rem;
+  color: #eb435f;
+}
+
 input {
   width: auto;
   border: none;
@@ -431,7 +551,7 @@ textarea:focus {
 
 .btn--full {
   margin-top: 2.4rem;
-  background-color: #333;
+  /* background-color: #333; */
   color: white;
   transition: 0.3s all ease-in-out;
 }

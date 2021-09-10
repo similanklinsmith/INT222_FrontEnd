@@ -8,6 +8,7 @@
             <div class="secondary-header">Edit product</div>
           </div>
           <form @submit.prevent="editProductConfirm" action="#" class="form">
+            <!-- component -->
             <div class="display-img">
               <label class="add-img" for="upload" v-if="preview_img == ''">
                 <input
@@ -19,6 +20,13 @@
                 />
                 <i class="fas fa-plus-square"></i>
               </label>
+              <div
+                class="img-name"
+                v-if="!prodImageIsValid"
+                :style="{ color: '#eb435f' }"
+              >
+                *required image
+              </div>
               <img :src="preview_img" alt="" v-else />
               <div class="img-name" v-if="name_img != ''">
                 {{ name_img }}
@@ -28,38 +36,54 @@
             <div class="info-form">
               <div class="col-left">
                 <div class="prod-name">
-                  <label for="name">Product name</label>
+                  <label for="name"
+                    >Product name
+                    <span v-if="!prodNameIsValid">*required</span></label
+                  >
                   <input
                     type="text"
-                    v-model="edit_name"
+                    v-model="form.edit_name"
                     placeholder="Fits T-shirt"
                   />
                 </div>
                 <div class="prod-desc">
-                  <label for="desc">Description</label>
+                  <label for="desc"
+                    >Description
+                    <span v-if="!prodDescIsValid">*required</span></label
+                  >
                   <textarea
                     name="desc"
                     id="desc"
-                    v-model="edit_desc"
+                    v-model="form.edit_desc"
                     cols="30"
                     rows="10"
                     placeholder="This shirt is made up with finess silks..."
                   ></textarea>
                 </div>
                 <div class="prod-price">
-                  <label for="price">Price</label>
+                  <label for="price"
+                    >Price
+                    <span v-if="!prodPriceIsValid"
+                      >*required/positive number</span
+                    ></label
+                  >
                   <input
                     type="text"
                     id="price"
                     name="price"
-                    v-model.number="edit_price"
+                    v-model.number="form.edit_price"
                     placeholder="599"
                   />
                 </div>
                 <div class="prod-brand-type">
                   <div class="prod-brand">
                     <label for="brands">Brand</label>
-                    <select name="brands" id="brands" v-model="edit_brands">
+                    <select
+                      name="brands"
+                      id="brands"
+                      v-model="form.edit_brands"
+                      :style="!prodBrandIsValid ? { color: '#eb435f' } : {}"
+                    >
                       <option value="">none</option>
                       <option
                         v-for="brand in allBrands"
@@ -72,7 +96,12 @@
 
                   <div class="prod-type">
                     <label for="types">Type</label>
-                    <select name="types" id="types" v-model="edit_types">
+                    <select
+                      name="types"
+                      id="types"
+                      v-model="form.edit_types"
+                      :style="!prodTypeIsValid ? { color: '#eb435f' } : {}"
+                    >
                       <option value="">none</option>
                       <option
                         v-for="category in allCategories"
@@ -86,33 +115,53 @@
               </div>
               <div class="col-right">
                 <div class="prod-date">
-                  <label for="date">Manufactured date</label>
+                  <label for="date"
+                    >Manufactured date
+                    <span v-if="!prodDateIsValid"
+                      >*required/positive number</span
+                    ></label
+                  >
                   <input
                     type="date"
                     name="date"
                     id="date"
-                    v-model="edit_date"
+                    v-model="form.edit_date"
+                    :style="!prodDateIsValid ? { color: '#eb435f' } : {}"
                   />
                 </div>
                 <div class="prod-colors">
-                  <label for="name">Colors</label>
+                  <label for="name"
+                    >Colors
+                    <span v-if="!prodColorsIsValid"
+                      >*required at least one</span
+                    ></label
+                  >
                   <div class="list-of-colors">
                     <input
                       class="checkbox"
                       type="checkbox"
                       v-for="color in colors"
                       :key="color.color_code"
-                      v-model="edit_colors"
+                      v-model="form.edit_colors"
                       :value="color"
                       :style="{ backgroundColor: color.color_code }"
                     />
                   </div>
                 </div>
-                <button class="btn btn--full" type="submit">
+                <button
+                  :style="[
+                    formIsValid
+                      ? { backgroundColor: '#333' }
+                      : { backgroundColor: '#707070', cursor: 'not-allowed' },
+                  ]"
+                  class="btn btn--full"
+                  type="submit"
+                >
                   Edit product
                 </button>
               </div>
             </div>
+            <!-- /component -->
           </form>
         </div>
       </div>
@@ -140,14 +189,19 @@ export default {
       urlColors: "http://localhost:3000/colors",
       colors: [],
       editId: this.id,
-      edit_name: "",
-      edit_desc: "",
-      edit_price: 0,
-      edit_brands: "",
-      edit_types: "",
-      edit_date: "",
-      edit_img: "",
-      edit_colors: [],
+      // edit product
+      form: {
+        edit_name: "",
+        edit_desc: "",
+        edit_price: 0,
+        edit_brands: "",
+        edit_types: "",
+        edit_date: "",
+        edit_img: "",
+        // edit_img_name:"",
+        edit_colors: [],
+      },
+
       former_colors: [],
       // preview image
       preview_img: "",
@@ -160,6 +214,11 @@ export default {
       "getBrandsToStore",
       "getCategoriesToStore",
     ]),
+    changeImg() {
+      this.form.edit_img = "";
+      this.preview_img = "";
+      this.name_img = "";
+    },
     uploadImage(e) {
       const image = e.target.files[0];
       this.name_img = e.target.files[0].name;
@@ -167,37 +226,43 @@ export default {
       reader.readAsDataURL(image);
       reader.onload = (e) => {
         this.preview_img = e.target.result;
-        this.edit_img = e.target.result;
+        this.form.edit_img = e.target.result;
       };
     },
     editProductConfirm() {
-      const editProduct = {
-        id: this.editId,
-        product_name: this.edit_name,
-        product_desc: this.edit_desc,
-        price: this.edit_price,
-        product_brand: this.edit_brands,
-        product_type: this.edit_types,
-        // isWishList: this.editProduct.isWishList,
-        release_date: this.edit_date,
-        colors: this.edit_colors,
-        product_img: this.edit_img,
-      };
-      this.$store
-        .dispatch("editProduct", editProduct)
-        .catch((err) => console.log(err));
+      if (this.formIsValid) {
+        const editProduct = {
+          id: this.editId,
+          product_name: this.form.edit_name,
+          product_desc: this.form.edit_desc,
+          price: this.form.edit_price,
+          product_brand: this.form.edit_brands,
+          product_type: this.form.edit_types,
+          release_date: this.form.edit_date,
+          colors: this.form.edit_colors,
+          product_img: this.form.edit_img, //ค่อย comment อันนี้ตอนเชื่อม BE
+          // image: this.edit_image,
+        };
+        this.$store
+          .dispatch("editProduct", editProduct)
+          // this.$store
+          //   .dispatch("editProduct", editProduct, this.preview_img)
+          .catch((err) => console.log(err));
 
-      (this.edit_name = ""),
-        (this.edit_desc = ""),
-        (this.edit_price = ""),
-        (this.edit_brands = ""),
-        (this.edit_types = ""),
-        (this.edit_date = ""),
-        (this.edit_colors = []),
-        (this.edit_img = ""),
-        (this.preview_img = ""),
-        (this.name_img = "");
-      this.$router.push("/stores");
+        (this.form.edit_name = ""),
+          (this.form.edit_desc = ""),
+          (this.form.edit_price = ""),
+          (this.form.edit_brands = ""),
+          (this.form.edit_types = ""),
+          (this.form.edit_date = ""),
+          (this.form.edit_colors = []),
+          (this.form.edit_img = ""),
+          (this.preview_img = ""),
+          // (this.form.edit_img_name = ""),
+          (this.name_img = "");
+        this.$router.push("/stores");
+      } else {
+      }
     },
   },
   computed: mapGetters(["getColors", "getBrands", "getCategories"]),
@@ -211,6 +276,46 @@ export default {
     allCategories() {
       return this.$store.getters.getCategories;
     },
+
+    // validations
+    prodImageIsValid() {
+      return !!this.form.edit_img;
+    },
+    prodNameIsValid() {
+      return !!this.form.edit_name;
+    },
+    prodDescIsValid() {
+      return !!this.form.edit_desc;
+    },
+    prodPriceIsValid() {
+      return (
+        typeof this.form.edit_price == "number" && this.form.edit_price > 0
+      );
+    },
+    prodBrandIsValid() {
+      return !!this.form.edit_brands;
+    },
+    prodTypeIsValid() {
+      return !!this.form.edit_types;
+    },
+    prodDateIsValid() {
+      return !!this.form.edit_date;
+    },
+    prodColorsIsValid() {
+      return this.form.edit_colors.length != 0;
+    },
+    formIsValid() {
+      return (
+        this.prodNameIsValid &&
+        this.prodImageIsValid &&
+        this.prodDescIsValid &&
+        this.prodPriceIsValid &&
+        this.prodBrandIsValid &&
+        this.prodTypeIsValid &&
+        this.prodDateIsValid &&
+        this.prodColorsIsValid
+      );
+    },
   },
   mounted() {
     window.scrollTo(0, 0);
@@ -223,26 +328,26 @@ export default {
       .then((res) => res.json())
       .then((data) => {
         (this.editProduct = data),
-          (this.edit_name = data.product_name),
-          (this.edit_desc = data.product_desc),
-          (this.edit_price = data.price),
-          (this.edit_brands = data.product_brand),
-          (this.edit_types = data.product_type),
-          (this.edit_date = data.release_date),
-          (this.edit_colors = data.colors),
-          (this.edit_img = data.product_img),
+          (this.form.edit_name = data.product_name),
+          (this.form.edit_desc = data.product_desc),
+          (this.form.edit_price = data.price),
+          (this.form.edit_brands = data.product_brand),
+          (this.form.edit_types = data.product_type),
+          (this.form.edit_date = data.release_date),
+          (this.form.edit_colors = data.colors),
+          (this.form.edit_img = data.product_img),
           (this.preview_img = data.product_img),
+          // (this.edit_img_name = data.image),
           (this.name_img = data.product_img.name);
       })
       .then(() => {
-        for (let index = 0; index < this.edit_colors.length; index++) {
-          this.former_colors.push(this.edit_colors[index]);
+        for (let index = 0; index < this.form.edit_colors.length; index++) {
+          this.former_colors.push(this.form.edit_colors[index]);
         }
-        console.log(this.former_colors)
         const checkboxInput = document.getElementsByClassName("checkbox");
         for (let index = 0; index < checkboxInput.length; index++) {
           if (checkboxInput[index].value == this.former_colors[index]) {
-              checkboxInput[index].checked = true;
+            checkboxInput[index].checked = true;
             continue;
           }
         }
@@ -379,6 +484,11 @@ label {
   font-size: 1.4rem;
   color: #555;
   margin-bottom: 1.2rem;
+}
+
+label span {
+  font-size: 1rem;
+  color: #eb435f;
 }
 
 input {

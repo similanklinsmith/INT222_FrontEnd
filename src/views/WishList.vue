@@ -11,12 +11,12 @@
             :key="product.id"
             :product="product"
             @toggleWishList="deleteWishList"
-            :style="
+          ></Card>
+                      <!-- :style="
               product.isWishList == true
                 ? { color: '#eb435f' }
                 : { color: 'grey' }
-            "
-          ></Card>
+            " -->
           <div class="no-wishlist" v-if="queryWishList.length == 0">
             you have not selected any products yet :|
             <div class="empty-wishlist">

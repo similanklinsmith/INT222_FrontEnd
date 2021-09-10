@@ -45,30 +45,44 @@
                 v-if="isEditColor == false"
               >
                 <div class="color-name">
-                  <label for="color-name">Color name</label>
+                  <label for="color-name"
+                    >Color name<span v-if="!addColorNameIsValid">*</span></label
+                  >
                   <input
                     type="text"
                     placeholder="red"
                     name="color-name"
                     id="color-name"
-                    v-model="color_name"
+                    v-model="form.color_name"
                   />
                 </div>
                 <div class="color-code">
-                  <label for="color-code">Color code</label>
+                  <label for="color-code"
+                    >Color code<span v-if="!addColorCodeIsValid">*</span></label
+                  >
                   <input
                     type="text"
                     placeholder="#FF4219"
                     name="color-code"
                     id="color-code"
-                    v-model="color_code"
+                    v-model="form.color_code"
                   />
                 </div>
                 <div
                   class="example-color"
-                  :style="{ backgroundColor: color_code }"
+                  :style="{ backgroundColor: form.color_code }"
                 ></div>
-                <button type="submit" class="btn btn--full">Add Color</button>
+                <button
+                  type="submit"
+                  :style="[
+                    addColorFormIsValid
+                      ? { backgroundColor: '#333' }
+                      : { backgroundColor: '#707070', cursor: 'not-allowed' },
+                  ]"
+                  class="btn btn--full"
+                >
+                  Add Color
+                </button>
               </form>
               <!-- /addForm -->
 
@@ -79,30 +93,48 @@
                 @submit.prevent="editColorById"
               >
                 <div class="color-name">
-                  <label for="color-name">Color name</label>
+                  <label for="color-name"
+                    >Color name<span v-if="!editColorNameIsValid"
+                      >*</span
+                    ></label
+                  >
                   <input
                     type="text"
                     placeholder="red"
                     name="color-name"
                     id="color-name"
-                    v-model="edit_color_name"
+                    v-model="form.edit_color_name"
                   />
                 </div>
                 <div class="color-code">
-                  <label for="color-code">Color code</label>
+                  <label for="color-code"
+                    >Color code<span v-if="!editColorCodeIsValid"
+                      >*</span
+                    ></label
+                  >
                   <input
                     type="text"
                     placeholder="#FF4219"
                     name="color-code"
                     id="color-code"
-                    v-model="edit_color_code"
+                    v-model="form.edit_color_code"
                   />
                 </div>
                 <div
                   class="example-color"
-                  :style="{ backgroundColor: edit_color_code }"
+                  :style="{ backgroundColor: form.edit_color_code }"
                 ></div>
-                <button type="submit" class="btn btn--full">Edit Color</button>
+                <button
+                  type="submit"
+                  class="btn btn--full"
+                  :style="[
+                    editColorFormIsValid
+                      ? { backgroundColor: '#333' }
+                      : { backgroundColor: '#707070', cursor: 'not-allowed' },
+                  ]"
+                >
+                  Edit Color
+                </button>
               </form>
               <!-- /editForm -->
 
@@ -116,7 +148,10 @@
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody v-for="(color, index) in colors" :key="color.color_code">
+                <tbody
+                  v-for="(color, index) in getAllColors"
+                  :key="color.color_code"
+                >
                   <tr>
                     <td>{{ index + 1 }}</td>
                     <td>{{ color.color_name }}</td>
@@ -162,32 +197,60 @@
                 v-if="isEditBrand == false"
               >
                 <div class="color-name">
-                  <label for="brand-name">Brand name</label>
+                  <label for="brand-name"
+                    >Brand name<span v-if="!addBrandNameIsValid">*</span></label
+                  >
                   <input
                     type="text"
                     placeholder="GUCCI"
                     name="brand-name"
                     id="brand-name"
-                    v-model="brand_name"
+                    v-model="form.brand_name"
                   />
                 </div>
-                <button type="submit" class="btn btn--full">Add Brand</button>
+                <button
+                  type="submit"
+                  class="btn btn--full"
+                  :style="[
+                    addBrandNameIsValid
+                      ? { backgroundColor: '#333' }
+                      : { backgroundColor: '#707070', cursor: 'not-allowed' },
+                  ]"
+                >
+                  Add Brand
+                </button>
               </form>
               <!-- /addBrand -->
 
               <!-- editBrand -->
-              <form class="color-inputs" @submit.prevent="editBrandById" v-if="isEditBrand">
+              <form
+                class="color-inputs"
+                @submit.prevent="editBrandById"
+                v-if="isEditBrand"
+              >
                 <div class="color-name">
-                  <label for="brand-name">Brand name</label>
+                  <label for="brand-name"
+                    >Brand<span v-if="!editBrandNameIsValid">*</span></label
+                  >
                   <input
                     type="text"
                     placeholder="GUCCI"
                     name="brand-name"
                     id="brand-name"
-                    v-model="edit_brand_name"
+                    v-model="form.edit_brand_name"
                   />
                 </div>
-                <button type="submit" class="btn btn--full">Edit Brand</button>
+                <button
+                  type="submit"
+                  class="btn btn--full"
+                  :style="[
+                    editBrandNameIsValid
+                      ? { backgroundColor: '#333' }
+                      : { backgroundColor: '#707070', cursor: 'not-allowed' },
+                  ]"
+                >
+                  Edit Brand
+                </button>
               </form>
               <!-- /editBrand -->
 
@@ -199,7 +262,7 @@
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody v-for="(brand, index) in brands" :key="brand.id">
+                <tbody v-for="(brand, index) in getAllBrands" :key="brand.id">
                   <tr>
                     <td>{{ index + 1 }}</td>
                     <td>{{ brand.brand_name }}</td>
@@ -249,143 +312,180 @@ export default {
       isEditColor: false,
       isEditBrand: false,
       // colors
-      colorUrl: "http://localhost:3000/colors",
-      colors: [],
-      color_name: "",
-      color_code: "",
-      // edit colors
+      // colorUrl: "http://localhost:3000/colors",
+      form: {
+        color_name: "",
+        color_code: "",
+        // edit colors
+        edit_color_name: "",
+        edit_color_code: "",
+        // brands
+        brand_name: "",
+        // edit brands
+        edit_brand_name: "",
+      },
       edit_color_id: "",
-      edit_color_name: "",
-      edit_color_code: "",
       // edit brands
       edit_brand_id: "",
-      edit_brand_name: "",
       // brands
-      brandsUrl: "http://localhost:3000/brands",
-      brands: [],
-      brand_name: "",
+      // brandsUrl: "http://localhost:3000/brands",
     };
   },
   mounted() {
     window.scrollTo(0, 0);
-    // this.getAllColors
-    this.$store.dispatch("getColorToStore");
-    fetch(this.colorUrl)
-      .then((res) => res.json())
-      .then((data) => {
-        this.colors = data;
-      })
-      .catch((err) => console.log(err.message));
-    fetch(this.brandsUrl)
-      .then((res) => res.json())
-      .then((data) => {
-        this.brands = data;
-      })
-      .catch((err) => console.log(err.message));
   },
+  computed: mapGetters(["getColors", "getBrands"]),
   computed: {
     getAllColors() {
       return this.$store.getters.getColors;
     },
-    //   ...mapGetters({
-    //     getAllColors: 'getColors'
-    // })
+    getAllBrands() {
+      return this.$store.getters.getBrands;
+    },
+
+    // validations-colors
+    addColorNameIsValid() {
+      return !!this.form.color_name;
+    },
+    addColorCodeIsValid() {
+      return (
+        !!this.form.color_code &&
+        /^#([A-Fa-f0-9]{3}$)|([A-Fa-f0-9]{6}$)/.test(this.form.color_code)
+      );
+    },
+    addColorFormIsValid() {
+      return this.addColorNameIsValid && this.addColorCodeIsValid;
+    },
+    editColorNameIsValid() {
+      return !!this.form.edit_color_name;
+    },
+    editColorCodeIsValid() {
+      return (
+        !!this.form.edit_color_code &&
+        /^#([A-Fa-f0-9]{3}$)|([A-Fa-f0-9]{6}$)/.test(this.form.edit_color_code)
+      );
+    },
+    editColorFormIsValid() {
+      return this.editColorNameIsValid && this.editColorCodeIsValid;
+    },
+    // validations-brands
+    addBrandNameIsValid() {
+      return !!this.form.brand_name;
+    },
+    editBrandNameIsValid() {
+      return !!this.form.edit_brand_name;
+    },
   },
+
   methods: {
-    //   ...mapActions(["getColorToStore"]),
+    ...mapActions(["getColorToStore", "getBrandsToStore"]),
     // Colors
     addNewColor() {
-      const newColor = {
-        color_code: this.color_code,
-        color_name: this.color_name,
-      };
-      this.colors.push(newColor);
-      this.$store
-        .dispatch("addColor", newColor)
-        .catch((err) => console.log(err));
-      this.color_code = "";
-      this.color_name = "";
+      if (this.addColorFormIsValid) {
+        const newColor = {
+          color_code: this.form.color_code,
+          color_name: this.form.color_name,
+        };
+        this.$store
+          .dispatch("addColor", newColor)
+          .catch((err) => console.log(err));
+        this.form.color_code = "";
+        this.form.color_name = "";
+      } else {
+      }
     },
     deleteColorById(id) {
       if (confirm("Do you really want to delete? 👹")) {
-        const index = this.colors.findIndex((color) => color.id == id);
+        const index = this.getAllColors.findIndex((color) => color.id == id);
         if (index !== -1) {
-          this.colors.splice(index, 1);
+          this.getAllColors.splice(index, 1);
           this.$store.dispatch("deleteColor", id);
         }
       }
     },
     editColorById() {
-      const index = this.colors.findIndex(
-        (color) => color.id == this.edit_color_id
-      );
-      const editColor = {
-        id: this.edit_color_id,
-        color_name: this.edit_color_name,
-        color_code: this.edit_color_code,
-      };
-      if (index !== -1) {
-        this.colors.splice(index, 1, editColor);
-        this.$store.dispatch("editColor", editColor);
-        this.edit_color_id = "";
-        this.edit_color_name = "";
-        this.edit_color_code = "";
-        this.isEditColor = false;
+      if (this.editColorFormIsValid) {
+        const index = this.getAllColors.findIndex(
+          (color) => color.id == this.edit_color_id
+        );
+        const editColor = {
+          id: this.edit_color_id,
+          color_name: this.form.edit_color_name,
+          color_code: this.form.edit_color_code,
+        };
+        if (index !== -1) {
+          this.getAllColors.splice(index, 1, editColor);
+          this.$store.dispatch("editColor", editColor);
+          this.edit_color_id = "";
+          this.form.edit_color_name = "";
+          this.form.edit_color_code = "";
+          this.isEditColor = false;
+        }
+      } else {
       }
     },
     toggleEditColor(id) {
       window.scrollTo(0, 0);
-      const index = this.colors.findIndex((color) => color.id == id);
+      const index = this.getAllColors.findIndex((color) => color.id == id);
       this.edit_color_id = id;
-      this.edit_color_name = this.colors[index].color_name;
-      this.edit_color_code = this.colors[index].color_code;
+      this.form.edit_color_name = this.getAllColors[index].color_name;
+      this.form.edit_color_code = this.getAllColors[index].color_code;
       this.isEditColor = !this.isEditColor;
     },
 
     // Brands
     addNewBrand() {
-      const newBrand = {
-        brand_name: this.brand_name,
-      };
-      this.brands.push(newBrand);
-      this.$store
-        .dispatch("addBrand", newBrand)
-        .catch((err) => console.log(err));
-      this.brand_name = "";
+      if (this.addBrandNameIsValid) {
+        const newBrand = {
+          brand_name: this.form.brand_name,
+        };
+        this.$store
+          .dispatch("addBrand", newBrand)
+          .catch((err) => console.log(err));
+        this.form.brand_name = "";
+      } else {
+      }
     },
     deleteBrandById(id) {
-      console.log(id);
+      // console.log(id);
       if (confirm("Do you really want to delete? 👹")) {
-        const index = this.brands.findIndex((brand) => brand.id == id);
+        const index = this.getAllBrands.findIndex((brand) => brand.id == id);
         if (index !== -1) {
+          this.getAllBrands.splice(index, 1);
           this.$store.dispatch("deleteBrand", id);
-          this.brands.splice(index, 1);
         }
       }
     },
     editBrandById() {
-      const index = this.brands.findIndex(
-        (brand) => brand.id == this.edit_brand_id
-      );
-      const editBrand = {
-        id: this.edit_brand_id,
-        brand_name: this.edit_brand_name,
-      };
-      if (index !== -1) {
-        this.brands.splice(index, 1, editBrand);
-        this.$store.dispatch("editBrand", editBrand);
-        this.edit_brand_id = "";
-        this.edit_brand_name = "";
-        this.isEditBrand = false;
+      if (this.editBrandNameIsValid) {
+        const index = this.getAllBrands.findIndex(
+          (brand) => brand.id == this.edit_brand_id
+        );
+        const editBrand = {
+          id: this.edit_brand_id,
+          brand_name: this.form.edit_brand_name,
+        };
+        if (index !== -1) {
+          this.getAllBrands.splice(index, 1, editBrand);
+          this.$store.dispatch("editBrand", editBrand);
+          this.edit_brand_id = "";
+          this.form.edit_brand_name = "";
+          this.isEditBrand = false;
+        }
+      } else {
       }
     },
     toggleEditBrand(id) {
       window.scrollTo(0, 0);
-      const index = this.brands.findIndex((brand) => brand.id == id);
+      const index = this.getAllBrands.findIndex((brand) => brand.id == id);
       this.edit_brand_id = id;
-      this.edit_brand_name = this.brands[index].brand_name;
+      this.form.edit_brand_name = this.getAllBrands[index].brand_name;
       this.isEditBrand = !this.isEditBrand;
     },
+  },
+  created() {
+    this.getColorToStore();
+    this.getBrandsToStore();
   },
 };
 </script>
@@ -447,10 +547,15 @@ export default {
   margin-right: 1.2rem;
 }
 
+label span {
+  font-size: 1rem;
+  color: #eb435f;
+}
+
 input {
   width: auto;
   border: none;
-  background: fff;
+  background: #fff;
   height: 2.8rem;
   padding: 0.4rem 0.6rem;
   color: #333;
@@ -549,6 +654,9 @@ tbody td:nth-child(4) {
 }
 /* below 542px */
 @media (max-width: 34em) {
+  .switch-btn {
+    font-size: 1.2rem;
+  }
   .options {
     justify-items: center;
   }
@@ -569,9 +677,45 @@ tbody td:nth-child(4) {
 }
 /* below 450px */
 @media (max-width: 28em) {
+  input {
+    width: 12rem;
+    font-size: 1.4rem;
+  }
+  .color-inputs {
+    gap: 1.6rem;
+  }
+  .tertiary-header {
+    display: none;
+  }
+  .options {
+    width: 100%;
+    margin: 0%;
+  }
+  .switch-btn {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    width: 100%;
+  }
+  .switch-btn .btn-brands,
+  .switch-btn .btn-colors {
+    width: 100%;
+  }
+
+  .switch-btn .btn-colors {
+    border-top-left-radius: 2.4rem;
+    border-bottom-left-radius: 2.4rem;
+  }
+  .switch-btn .btn-brands {
+    border-top-right-radius: 2.4rem;
+    border-bottom-right-radius: 2.4rem;
+  }
   .example-color {
     width: 1.6rem;
     height: 1.6rem;
+  }
+  .table {
+    margin: 2.4rem 0;
   }
   th {
     padding: 1rem;

@@ -234,7 +234,6 @@ export default {
   mounted() {
     // this.$store.dispatch("getProductsToStore");
     window.scrollTo(0, 0);
-    // this.handleDelete;
     // fetch(this.productUrl)
     //   .then((res) => res.json())
     //   .then((data) => (this.products = data))

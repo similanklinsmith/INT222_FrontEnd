@@ -23,14 +23,14 @@
             <div class="form-header">
               Sign in
             </div>
-            <div class="input-email">
-              <label for="email">Email</label>
+            <div class="input-username">
+              <label for="username">Username</label>
               <input
                 type="email"
-                name="email"
-                id="email"
-                placeholder="example@mail.com"
-                v-model="email"
+                name="username"
+                id="username"
+                placeholder="admin"
+                v-model="form.sign_in_username"
               />
             </div>
             <div class="input-password">
@@ -40,7 +40,7 @@
                 name="password"
                 id="password"
                 placeholder="*******"
-                v-model="password"
+                v-model="form.sign_in_password"
               />
             </div>
             <a href="#" class="forgot">Forgot your password?</a>
@@ -56,42 +56,157 @@
           <div class="back-btn" @click="goBack">
             <i class="fas fa-chevron-left"></i>
           </div>
-          <form class="form">
+          <form class="form" @submit.prevent="createAccount">
             <div class="form-header">
               Create account
             </div>
-            <div class="input-name">
-              <label for="name">Name</label>
-              <input type="text" name="name" id="name" placeholder="John" />
+            <div class="flex-display">
+              <div class="input-name">
+                <label for="name"
+                  >Name
+                  <span
+                    v-if="!signUpNameIsValid && form.sign_up_name.length == 0"
+                    >*required </span
+                  ><span
+                    v-if="
+                      signUpNameIsValid || 50 - form.sign_up_name.length <= 0
+                    "
+                    :style="[
+                      50 - form.sign_up_name.length <= 0
+                        ? { color: '#eb435f' }
+                        : { color: '#32CD32' },
+                    ]"
+                    >({{ 50 - form.sign_up_name.length }} chars left)</span
+                  ></label
+                >
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  placeholder="John"
+                  v-model="form.sign_up_name"
+                />
+              </div>
+              <div class="input-surname">
+                <label for="surname"
+                  >Surname
+                  <span
+                    v-if="
+                      !signUpSurnameIsValid && form.sign_up_surname.length == 0
+                    "
+                    >*required </span
+                  ><span
+                    v-if="
+                      signUpSurnameIsValid ||
+                        50 - form.sign_up_surname.length <= 0
+                    "
+                    :style="[
+                      50 - form.sign_up_surname.length <= 0
+                        ? { color: '#eb435f' }
+                        : { color: '#32CD32' },
+                    ]"
+                    >({{ 50 - form.sign_up_surname.length }} chars left)</span
+                  >
+                </label>
+                <input
+                  type="text"
+                  name="surname"
+                  id="surname"
+                  placeholder="Smith"
+                  v-model="form.sign_up_surname"
+                />
+              </div>
             </div>
-            <div class="input-surname">
-              <label for="surname">Surname</label>
+            <div class="input-username">
+              <label for="username"
+                >Username
+                <span
+                  v-if="
+                    !signUpUsernameIsValid && form.sign_up_username.length == 0
+                  "
+                  >*required </span
+                ><span
+                  v-if="
+                    signUpUsernameIsValid ||
+                      40 - form.sign_up_username.length <= 0
+                  "
+                  :style="[
+                    40 - form.sign_up_username.length <= 0
+                      ? { color: '#eb435f' }
+                      : { color: '#32CD32' },
+                  ]"
+                  >({{ 40 - form.sign_up_username.length }} chars left)</span
+                >
+              </label>
               <input
                 type="text"
-                name="surname"
-                id="surname"
-                placeholder="Smith"
+                name="username"
+                id="username"
+                placeholder="admin"
+                v-model="form.sign_up_username"
               />
             </div>
             <div class="input-email">
-              <label for="email">Email</label>
+              <label for="email"
+                >Email <span v-if="!signUpEmailIsValid">*required</span></label
+              >
               <input
                 type="email"
                 name="email"
                 id="email"
                 placeholder="example@mail.com"
+                v-model="form.sign_up_email"
               />
             </div>
             <div class="input-password">
-              <label for="password">Password</label>
+              <label for="password"
+                >Password
+                <span v-if="!signUpPasswordIsValid"
+                  >*required at least 8 chars</span
+                >
+                <span
+                  :style="{ color: '#FFD700' }"
+                  v-if="
+                    form.sign_up_password.length >= 8 &&
+                      form.sign_up_password.length < 10
+                  "
+                  >good</span
+                >
+                <span
+                  :style="{ color: '#32CD32' }"
+                  v-if="form.sign_up_password.length >= 10"
+                  >excellent</span
+                >
+              </label>
               <input
-                type="password"
+                type="text"
                 name="password"
                 id="password"
                 placeholder="*******"
+                v-model="form.sign_up_password"
+                :style="[
+                  form.sign_up_password.length <= 0
+                    ? { backgroundColor: '' }
+                    : form.sign_up_password.length < 8
+                    ? { backgroundColor: '#f9cede' }
+                    : form.sign_up_password.length >= 8 &&
+                      form.sign_up_password.length < 10
+                    ? { backgroundColor: '#fff7cc' }
+                    : { backgroundColor: '#d6f5d6' },
+                ]"
               />
             </div>
-            <a href="" class="btn btn--full">Sign up</a>
+            <button
+              class="btn btn--full"
+              type="submit"
+              :style="[
+                signUpFormIsValid
+                  ? { backgroundColor: '#333' }
+                  : { backgroundColor: '#707070', cursor: 'not-allowed' },
+              ]"
+            >
+              Sign up
+            </button>
             <div class=" mobile sign-btn" @click="isSignUp = false">
               Sign in
             </div>
@@ -107,7 +222,10 @@
               </div>
               <div class="sign-btn" @click="isSignUp = false">Sign in</div>
             </div>
-            <img src="../../src/assets/images/sign-in.jpg" alt="" />
+            <img
+              src="../../src/assets/images/sign-in.jpg"
+              alt="sign-in-image"
+            />
           </div>
         </div>
       </transition-group>
@@ -129,23 +247,84 @@ export default {
   data() {
     return {
       isSignUp: false,
-      email: "",
-      password: ""
+      form: {
+        // sign-in
+        sign_in_email: "",
+        sign_in_password: "",
+        // sign-up
+        sign_up_name: "",
+        sign_up_surname: "",
+        sign_up_username: "",
+        sign_up_email: "",
+        sign_up_password: "",
+      },
     };
   },
   mounted() {
     window.scrollTo(0, 0);
   },
+  computed: {
+    signUpNameIsValid() {
+      return !!this.form.sign_up_name && this.form.sign_up_name.length <= 50;
+    },
+    signUpSurnameIsValid() {
+      return (
+        !!this.form.sign_up_surname && this.form.sign_up_surname.length <= 50
+      );
+    },
+    signUpUsernameIsValid() {
+      return (
+        !!this.form.sign_up_username && this.form.sign_up_username.length <= 40
+      );
+    },
+    signUpEmailIsValid() {
+      return !!this.form.sign_up_email;
+    },
+    signUpPasswordIsValid() {
+      return (
+        !!this.form.sign_up_password && this.form.sign_up_password.length >= 8
+      );
+    },
+    signUpFormIsValid() {
+      return (
+        this.signUpPasswordIsValid &&
+        this.signUpEmailIsValid &&
+        this.signUpUsernameIsValid &&
+        this.signUpSurnameIsValid &&
+        this.signUpNameIsValid
+      );
+    },
+  },
   methods: {
     goBack() {
       this.$router.go(-1);
     },
-    signIn(){
-      this.$store.dispatch('retrieveToken',{
-        email: this.email,
-        password: this.password
-      })
-    }
+    createAccount() {
+      if (this.signUpFormIsValid) {
+        const newAccount = {
+          first_name: this.form.sign_up_name,
+          last_name: this.form.sign_up_surname,
+          username: this.form.sign_up_username,
+          email: this.form.sign_up_email,
+          password: this.form.sign_up_password,
+          role: "member",
+        };
+        this.$store.dispatch("createAccount", newAccount);
+        (this.form.sign_up_name = ""),
+          (this.form.sign_up_surname = ""),
+          (this.form.sign_up_username = ""),
+          (this.form.sign_up_email = ""),
+          (this.form.sign_up_password = "");
+          alert("Create Account Success🎉🎉")
+      } else {
+      }
+    },
+    // signIn() {
+    //   this.$store.dispatch("retrieveToken", {
+    //     email: this.email,
+    //     password: this.password,
+    //   });
+    // },
   },
 };
 </script>
@@ -268,7 +447,7 @@ export default {
   border: none;
   cursor: pointer;
   text-transform: uppercase;
-  margin-top: 2.4rem;
+  /* margin-top: 2.4rem; */
   border-radius: 2.4rem;
 }
 
@@ -327,16 +506,39 @@ export default {
   width: 100%;
 }
 
-.input-email,
-.input-password,
+.flex-display {
+  display: flex;
+  height: auto;
+  /* flex-wrap: wrap; */
+}
+
 .input-name,
 .input-surname {
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+}
+
+.input-name {
+  margin-left: 20%;
+  margin-top: 2.4rem;
+}
+
+.input-surname {
+  margin-right: 20%;
+  margin-top: 2.4rem;
+}
+
+.input-username,
+.input-email,
+.input-password {
   display: flex;
   flex-direction: column;
   width: 60%;
   margin: 3.2rem 20%;
 }
 
+.input-username label,
 .input-email label,
 .input-password label,
 .input-name label,
@@ -347,9 +549,13 @@ export default {
   margin-bottom: 1.2rem;
 }
 
-.input-email input,
-.input-password input,
-.input-name input,
+.input-name input {
+  width: 80%;
+  height: 3.6rem;
+  background: rgba(211, 211, 211, 0.25);
+  border: none;
+  padding: 0 0.8rem;
+}
 .input-surname input {
   width: 100%;
   height: 3.6rem;
@@ -357,7 +563,17 @@ export default {
   border: none;
   padding: 0 0.8rem;
 }
+.input-username input,
+.input-email input,
+.input-password input {
+  width: 100%;
+  height: 3.6rem;
+  background: rgba(211, 211, 211, 0.25);
+  border: none;
+  padding: 0 0.8rem;
+}
 
+.input-username input:focus,
 .input-email input:focus,
 .input-password input:focus,
 .input-name input:focus,
@@ -365,11 +581,17 @@ export default {
   outline: none;
 }
 
+.input-username input::placeholder,
 .input-email input::placeholder,
 .input-password input::placeholder,
 .input-name input::placeholder,
 .input-surname input::placeholder {
   color: rgb(85, 85, 85, 0.35);
+}
+
+label span {
+  font-size: 1rem;
+  color: #eb435f;
 }
 
 .forgot {
@@ -484,9 +706,10 @@ a:active {
     transform: translateY(-7rem);
     background-color: #eb435f;
   }
-  .sign-up .form-header{
+  .sign-up .form-header {
     color: white;
   }
+  .sign-up .input-username label,
   .sign-up .input-email label,
   .sign-up .input-password label,
   .sign-up .input-name label,
@@ -495,23 +718,24 @@ a:active {
   }
 
   .sign-up .input-email input::placeholder,
+  .sign-up .input-username input::placeholder,
   .sign-up .input-password input::placeholder,
   .sign-up .input-name input::placeholder,
   .sign-up .input-surname input::placeholder {
     color: rgba(255, 255, 255, 0.35);
   }
   .sign-up .btn--full,
-.sign-up .btn--full:visited {
-  width: 26rem;
-  background-color: white;
-  color: #333;
-  transition: 0.3s all ease-in-out;
-}
+  .sign-up .btn--full:visited {
+    width: 26rem;
+    background-color: white;
+    color: #333;
+    transition: 0.3s all ease-in-out;
+  }
 
-.sign-up .btn--full:hover,
-.sign-up .btn--full:active {
-  background-color: rgba(255, 255, 255, 0.35);
-}
+  .sign-up .btn--full:hover,
+  .sign-up .btn--full:active {
+    background-color: rgba(255, 255, 255, 0.35);
+  }
   .img-show {
     display: none;
   }
