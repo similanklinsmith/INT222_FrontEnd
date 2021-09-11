@@ -12,7 +12,7 @@
     ></div>
     <div class="profile-info">
       <div class="name">
-        {{ user.name }}
+        {{ user.first_name }} {{user.last_name}}
         <div
           class="role"
           :style="[
@@ -29,6 +29,9 @@
       <div class="email">
         <i class="icon fas fa-envelope"></i>
         <span>{{ user.email }}</span>
+      </div>
+      <div class="username">
+       <i class="icon fas fa-user"></i> <span>{{ user.username }}</span>
       </div>
       <div class="password">
         <i class="icon fas fa-key"></i> <span>{{ user.password }}</span>
@@ -55,7 +58,7 @@ export default {
 .list {
   width: 100%;
   background-color: white;
-  height: 16rem;
+  height: auto;
   position: relative;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   transition: 0.3s all ease-in-out;
@@ -104,7 +107,8 @@ export default {
 }
 
 .email,
-.password {
+.password,
+.username {
   font-size: 1.4rem;
 }
 
@@ -114,7 +118,8 @@ export default {
 }
 
 .email span,
-.password span {
+.password span,
+.username span {
   color: #555;
 }
 

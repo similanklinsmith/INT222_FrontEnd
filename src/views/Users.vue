@@ -60,7 +60,7 @@
         </div>
         <transition-group name="fade">
           <!-- component -->
-          <List v-for="user in users" :key="user.id" :user="user"></List>
+          <List v-for="user in getAllUsers" :key="user.id" :user="user"></List>
           <!-- -------- -->
         </transition-group>
       </div>
@@ -73,6 +73,7 @@
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
 import List from "@/components/List.vue";
+import { mapGetters , mapActions} from 'vuex';
 export default {
   name: "Users",
   components: {
@@ -82,30 +83,24 @@ export default {
   },
   data() {
     return {
-      users: [
-        {
-          id: 1,
-          name: "Similan Klinsmith",
-          email: "similan.klinsmith@mail.kmutt.ac.th",
-          password: "nalimis29",
-          role: "admin",
-        },
-        {
-          id: 2,
-          name: "Similan Klinsmith",
-          email: "similan.klinsmith@mail.kmutt.ac.th",
-          password: "nalimis29",
-          role: "deputy admin",
-        },
-        {
-          id: 3,
-          name: "Similan Klinsmith",
-          email: "similan.klinsmith@mail.kmutt.ac.th",
-          password: "nalimis29",
-          role: "consumer",
-        },
-      ],
+      users: [],
     };
+  },
+  methods: {
+        ...mapActions([
+      "getAccountsToSite",
+    ]),
+  },
+    computed: mapGetters([
+    "getAccounts",
+  ]),
+  computed: {
+    getAllUsers() {
+      return this.$store.getters.getAccounts;
+    }
+  },
+  created() {
+    this.getAccountsToSite();
   },
   mounted() {
     window.scrollTo(0, 0);

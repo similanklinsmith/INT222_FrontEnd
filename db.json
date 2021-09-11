@@ -317,13 +317,31 @@
   ],
   "accounts": [
     {
-      "first_name": "INT222",
-      "last_name": "asdf",
-      "username": "admin",
-      "email": "deep2fasdf5952@gmail.com",
-      "password": "asdfasdfasdf",
-      "role": "member",
+      "first_name": "Similan",
+      "last_name": "Klinsmith",
+      "username": "deep",
+      "email": "deep@gmail.com",
+      "password": "62130500096",
+      "role": "admin",
       "id": 1
+    },
+    {
+      "first_name": "Praepanwa",
+      "last_name": "Tedprasit",
+      "username": "phaeng",
+      "email": "phaeng@gmail.com",
+      "password": "62130500069",
+      "role": "deputy admin",
+      "id": 2
+    },
+    {
+      "first_name": "Noparat",
+      "last_name": "Prasongdee",
+      "username": "saimai",
+      "email": "saimai@gmail.com",
+      "password": "62130500126",
+      "role": "member",
+      "id": 3
     }
   ]
 }

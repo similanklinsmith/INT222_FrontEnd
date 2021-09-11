@@ -230,6 +230,11 @@
         </div>
       </transition-group>
     </div>
+    <!-- component  popup -->
+    <div class="modal" v-if="success">
+        <Popup @closePopup="success = false"/>
+    </div>
+    <!-- /component  popup -->
     <Socials class="socials"></Socials>
     <Footer class="footer"></Footer>
     <div class="big-circle"></div>
@@ -239,13 +244,16 @@
 <script>
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
+import Popup from "@/components/Popup.vue";
 export default {
   components: {
     Socials,
     Footer,
+    Popup
   },
   data() {
     return {
+      success: false,
       isSignUp: false,
       form: {
         // sign-in
@@ -315,7 +323,8 @@ export default {
           (this.form.sign_up_username = ""),
           (this.form.sign_up_email = ""),
           (this.form.sign_up_password = "");
-          alert("Create Account Success🎉🎉")
+          this.success = true;
+        // alert("Create Account Success🎉🎉");
       } else {
       }
     },
@@ -329,6 +338,17 @@ export default {
 };
 </script>
 <style scoped>
+.modal{
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.25);
+  left: 0;
+  top: 0;
+  padding-top: 20rem;
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
 .mobile {
   display: none !important;
 }

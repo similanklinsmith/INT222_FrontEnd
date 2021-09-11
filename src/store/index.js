@@ -1,5 +1,5 @@
 import { createStore, storeKey } from "vuex";
-
+import vueConfig from "../../vue.config";
 export default createStore({
   state: {
     products: [],
@@ -7,15 +7,15 @@ export default createStore({
     brands: [],
     categories: [],
     wishlists: [],
-    productUrl: "http://localhost:3000/products",
-    colorUrl: "http://localhost:3000/colors",
-    brandUrl: "http://localhost:3000/brands",
-    categoryUrl: "http://localhost:3000/categories",
-    wishlistUrl: "http://localhost:3000/wishlist",
+    productUrl: vueConfig.url + "/products",
+    colorUrl: vueConfig.url + "/colors",
+    brandUrl: vueConfig.url + "/brands",
+    categoryUrl: vueConfig.url + "/categories",
+    wishlistUrl: vueConfig.url + "/wishlist",
 
     // account
     accounts: [],
-    accountUrl: "http://localhost:3000/accounts",
+    accountUrl: vueConfig.url + "/accounts",
   },
   mutations: {
     // products
@@ -122,12 +122,16 @@ export default createStore({
     },
 
     // accounts
+    GET_ACCOUNTS(state, accounts) {
+      state.accounts = accounts;
+    },
     ADD_ACCOUNT(state, newAccount) {
       state.accounts.push(newAccount);
     },
   },
   actions: {
     getProductsToStore(context) {
+      console.log(this.state.productUrl);
       fetch(this.state.productUrl)
         .then((res) => res.json())
         .then((data) => {
@@ -370,6 +374,16 @@ export default createStore({
         .catch((err) => console.log(err.message));
     },
 
+    // Accounts
+    getAccountsToSite(context) {
+      fetch(this.state.accountUrl)
+        .then((res) => res.json())
+        .then((data) => {
+          context.commit("GET_ACCOUNTS", data);
+        })
+        .catch((err) => console.log(err.message));
+    },
+
     createAccount(context, newAccount) {
       const jsonAccount = JSON.stringify(newAccount, {
         type: "application/json",
@@ -414,10 +428,15 @@ export default createStore({
       return state.categories;
     },
 
-    // wishlist getter
-    getWishList() {
+    // wishlist getters
+    getWishList(state) {
       return state.wishlists;
     },
+
+    // account getters
+    getAccounts(state) {
+      return state.accounts
+    }
   },
   modules: {},
 });
