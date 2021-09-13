@@ -1,5 +1,4 @@
 import { createStore, storeKey } from "vuex";
-import vueConfig from "../../vue.config";
 export default createStore({
   state: {
     products: [],
@@ -7,15 +6,15 @@ export default createStore({
     brands: [],
     categories: [],
     wishlists: [],
-    productUrl: vueConfig.url + "/products",
-    colorUrl: vueConfig.url + "/colors",
-    brandUrl: vueConfig.url + "/brands",
-    categoryUrl: vueConfig.url + "/categories",
-    wishlistUrl: vueConfig.url + "/wishlist",
+    productUrl: "http://localhost:3000/products",
+    colorUrl: "http://localhost:3000/colors",
+    brandUrl: "http://localhost:3000/brands",
+    categoryUrl: "http://localhost:3000/categories",
+    wishlistUrl: "http://localhost:3000/wishlist",
 
     // account
     accounts: [],
-    accountUrl: vueConfig.url + "/accounts",
+    accountUrl: "http://localhost:3000/accounts",
   },
   mutations: {
     // products

@@ -35,13 +35,35 @@
             </div>
             <div class="input-password">
               <label for="password">Password</label>
-              <input
-                type="password"
-                name="password"
-                id="password"
-                placeholder="*******"
-                v-model="form.sign_in_password"
-              />
+              <div class="show-hide-passwod">
+                <input
+                  :type="type"
+                  name="password"
+                  id="password"
+                  placeholder="*******"
+                  v-model="form.sign_in_password"
+                />
+                <div class="btn-eye" @click="togglePassword">
+                  <div
+                    :style="[
+                      type === 'text'
+                        ? { display: 'none' }
+                        : { display: 'flex' },
+                    ]"
+                  >
+                    <i class="fas fa-eye icon"></i>
+                  </div>
+                  <div
+                    :style="[
+                      type !== 'text'
+                        ? { display: 'none' }
+                        : { display: 'flex' },
+                    ]"
+                  >
+                    <i class="fas fa-eye-slash icon"></i>
+                  </div>
+                </div>
+              </div>
             </div>
             <a href="#" class="forgot">Forgot your password?</a>
             <button class="btn btn--full" type="submit">Sign in</button>
@@ -232,7 +254,7 @@
     </div>
     <!-- component  popup -->
     <div class="modal" v-if="success">
-        <Popup @closePopup="success = false"/>
+      <Popup @closePopup="success = false" />
     </div>
     <!-- /component  popup -->
     <Socials class="socials"></Socials>
@@ -249,10 +271,11 @@ export default {
   components: {
     Socials,
     Footer,
-    Popup
+    Popup,
   },
   data() {
     return {
+      type: "password",
       success: false,
       isSignUp: false,
       form: {
@@ -307,6 +330,14 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
+    togglePassword() {
+      if (this.type === "password") {
+        this.type = "text";
+      } else if (this.type === "text") {
+        this.type = "password";
+      }
+      console.log(this.type);
+    },
     createAccount() {
       if (this.signUpFormIsValid) {
         const newAccount = {
@@ -323,7 +354,7 @@ export default {
           (this.form.sign_up_username = ""),
           (this.form.sign_up_email = ""),
           (this.form.sign_up_password = "");
-          this.success = true;
+        this.success = true;
         // alert("Create Account Success🎉🎉");
       } else {
       }
@@ -338,7 +369,7 @@ export default {
 };
 </script>
 <style scoped>
-.modal{
+.modal {
   width: 100%;
   height: 100%;
   position: fixed;
@@ -567,6 +598,24 @@ export default {
   font-size: 1.4rem;
   color: #555;
   margin-bottom: 1.2rem;
+}
+
+.show-hide-passwod {
+  position: relative;
+}
+
+.show-hide-passwod .icon {
+  position: absolute;
+  right: 2%;
+  top: 35%;
+  font-size: 1.2rem;
+  color: #555;
+  cursor: pointer;
+  transition: 0.2s all ease-in-out;
+}
+
+.show-hide-passwod .icon:hover {
+  color: #333;
 }
 
 .input-name input {

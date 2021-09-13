@@ -7,8 +7,92 @@
 
 *::-webkit-scrollbar {
   display: none;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.loader-wrapper {
+  position: fixed;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  background-color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.loader {
+  z-index: 999;
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  position: relative;
+  border: 4px solid #eb435f;
+  animation: loader 2s infinite ease;
+}
+
+.loader-inner {
+  vertical-align: top;
+  display: inline-block;
+  width: 100%;
+  background-color: #eb435f;
+  animation: loader-inner 2s infinite ease-in;
+}
+
+@keyframes loader {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(180deg);
+    width: 4rem;
+    height: 4rem;
+  }
+
+  50% {
+    transform: rotate(180deg);
+    width: 5rem;
+    height: 5rem;
+  }
+
+  75% {
+    transform: rotate(360deg);
+    width: 4rem;
+    height: 4rem;
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-inner {
+  0% {
+    height: 0%;
+  }
+
+  25% {
+    height: 0%;
+  }
+
+  50% {
+    height: 100%;
+  }
+
+  75% {
+    height: 100%;
+  }
+
+  100% {
+    height: 0%;
+  }
 }
 
 html {
@@ -200,15 +284,15 @@ select option {
 }
 
 @keyframes floating {
-  from {
+  0% {
     transform: translateY(0px);
   }
 
-  65% {
+  50% {
     transform: translateY(15px);
   }
 
-  to {
+  100% {
     transform: translateY(-0px);
   }
 }
@@ -353,6 +437,7 @@ select option {
     padding: 0 1.6rem;
   }
 }
+
 /* below 360px */
 @media (max-width: 23em) {
   html {

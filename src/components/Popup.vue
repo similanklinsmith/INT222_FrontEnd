@@ -1,13 +1,13 @@
 <template>
   <div class="pop-up">
-    <div class="success-text">
-      Sign-up Success!
-    </div>
     <div class="success-img">
       <img
         src="../../src/assets/images/success.png"
         alt="success singup picture"
       />
+    </div>
+    <div class="success-text">
+      Sign-up Success!
     </div>
     <div class="btn btn--full" @click="closePopup">ok</div>
   </div>
@@ -33,7 +33,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  row-gap: 1.2rem;
+  row-gap: 2rem;
   animation-name: appears-from-bottom;
   animation-duration: 0.3s;
   animation-iteration-count: 1;
@@ -42,10 +42,12 @@ export default {
   font-size: 2rem;
   font-weight: 700;
   color: #35e08e;
+  animation: appears-from-bottom 0.75s 1 ease;
 }
 .success-img {
   width: 15rem;
   height: 15rem;
+  animation: appears-from-bottom 0.75s 1 ease;
 }
 .success-img img {
   width: 100%;

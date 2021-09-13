@@ -4,7 +4,7 @@
       <div class="container">
         <div class="store-header">
           <div class="image-slide-show">
-            <img :src="slotImages[cursor - 1].imgSrc" alt="" />
+            <img :src="slotImages[cursor-1].imgSrc" alt="image slide ads" />
           </div>
           <div class="store-header-text">
             <div class="sub-heading">Choose your match</div>
@@ -82,7 +82,7 @@
             </div>
             <div class="text-filter">
               <label for="colors">COLOR</label>
-              <select name="colors" id="colors"  v-model="selectedColor">
+              <select name="colors" id="colors" v-model="selectedColor">
                 <option value="">none</option>
                 <option
                   v-for="color in allColors"
@@ -139,7 +139,11 @@
                   : { color: 'grey' }
               " -->
             <div class="not-found" v-if="queryProducts.length == 0">
-              <span>{{ searchInput }} {{ selectedBrand }} {{ selectedCategory }}</span> is Not found
+              <span
+                >{{ searchInput }} {{ selectedBrand }}
+                {{ selectedCategory }}</span
+              >
+              is Not found
             </div>
           </transition-group>
         </div>
@@ -222,16 +226,28 @@ export default {
       // }
     },
     changeImage(id) {
-      for (let index = 0; index < this.slotImages.length; index++) {
-        if (this.slotImages[index].show === true) {
-          this.slotImages[index].show = false;
+        for (let index = 0; index < this.slotImages.length; index++) {
+          if (this.slotImages[index].show === true) {
+            this.slotImages[index].show = false;
+          }
         }
-      }
-      this.cursor = id;
-      this.slotImages[this.cursor - 1].show = true;
+        this.cursor = id;
+        this.slotImages[this.cursor - 1].show = true;
     },
   },
   mounted() {
+    setInterval(() => {
+      this.cursor++;
+      if (this.cursor > 3) {
+        this.cursor = 1;
+      }
+       for (let index = 0; index < this.slotImages.length; index++) {
+          if (this.slotImages[index].show === true) {
+            this.slotImages[index].show = false;
+          }
+        }
+      this.slotImages[this.cursor - 1].show = true;
+    }, 5000);
     // this.$store.dispatch("getProductsToStore");
     window.scrollTo(0, 0);
     // fetch(this.productUrl)

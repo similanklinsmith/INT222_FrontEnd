@@ -34,6 +34,7 @@ export default {};
 .img-box img {
   width: 42rem;
   height: 42rem;
+  animation: appears-from-bottom 1.5s 1 ease;
 }
 .not-found-text {
   align-self: center;
