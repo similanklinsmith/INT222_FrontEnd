@@ -246,7 +246,7 @@ export default {
         this.$store
           .dispatch("editProduct", editProduct)
           // this.$store
-          //   .dispatch("editProduct", editProduct, this.preview_img)
+          //   .dispatch("editProduct", {editProduct, this.preview_img})
           .catch((err) => console.log(err));
 
         (this.form.edit_name = ""),
@@ -625,8 +625,8 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
   .add-img {
-    width: 50%;
-    margin: 0 25%;
+    width: 70%;
+    margin: 0 15%;
     height: 36rem;
   }
 }

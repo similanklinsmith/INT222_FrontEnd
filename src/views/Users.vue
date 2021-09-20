@@ -28,6 +28,15 @@
                 placeholder="Smith"
               />
             </div>
+            <div class="username">
+              <label for="username">Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Smith123"
+              />
+            </div>
             <div class="email">
               <label for="email">Email</label>
               <input
@@ -58,9 +67,98 @@
             </div>
           </div>
         </div>
+        <div class="filter">
+          <div class="role-filter">
+            <label for="colors">ROLES</label>
+            <select v-model="selectedRole">
+              <option value="">none</option>
+              <option value="Admin">Admin</option>
+              <option value="Deputy Admin">Deputy Admin</option>
+              <option value="Member">Member</option>
+            </select>
+          </div>
+          <div class="role-filter-mb">
+            <div
+              class="filter-mb admin-filter"
+              :style="[
+                adminFilter == true || selectedRole == 'Admin'
+                  ? { backgroundColor: '#ffd700', color: 'white' }
+                  : { backgroundColor: '#ddd', color: '#white' },
+              ]"
+              @click="filterAdmin"
+            >
+              Admin
+            </div>
+            <div
+              class="filter-mb deputy-admin-filter"
+              :style="[
+                deputyAdminFilter == true || selectedRole == 'Deputy Admin'
+                  ? { backgroundColor: '#FF6347', color: 'white' }
+                  : { backgroundColor: '#ddd', color: '#white' },
+              ]"
+              @click="filterDeputyAdmin"
+            >
+              Deputy Admin
+            </div>
+            <div
+              class="filter-mb member-filter"
+              :style="[
+                memberFilter == true || selectedRole == 'Member'
+                  ? { backgroundColor: '#9400D3', color: 'white' }
+                  : { backgroundColor: '#ddd', color: '#white' },
+              ]"
+              @click="filterMember"
+            >
+              Member
+            </div>
+          </div>
+          <input
+            type="text"
+            class="search"
+            placeholder="Search by username"
+            v-model="searchInput"
+          />
+        </div>
         <transition-group name="fade">
           <!-- component -->
-          <List v-for="user in getAllUsers" :key="user.id" :user="user"></List>
+          <List
+            class="List"
+            v-for="user in queryUsers"
+            :key="user.id"
+            :user="user"
+          ></List>
+        </transition-group>
+        <transition-group name="slide-fade">
+          <Table :ths="ths" class="table" :key="ths">
+            <tbody v-for="(user, index) in queryUsers" :key="user.id">
+              <tr>
+                <td>{{ index + 1 }}</td>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.last_name }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.password }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                  <div
+                    class="delete"
+                    @click="deleteColorById(color.id)"
+                    :style="{ display: 'inline' }"
+                  >
+                    Delete
+                  </div>
+                  |
+                  <div
+                    class="edit"
+                    @click="toggleEditColor(color.id)"
+                    :style="{ display: 'inline' }"
+                  >
+                    Edit
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </Table>
           <!-- -------- -->
         </transition-group>
       </div>
@@ -73,31 +171,81 @@
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
 import List from "@/components/List.vue";
-import { mapGetters , mapActions} from 'vuex';
+import Table from "@/components/Table.vue";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Users",
   components: {
     Socials,
     Footer,
     List,
+    Table,
   },
   data() {
     return {
       users: [],
+      searchInput: "",
+      selectedRole: "",
+      adminFilter: false,
+      deputyAdminFilter: false,
+      memberFilter: false,
+      ths: [
+        "No",
+        "First Name",
+        "Last Name",
+        "Username",
+        "Email",
+        "Password",
+        "Role",
+      ],
     };
   },
   methods: {
-        ...mapActions([
-      "getAccountsToSite",
-    ]),
+    ...mapActions(["getAccountsToSite"]),
+    filterAdmin() {
+      this.deputyAdminFilter = false;
+      this.memberFilter = false;
+      this.adminFilter = !this.adminFilter;
+      if (this.adminFilter || this.selectedRole == "Admin") {
+        this.selectedRole = "Admin";
+      } else {
+        this.selectedRole = "";
+      }
+    },
+    filterDeputyAdmin() {
+      this.adminFilter = false;
+      this.memberFilter = false;
+      this.deputyAdminFilter = !this.deputyAdminFilter;
+      if (this.deputyAdminFilter) {
+        this.selectedRole = "Deputy Admin";
+      } else {
+        this.selectedRole = "";
+      }
+    },
+    filterMember() {
+      this.adminFilter = false;
+      this.deputyAdminFilter = false;
+      this.memberFilter = !this.memberFilter;
+      if (this.memberFilter) {
+        this.selectedRole = "Member";
+      } else {
+        this.selectedRole = "";
+      }
+    },
   },
-    computed: mapGetters([
-    "getAccounts",
-  ]),
+  computed: mapGetters(["getAccounts"]),
   computed: {
     getAllUsers() {
       return this.$store.getters.getAccounts;
-    }
+    },
+    queryUsers() {
+      return this.getAllUsers.filter((user) => {
+        return (
+          user.role.toLowerCase().includes(this.selectedRole.toLowerCase()) &&
+          user.username.toLowerCase().includes(this.searchInput)
+        );
+      });
+    },
   },
   created() {
     this.getAccountsToSite();
@@ -122,7 +270,7 @@ export default {
   margin: 0 10%;
   width: 80%;
   background-color: white;
-  height: 48rem;
+  height: 58rem;
   /* padding: 2rem 4rem; */
   grid-column: span 2;
   display: grid;
@@ -135,6 +283,85 @@ export default {
   flex-direction: column;
   padding: 4rem 4rem 2rem 2rem;
   height: 100%;
+}
+.filter {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: 60fr 40fr;
+  column-gap: 2.4rem;
+}
+.filter input,
+.filter select {
+  height: 3.2rem;
+  margin-bottom: 0;
+  background-color: #fff;
+  font-size: 1.4rem;
+  font-weight: 300;
+}
+
+.filter .role-filter {
+  display: flex;
+  justify-content: right;
+  align-self: center;
+}
+.filter .role-filter label {
+  align-self: center;
+  margin-right: 1.2rem;
+  margin-bottom: 0;
+}
+.role-filter-mb {
+  display: none;
+}
+.filter-mb {
+  /* width: 3.6rem; */
+  height: 3.6rem;
+  background-color: #fff;
+  font-size: 1.4rem;
+  padding: 1rem 1.2rem;
+  color: white;
+  text-transform: capitalize;
+  transition: 0.2s all ease-in-out;
+  cursor: pointer;
+}
+.filter-mb:hover {
+  filter: saturate(30%);
+}
+.List {
+  display: none;
+}
+.table {
+  grid-column: span 2;
+}
+tbody {
+  font-size: 1.4rem;
+  text-align: center;
+  background-color: #fff;
+  transition: 0.2s all ease-in-out;
+}
+tbody td {
+  padding: 1.4rem;
+  line-height: 1.8;
+}
+tbody:hover {
+  background-color: rgb(245, 244, 244);
+}
+tbody td:nth-child(4) {
+  height: 8rem;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+.delete,
+.edit {
+  cursor: pointer;
+  transition: 0.2s all ease-in-out;
+}
+.delete:hover {
+  color: #eb435f;
+}
+.edit:hover {
+  color: #ffd700;
 }
 label {
   display: block;
@@ -215,7 +442,14 @@ input::placeholder {
 .btn--full:hover {
   background-color: #3df53d;
 }
-
+@media (max-width: 55em) {
+  .table {
+    display: none;
+  }
+  .List {
+    display: inline;
+  }
+}
 @media (max-width: 53em) {
   .form {
     display: grid;
@@ -245,14 +479,35 @@ input::placeholder {
   .text .info {
     font-size: 1.2rem;
   }
-}
-  /* below 470px */
-  @media (max-width: 29em) {
-    .text .header {
-      font-size: 2.4rem;
-    }
-    .text .info {
-      font-size: 1rem;
-    }
+  .filter .search {
+    grid-column: span 2;
+    width: 80%;
+    margin: 0 10%;
   }
+  .filter .search {
+    grid-row: 1;
+  }
+  .filter .role-filter {
+    display: none;
+  }
+  .role-filter-mb {
+    grid-column: span 2;
+    justify-self: center;
+    justify-items: center;
+    justify-content: center;
+    display: flex;
+    column-gap: 1.2rem;
+    width: 90%;
+    margin: 1.2rem 10% 0 10%;
+  }
+}
+/* below 470px */
+@media (max-width: 29em) {
+  .text .header {
+    font-size: 2.4rem;
+  }
+  .text .info {
+    font-size: 1rem;
+  }
+}
 </style>

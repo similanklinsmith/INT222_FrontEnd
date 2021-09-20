@@ -158,7 +158,7 @@ export default createStore({
     // },
 
     addProduct(context, newProduct) {
-      // addProduct(context, newProduct, image)
+      // addProduct(context, {newProduct, image})
       const jsonProduct = JSON.stringify(newProduct, {
         type: "application/json",
       });
@@ -187,7 +187,7 @@ export default createStore({
     },
 
     editProduct(context, editProduct) {
-      // editProduct(context, editProduct, image)
+      // editProduct(context, {editProduct, image})
       const jsonProduct = JSON.stringify(editProduct, {
         type: "application/json",
       });

@@ -138,16 +138,7 @@
               </form>
               <!-- /editForm -->
 
-              <table>
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Color Name</th>
-                    <th>Color Code</th>
-                    <th>Example</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
+              <Table :ths="thsColor">
                 <tbody
                   v-for="(color, index) in getAllColors"
                   :key="color.color_code"
@@ -181,7 +172,7 @@
                     </td>
                   </tr>
                 </tbody>
-              </table>
+              </Table>
             </div>
           </transition>
           <!-- /Colors -->
@@ -254,14 +245,7 @@
               </form>
               <!-- /editBrand -->
 
-              <table>
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Brand Name</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
+              <Table :ths="thsBrand">
                 <tbody v-for="(brand, index) in getAllBrands" :key="brand.id">
                   <tr>
                     <td>{{ index + 1 }}</td>
@@ -285,7 +269,7 @@
                     </td>
                   </tr>
                 </tbody>
-              </table>
+              </Table>
             </div>
           </transition>
           <!-- /Brands -->
@@ -297,6 +281,7 @@
   </div>
 </template>
 <script>
+import Table from "@/components/Table.vue";
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
 import { mapGetters, mapActions } from "vuex";
@@ -305,9 +290,12 @@ export default {
   components: {
     Socials,
     Footer,
+    Table,
   },
   data() {
     return {
+      thsColor: ["No", "Color Name", "Color Code", "Example"],
+      thsBrand: ["No", "Brand Name"],
       isShow: true,
       isEditColor: false,
       isEditBrand: false,

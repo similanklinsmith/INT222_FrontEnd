@@ -325,7 +325,7 @@ export default {
     background-color: #fff;
     transform: translateY(-3.6rem);
     width: 90%;
-    margin: 0 5%;
+    margin: 0 5% 2.4rem 5%;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 0px 0px -5px,
       rgba(0, 0, 0, 0.3) 0px 0px 16px -8px;
     /* position:absolute;

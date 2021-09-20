@@ -211,6 +211,9 @@ export default {
 
 /* below 480px */
 @media (max-width: 30em) {
+  .product-img{
+    height: 24rem;
+  }
   .product-brand {
     width: 60%;
     margin: 0 20% 1.2rem 20%;
@@ -219,13 +222,42 @@ export default {
     width: 1.4rem;
     height: 1.4rem;
   }
+  .icon {
+  width: 3.6rem;
+  height: 3.6rem;
+  z-index: 999;
+  position: absolute;
+  top: 0%;
+  right: 0%;
+  margin: 1.2rem 1.2rem 0 0;
+  cursor: pointer;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 50%;
+}
 }
 
 /* below 375px */
 @media (max-width: 24em) {
+    .product-img{
+    height: 36rem;
+  }
   .product-brand {
     width: 25%;
     margin: 0 37.5% 1.2rem 37.5%;
   }
+  .icon {
+  width: 3.6rem;
+  height: 3.6rem;
+  z-index: 999;
+  position: absolute;
+  top: 0%;
+  right: 0%;
+  margin: 2.4rem 2.4rem 0 0;
+  cursor: pointer;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 50%;
+}
 }
 </style>

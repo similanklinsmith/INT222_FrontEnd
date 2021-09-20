@@ -4,7 +4,7 @@
       <div class="container">
         <div class="store-header">
           <div class="image-slide-show">
-            <img :src="slotImages[cursor-1].imgSrc" alt="image slide ads" />
+            <img :src="slotImages[cursor - 1].imgSrc" alt="image slide ads" />
           </div>
           <div class="store-header-text">
             <div class="sub-heading">Choose your match</div>
@@ -80,7 +80,7 @@
                 >
               </select>
             </div>
-            <div class="text-filter">
+            <!-- <div class="text-filter">
               <label for="colors">COLOR</label>
               <select name="colors" id="colors" v-model="selectedColor">
                 <option value="">none</option>
@@ -91,7 +91,7 @@
                   >{{ color.color_name }}</option
                 >
               </select>
-            </div>
+            </div> -->
             <div class="text-filter">
               <label for="product-types">PRODUCT TYPE</label>
               <select
@@ -226,13 +226,13 @@ export default {
       // }
     },
     changeImage(id) {
-        for (let index = 0; index < this.slotImages.length; index++) {
-          if (this.slotImages[index].show === true) {
-            this.slotImages[index].show = false;
-          }
+      for (let index = 0; index < this.slotImages.length; index++) {
+        if (this.slotImages[index].show === true) {
+          this.slotImages[index].show = false;
         }
-        this.cursor = id;
-        this.slotImages[this.cursor - 1].show = true;
+      }
+      this.cursor = id;
+      this.slotImages[this.cursor - 1].show = true;
     },
   },
   mounted() {
@@ -241,11 +241,11 @@ export default {
       if (this.cursor > 3) {
         this.cursor = 1;
       }
-       for (let index = 0; index < this.slotImages.length; index++) {
-          if (this.slotImages[index].show === true) {
-            this.slotImages[index].show = false;
-          }
+      for (let index = 0; index < this.slotImages.length; index++) {
+        if (this.slotImages[index].show === true) {
+          this.slotImages[index].show = false;
         }
+      }
       this.slotImages[this.cursor - 1].show = true;
     }, 5000);
     // this.$store.dispatch("getProductsToStore");
@@ -574,7 +574,11 @@ export default {
   color: #555;
   border: none;
   background-color: rgb(240, 240, 240);
-  width: 24rem;
+  width: 36rem;
+  height: 3.2rem;
+}
+select {
+  height: 3.2rem !important;
 }
 
 .search input:focus {
@@ -770,6 +774,9 @@ export default {
   }
   .add-product {
     display: none;
+  }
+  .search input{
+    width: auto;
   }
 }
 

@@ -164,45 +164,94 @@
         <div class="secondary-header">Into new world</div>
         <div class="grid">
           <div class="testimonials">
-            <figure class="testimonial">
-              <img
-                class="testimonial-img"
-                alt="Photo of customer Dave Bryson"
-                src="../../src/assets/images/hero-image.jpg"
-              />
-              <blockquote class="testimonial-text">
-                "Have huge number of product catalogs, there are many kinds of
-                fashion. I really love to use this site so much."
-              </blockquote>
-              <p class="testimonial-name">&mdash; Dave Bryson</p>
-            </figure>
-
-            <figure class="testimonial">
-              <img
-                class="testimonial-img"
-                alt="Photo of customer Ben Hadley"
-                src="../../src/assets/images/hero-image.jpg"
-              />
-              <blockquote class="testimonial-text">
-                "This site is not only having freaking cool and awesome UI
-                design, but also having lot of Fashioned Clothes."
-              </blockquote>
-              <p class="testimonial-name">&mdash; Ben Hadley</p>
-            </figure>
-
-            <figure class="testimonial">
-              <img
-                class="testimonial-img"
-                alt="Photo of customer Steve Miller"
-                src="../../src/assets/images/hero-image.jpg"
-              />
-              <blockquote class="testimonial-text">
-                "NerdyStyle is a life saver! I just started a company, so
-                there's no time for updating my fashion. I couldn't live without
-                this website!"
-              </blockquote>
-              <p class="testimonial-name">&mdash; Steve Miller</p>
-            </figure>
+            <div class="col-left">
+              <figure
+                class="testimonial"
+                v-for="testimonial in testimonials"
+                :key="testimonial.id"
+                @click="selectedTestimonial(testimonial.id)"
+                :style="[
+                  testimonial.selected ? { opaity: 1 } : { opacity: 0.5 },
+                ]"
+              >
+                <img
+                  class="testimonial-img"
+                  alt="Photo of customer Dave Bryson"
+                  src="../../src/assets/images/hero-image.jpg"
+                />
+                <div class="tester-info">
+                  <div class="testimonial-name">{{ testimonial.fullname }}</div>
+                  <div class="testimonial-info">
+                    Lorem ipsum dolor sit amet.
+                  </div>
+                </div>
+              </figure>
+            </div>
+            <div class="col-right col-right-com">
+              <div class="show-feedback">
+                <div class="testimonial-header-text">
+                  {{ testimonials[cursorTestimonial].headerText }}
+                </div>
+                <div class="ratings">
+                  <div
+                    class="stars"
+                    v-for="star in testimonials[cursorTestimonial].ratings"
+                    :key="star"
+                  >
+                    <i class="fas fa-star icon" />
+                  </div>
+                </div>
+                <div class="testimonial-text">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Nostrum autem enim corrupti, nisi laborum corporis.
+                  Repellendus sapiente natus porro quaerat dolor quo ad
+                  doloremque alias hic sit odit nulla itaque recusandae debitis
+                  aspernatur, ex eveniet. Magnam eligendi ipsa a qui error,
+                  quisquam sed commodi molestias obcaecati nemo nobis, cum
+                  fugiat.
+                </div>
+                <p class="testimonial-name">
+                  &mdash; {{ testimonials[cursorTestimonial].fullname }}
+                </p>
+              </div>
+            </div>
+            <div class="testimonials-slide">
+              <splide>
+                <splide-slide
+                  v-for="testimonial in testimonials"
+                  :key="testimonial"
+                >
+                  <div class="col-right">
+                    <div class="show-feedback">
+                      <div class="testimonial-header-text">
+                        {{ testimonial.headerText }}
+                      </div>
+                      <div class="ratings">
+                        <div
+                          class="stars"
+                          v-for="star in testimonial.ratings"
+                          :key="star"
+                        >
+                          <i class="fas fa-star icon" />
+                        </div>
+                      </div>
+                      <div class="testimonial-text">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Nostrum autem enim corrupti, nisi laborum corporis.
+                        Repellendus sapiente natus porro quaerat dolor quo ad
+                        doloremque alias hic sit odit nulla itaque recusandae
+                        debitis aspernatur, ex eveniet. Magnam eligendi ipsa a
+                        qui error, quisquam sed commodi molestias obcaecati nemo
+                        nobis, cum fugiat.
+                      </div>
+                      <p class="testimonial-name">
+                        &mdash; {{ testimonial.fullname }}
+                      </p>
+                    </div>
+                  </div>
+                </splide-slide>
+              </splide>
+            </div>
           </div>
         </div>
       </div>
@@ -289,6 +338,7 @@ export default {
       },
       cursorMember: 1,
       cursorCategory: 1,
+      cursorTestimonial: 0,
       slides1: [
         require("../../src/assets/images/men/men3.jpg"),
         require("../../src/assets/images/men/men1.jpg"),
@@ -351,6 +401,29 @@ export default {
           selected: false,
         },
       ],
+      testimonials: [
+        {
+          id: 1,
+          fullname: "Dave Bryson",
+          headerText: "Have huge number of product catalogs!",
+          ratings: 5,
+          selected: true,
+        },
+        {
+          id: 2,
+          fullname: "Steve Miller",
+          headerText: "NerdyStyle is a life saver!",
+          ratings: 4,
+          selected: false,
+        },
+        {
+          id: 3,
+          fullname: "Ben Hadley",
+          headerText: "This site is having freaking cool awesome UI design!",
+          ratings: 5,
+          selected: false,
+        },
+      ],
       members: [
         {
           id: 1,
@@ -386,9 +459,6 @@ export default {
     };
   },
   methods: {
-    // add(){
-    //   this.$store.dispatch('addAction');
-    // },
     selected(id) {
       this.cursorCategory = id - 1;
       for (let index = 0; index < this.categories.length; index++) {
@@ -397,6 +467,15 @@ export default {
         }
       }
       this.categories[id - 1].selected = true;
+    },
+    selectedTestimonial(id) {
+      this.cursorTestimonial = id - 1;
+      for (let index = 0; index < this.testimonials.length; index++) {
+        if (this.testimonials[index].selected === true) {
+          this.testimonials[index].selected = false;
+        }
+      }
+      this.testimonials[id - 1].selected = true;
     },
     nextMember() {
       this.cursorMember++;
@@ -902,29 +981,43 @@ TESTIMONIALS SECION
   margin-top: 9.6rem;
   position: relative;
   margin-bottom: 4.8rem;
-  background-color: #c4c0bd;
   padding: 3.6rem 0;
 }
 .testimonials {
   margin: 3.2rem 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 2fr;
   padding: 1.2rem 2.4rem;
-  gap: 1.8rem;
+  gap: 3.6rem;
+}
+
+.testimonials .col-left {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2.4rem;
+}
+.testimonials .col-right {
+  /* margin: 0 0 0 10%; */
+  width: 100%;
+  background-color: #f8f6f5;
+  padding: 3.6rem 4.8rem;
 }
 .testimonial {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  column-gap: 2.8rem;
   width: 100%;
-  background: #e7e3e0;
+  height: 12rem;
+  background: #f8f6f5;
   padding: 1.8rem 2.4rem;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
-    rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 3px 12px;
   transition: 0.2s all ease-in-out;
 }
 
 .testimonial:hover {
   transform: scale(1.025);
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
-    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
 }
 .testimonial-text {
   font-size: 1.6rem;
@@ -932,10 +1025,26 @@ TESTIMONIALS SECION
   margin: 1.2rem 0;
   line-height: 2;
   font-weight: 300;
+  text-indent: 3.2rem;
 }
 .testimonial-name {
-  font-size: 1.2rem;
+  display: inline-block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  /* text-align: right; */
+}
+.col-right .testimonial-name {
   text-align: right;
+  width: 100%;
+}
+.testimonial-info {
+  display: inline-block;
+  font-size: 1.4rem;
+  color: rgb(175, 175, 175);
+  font-weight: 300;
+  line-height: 1.6;
+  /* text-align: right; */
 }
 .testimonial-img {
   width: 5.4rem;
@@ -945,6 +1054,35 @@ TESTIMONIALS SECION
 .testimonial-img img {
   width: 100%;
   object-fit: cover;
+}
+.testimonial-header-text {
+  font-size: 2rem;
+  font-weight: 900;
+}
+.ratings {
+  flex-direction: row;
+  display: flex;
+  margin-top: 1.6rem;
+  margin-bottom: 2rem;
+  column-gap: 1rem;
+}
+.ratings .icon {
+  width: 1.4rem;
+  height: 1.4rem;
+  color: #ffd700;
+  cursor: auto;
+}
+.ratings .icon:hover {
+  color: #ffd700;
+}
+.testimonials-slide {
+  display: none;
+  overflow: hidden;
+}
+.testimonials-slide .col-right {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
 }
 
 /*--------------------------- 
@@ -1148,6 +1286,18 @@ ABOUT SECION
 @media (max-width: 47em) {
   .testimonials {
     grid-template-columns: 1fr;
+  }
+  .testimonials .col-left {
+    display: none;
+  }
+  .testimonials-slide {
+    display: inline;
+  }
+  .col-right-com {
+    display: none;
+  }
+  .section-about {
+    margin-top: 4rem;
   }
 }
 /* below 588px */
