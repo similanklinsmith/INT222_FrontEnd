@@ -127,10 +127,15 @@ export default createStore({
     ADD_ACCOUNT(state, newAccount) {
       state.accounts.push(newAccount);
     },
+    DELETE_ACCOUNT(state, id){
+      const index = state.accounts.findIndex((account) => account.id == id);
+      if (index != -1) {
+        state.accounts.splice(index, 1);
+      }
+    }
   },
   actions: {
     getProductsToStore(context) {
-      console.log(this.state.productUrl);
       fetch(this.state.productUrl)
         .then((res) => res.json())
         .then((data) => {
@@ -400,6 +405,13 @@ export default createStore({
         })
         .catch((err) => console.log(err));
     },
+
+    deleteAccount(context, id){
+      fetch(this.state.accountUrl + "/" + id, {
+        method: "DELETE",
+      }).catch((err) => console.log(err.message));
+      context.commit("DELETE_ACCOUNT", id);
+    }
   },
   getters: {
     // product getters
@@ -407,9 +419,7 @@ export default createStore({
       return state.products;
     },
     getProductById: (state) => (id) => {
-      return state.products.filter((product) => {
-        return product.id == id;
-      });
+      return state.products.find(product => product.id === id);
     },
 
     // color getters
