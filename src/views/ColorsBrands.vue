@@ -435,7 +435,6 @@ export default {
       }
     },
     deleteBrandById(id) {
-      // console.log(id);
       if (confirm("Do you really want to delete? 👹")) {
         const index = this.getAllBrands.findIndex((brand) => brand.id == id);
         if (index !== -1) {

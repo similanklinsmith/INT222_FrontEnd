@@ -80,6 +80,7 @@
                 <div class="prod-brand-type">
                   <div class="prod-brand">
                     <label for="brands">Brand</label>
+                    {{form.prod_brands}}
                     <select
                       name="brands"
                       id="brands"
@@ -90,7 +91,7 @@
                       <option
                         v-for="brand in allBrands"
                         :key="brand.id"
-                        :value="brand.brand_name"
+                        :value="brand"
                         >{{ brand.brand_name }}</option
                       >
                     </select>
@@ -108,7 +109,7 @@
                       <option
                         v-for="category in allCategories"
                         :key="category.id"
-                        :value="category.category_name"
+                        :value="category"
                         >{{ category.category_name }}</option
                       >
                     </select>
@@ -277,8 +278,8 @@ export default {
           product_name: this.form.prod_name,
           product_desc: this.form.prod_desc,
           price: this.form.prod_price,
-          product_brand: this.form.prod_brands,
-          product_type: this.form.prod_types,
+          brand: this.form.prod_brands,
+          category: this.form.prod_types,
           release_date: this.form.prod_date,
           colors: this.form.selected_colors,
           product_img: this.form.prod_img, //ค่อย comment อันนี้ตอนเชื่อม BE

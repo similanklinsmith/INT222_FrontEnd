@@ -126,6 +126,7 @@
             v-for="user in queryUsers"
             :key="user.id"
             :user="user"
+            @deleteAccountById="handleDelete"
           ></List>
         </transition-group>
         <transition-group name="slide-fade">
@@ -142,7 +143,7 @@
                 <td>
                   <div
                     class="delete"
-                    @click="deleteColorById(color.id)"
+                    @click="deleteAccount(user.id)"
                     :style="{ display: 'inline' }"
                   >
                     Delete
@@ -231,6 +232,17 @@ export default {
       } else {
         this.selectedRole = "";
       }
+    },
+    deleteAccount(id) {
+      if (confirm("Do you really want to delete? 😲")) {
+        this.$store.dispatch("deleteAccount", id);
+        // this.$router.push("/stores");
+      }
+    },
+    handleDelete(id) {
+      this.getAllUsers = this.getAllUsers.filter((user) => {
+        return user.id != id;
+      });
     },
   },
   computed: mapGetters(["getAccounts"]),

@@ -1,15 +1,31 @@
 <template>
   <div class="store">
     <div class="stores-section">
+      <div class="image-slide-show-mb">
+        <splide :options="options">
+          <splide-slide v-for="image in slotImages" :key="image"
+            ><div class="img-container">
+              <img :src="image.imgSrc" alt="" />
+              <div class="store-header-text">
+                <div class="sub-heading">Choose your match</div>
+                <div class="secondary-header">Nerdy Store</div>
+              </div>
+            </div></splide-slide
+          >
+        </splide>
+      </div>
       <div class="container">
         <div class="store-header">
-          <div class="image-slide-show">
-            <img :src="slotImages[cursor - 1].imgSrc" alt="image slide ads" />
+          <div class="image-slide-show-com">
+            <div class="image-slide-show">
+              <img :src="slotImages[cursor - 1].imgSrc" alt="image slide ads" />
+            </div>
+            <div class="store-header-text">
+              <div class="sub-heading">Choose your match</div>
+              <div class="secondary-header">Nerdy Store</div>
+            </div>
           </div>
-          <div class="store-header-text">
-            <div class="sub-heading">Choose your match</div>
-            <div class="secondary-header">Nerdy Store</div>
-          </div>
+
           <div class="slide-nav grid grid--3-cols">
             <div
               class="nav"
@@ -68,7 +84,7 @@
         <div class="secondary-header">Clothes</div>
         <div class="filters-clothes">
           <div class="filter">
-            <div class="text-filter">
+            <div class="text-filter filter-brand">
               <label for="brands">BRAND</label>
               <select name="brands" id="brands" v-model="selectedBrand">
                 <option value="">none</option>
@@ -119,6 +135,25 @@
               v-model="searchInput"
             />
           </div>
+          <div class="brand-filter-mb">
+            <div
+              class="filter-mb"
+              v-for="brand in allBrands"
+              :key="brand"
+              :style="[
+                selectedBrand == brand.brand_name
+                  ? { backgroundColor: '#eb435f', color: 'white' }
+                  : { backgroundColor: '#ddd', color: '#white' },
+              ]"
+              @click="
+                selectedBrand == brand.brand_name
+                  ? (selectedBrand = '')
+                  : (selectedBrand = brand.brand_name)
+              "
+            >
+              {{ brand.brand_name }}
+            </div>
+          </div>
         </div>
         <div class="card-grid grid grid--4-cols">
           <router-link to="/add-product" class="add-product">
@@ -160,6 +195,7 @@
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
 import Card from "@/components/Card.vue";
+import { Splide, SplideSlide } from "@splidejs/vue-splide";
 import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Stores",
@@ -167,9 +203,15 @@ export default {
     Socials,
     Footer,
     Card,
+    Splide,
+    SplideSlide,
   },
   data() {
     return {
+      options: {
+        rewind: true,
+        autoplay: "playing",
+      },
       productUrl: "http://localhost:3000/products",
       urlColors: "http://localhost:3000/colors",
       products: [],
@@ -206,12 +248,6 @@ export default {
       "getBrandsToStore",
       "getCategoriesToStore",
     ]),
-
-    // handleDelete(id) {
-    //   this.products = this.products.filter((product) => {
-    //     return product.id != id;
-    //   });
-    // },
     handleDelete(id) {
       this.getAllproducts = this.getAllproducts.filter((product) => {
         return product.id != id;
@@ -248,16 +284,7 @@ export default {
       }
       this.slotImages[this.cursor - 1].show = true;
     }, 5000);
-    // this.$store.dispatch("getProductsToStore");
     window.scrollTo(0, 0);
-    // fetch(this.productUrl)
-    //   .then((res) => res.json())
-    //   .then((data) => (this.products = data))
-    //   .catch((err) => console.log(err.message));
-    // fetch(this.urlColors)
-    //   .then((res) => res.json())
-    //   .then((data) => (this.colors = data))
-    //   .catch((err) => console.log(err.message));
   },
   computed: mapGetters([
     "getProducts",
@@ -281,24 +308,25 @@ export default {
     queryProducts() {
       return this.getAllproducts.filter((product) => {
         return (
-          product.product_brand
+          product != this.handleDelete &&
+          product.brand.brand_name
             .toLowerCase()
             .includes(this.selectedBrand.toLowerCase()) &&
           product.product_name.toLowerCase().includes(this.searchInput) &&
-          product.product_type.includes(this.selectedCategory)
+          product.category.category_name.includes(this.selectedCategory)
         );
       });
     },
-    queryColors() {
-      for (let index = 0; index < this.products.length; index++) {
-        for (let i = 0; i < this.products[index].colors.length; i++) {
-          if (this.products[index].colors[i].color_code == this.selectedColor) {
-            this.selectColorProduct.push(this.products[index]);
-          }
-        }
-      }
-      return this.selectColorProduct;
-    },
+    // queryColors() {
+    //   for (let index = 0; index < this.products.length; index++) {
+    //     for (let i = 0; i < this.products[index].colors.length; i++) {
+    //       if (this.products[index].colors[i].color_code == this.selectedColor) {
+    //         this.selectColorProduct.push(this.products[index]);
+    //       }
+    //     }
+    //   }
+    //   return this.selectColorProduct;
+    // },
   },
   created() {
     this.getColorToStore();
@@ -345,6 +373,19 @@ export default {
 
 .store-header img:hover {
   transform: scale(1.025);
+}
+
+.image-slide-show-mb {
+  display: none;
+}
+.img-container {
+  width: 100%;
+  height: 100%;
+}
+.img-container img {
+  width: 100%;
+  height: 36rem;
+  object-fit: cover;
 }
 
 .stores-section .sub-heading {
@@ -588,6 +629,27 @@ select {
 .search input::placeholder {
   color: rgb(85, 85, 85, 0.35);
 }
+.brand-filter-mb {
+  display: none;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  overflow: hidden;
+}
+
+.filter-mb {
+  width: auto;
+  height: 3.6rem;
+  background-color: #fff;
+  font-size: 1.4rem;
+  padding: 1rem 1.2rem;
+  color: white;
+  text-transform: capitalize;
+  transition: 0.2s all ease-in-out;
+  cursor: pointer;
+}
+.filter-mb:hover {
+  filter: saturate(30%);
+}
 
 .card-grid.grid {
   column-gap: 1.6rem;
@@ -713,6 +775,15 @@ select {
 
 /* below 577px */
 @media (max-width: 36em) {
+  .search input {
+    max-width: 30rem;
+  }
+  .image-slide-show-mb {
+    display: inline;
+  }
+  .image-slide-show-com {
+    display: none;
+  }
   .text-filter,
   .search {
     font-size: 1rem;
@@ -741,6 +812,12 @@ select {
 
 /* below 470px */
 @media (max-width: 29em) {
+  .filter-brand {
+    display: none;
+  }
+  .brand-filter-mb {
+    display: flex;
+  }
   .float-add-product {
     display: inline;
   }
@@ -775,9 +852,9 @@ select {
   .add-product {
     display: none;
   }
-  .search input{
+  /* .search input {
     width: auto;
-  }
+  } */
 }
 
 /* below 375px */

@@ -88,7 +88,7 @@
                       <option
                         v-for="brand in allBrands"
                         :key="brand.id"
-                        :value="brand.brand_name"
+                        :value="brand"
                         >{{ brand.brand_name }}</option
                       >
                     </select>
@@ -106,7 +106,7 @@
                       <option
                         v-for="category in allCategories"
                         :key="category.id"
-                        :value="category.category_name"
+                        :value="category"
                         >{{ category.category_name }}</option
                       >
                     </select>
@@ -236,8 +236,8 @@ export default {
           product_name: this.form.edit_name,
           product_desc: this.form.edit_desc,
           price: this.form.edit_price,
-          product_brand: this.form.edit_brands,
-          product_type: this.form.edit_types,
+          brand: this.form.edit_brands,
+          category: this.form.edit_types,
           release_date: this.form.edit_date,
           colors: this.form.edit_colors,
           product_img: this.form.edit_img, //ค่อย comment อันนี้ตอนเชื่อม BE
@@ -331,8 +331,8 @@ export default {
           (this.form.edit_name = data.product_name),
           (this.form.edit_desc = data.product_desc),
           (this.form.edit_price = data.price),
-          (this.form.edit_brands = data.product_brand),
-          (this.form.edit_types = data.product_type),
+          (this.form.edit_brands = data.brand),
+          (this.form.edit_types = data.category),
           (this.form.edit_date = data.release_date),
           (this.form.edit_colors = data.colors),
           (this.form.edit_img = data.product_img),

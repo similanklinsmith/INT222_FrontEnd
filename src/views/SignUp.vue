@@ -14,7 +14,7 @@
               </div>
               <div class="sign-btn" @click="isSignUp = true">Sign up</div>
             </div>
-            <img src="../../src/assets/images/sign-up.jpg" alt="" />
+            <img src="../../src/assets/images/sign-up-gif.gif" alt="" />
           </div>
           <div class="back-btn" @click="goBack">
             <i class="fas fa-chevron-left"></i>
@@ -245,7 +245,7 @@
               <div class="sign-btn" @click="isSignUp = false">Sign in</div>
             </div>
             <img
-              src="../../src/assets/images/sign-in.jpg"
+              src="../../src/assets/images/sign-in-gif.gif"
               alt="sign-in-image"
             />
           </div>

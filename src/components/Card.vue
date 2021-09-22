@@ -16,7 +16,7 @@
     </div>
     <div class="product-info">
       <div class="product-brand">
-        {{ product.product_brand }}
+        {{ product.brand.brand_name }}
       </div>
       <div class="product-name">
         {{ product.product_name }}
@@ -207,6 +207,7 @@ export default {
   position: absolute;
   z-index: 1;
   font-size: 1rem;
+  margin-left: 0.4rem;
 }
 
 /* below 480px */

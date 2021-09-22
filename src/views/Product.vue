@@ -25,7 +25,7 @@
           <div class="cloth-details">
             <div class="prod_name">
               {{ product.product_name }}
-              <span class="brand">{{ product.product_brand }}</span>
+              <span class="brand">{{ brand }}</span>
             </div>
             <div class="prod_date">({{ product.release_date }})</div>
             <div class="prod_price">฿{{ product.price }}</div>
@@ -75,6 +75,7 @@ export default {
     return {
       urlProductShow: "http://localhost:3000/products/" + this.id,
       product: {},
+      brand: "",
     };
   },
   methods: {
@@ -96,7 +97,10 @@ export default {
     window.scrollTo(0, 0);
     fetch(this.urlProductShow)
       .then((res) => res.json())
-      .then((data) => (this.product = data))
+      .then((data) => {
+        this.product = data;
+        this.brand = data.brand.brand_name;
+      })
       .catch((err) => console.log(err.message));
   },
 };

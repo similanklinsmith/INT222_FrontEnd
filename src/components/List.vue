@@ -12,7 +12,7 @@
     ></div>
     <div class="profile-info">
       <div class="name">
-        {{ user.first_name }} {{user.last_name}}
+        {{ user.first_name }} {{ user.last_name }}
         <div
           class="role"
           :style="[
@@ -31,13 +31,13 @@
         <span>{{ user.email }}</span>
       </div>
       <div class="username">
-       <i class="icon fas fa-user"></i> <span>{{ user.username }}</span>
+        <i class="icon fas fa-user"></i> <span>{{ user.username }}</span>
       </div>
       <div class="password">
         <i class="icon fas fa-key"></i> <span>{{ user.password }}</span>
       </div>
       <div class="action-btn">
-        <div class="btn">
+        <div class="btn" @click="deleteAccount(user.id)">
           <span class="delete-text">delete</span
           ><i class="delete fas fa-trash-alt"></i>
         </div>
@@ -52,6 +52,14 @@
 export default {
   name: "List",
   props: ["user"],
+  methods: {
+    deleteAccount(id) {
+      if (confirm("Do you really want to delete? 😲")) {
+        this.$store.dispatch("deleteAccount", id);
+        this.$emit("deleteAccountById", id);
+      }
+    },
+  },
 };
 </script>
 <style scoped>
