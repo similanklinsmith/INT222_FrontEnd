@@ -21,16 +21,16 @@
                 />
                 <i class="fas fa-plus-square"></i>
               </label>
-              <div
+              <!-- <div
                 class="img-name"
                 v-if="!prodImageIsValid"
                 :style="{ color: '#eb435f' }"
               >
                 *required image
-              </div>
+              </div> -->
               <img :src="preview_img" alt="" v-else />
-              <div class="img-name" v-if="name_img != ''">
-                {{ name_img }}
+              <div class="img-name" v-if="form.name_img != ''">
+                {{ form.name_img }}
                 <span @click="changeImg"><i class="fas fa-times"></i></span>
               </div>
             </div>
@@ -51,7 +51,7 @@
                 <div class="prod-desc">
                   <label for="desc"
                     >Description
-                    <span v-if="!prodNameIsValid">*required</span></label
+                    <span v-if="!prodDescIsValid">*required</span></label
                   >
                   <textarea
                     name="desc"
@@ -65,7 +65,7 @@
                 <div class="prod-price">
                   <label for="price"
                     >Price
-                    <span v-if="!prodNameIsValid"
+                    <span v-if="!prodPriceIsValid"
                       >*required/positive number</span
                     ></label
                   >
@@ -80,7 +80,6 @@
                 <div class="prod-brand-type">
                   <div class="prod-brand">
                     <label for="brands">Brand</label>
-                    {{form.prod_brands}}
                     <select
                       name="brands"
                       id="brands"
@@ -143,7 +142,7 @@
                       class="checkbox"
                       type="checkbox"
                       v-for="color in allColors"
-                      :key="color.color_code"
+                      :key="color.color_id"
                       v-model="form.selected_colors"
                       :value="color"
                       :style="{ backgroundColor: color.color_code }"
@@ -185,6 +184,7 @@ export default {
   },
   data() {
     return {
+      colors: [],
       form: {
         //add product
         prod_name: "",
@@ -195,10 +195,10 @@ export default {
         prod_date: "",
         selected_colors: [],
         prod_img: "",
+        name_img: "",
       },
       //preview image
       preview_img: "",
-      name_img: "",
     };
   },
   computed: mapGetters(["getColors", "getBrands", "getCategories"]),
@@ -225,7 +225,9 @@ export default {
     },
     prodPriceIsValid() {
       return (
-        typeof this.form.prod_price == "number" && this.form.prod_price > 0
+        typeof this.form.prod_price == "number" &&
+        this.form.prod_price > 0 &&
+        this.form.prod_price < 10000
       );
     },
     prodBrandIsValid() {
@@ -264,31 +266,38 @@ export default {
     ]),
     uploadImage(e) {
       const image = e.target.files[0];
-      this.name_img = image.name;
+      this.form.prod_img = e.target.files[0];
+      this.form.name_img = image.name;
       const reader = new FileReader();
       reader.readAsDataURL(image);
       reader.onload = (e) => {
         this.preview_img = e.target.result;
-        this.form.prod_img = e.target.result;
+        // this.form.prod_img = e.target.result;
       };
     },
     addProduct() {
+      let colors = [];
+      for (var i = 0; i < this.form.selected_colors.length; i++) {
+        colors.push({ id: this.form.selected_colors[i].color_id });
+      }
       if (this.formIsValid) {
         const newProduct = {
           product_name: this.form.prod_name,
           product_desc: this.form.prod_desc,
           price: this.form.prod_price,
-          brand: this.form.prod_brands,
-          category: this.form.prod_types,
+          brand_id: this.form.prod_brands.brand_id,
+          category_id: this.form.prod_types.category_id,
           release_date: this.form.prod_date,
-          colors: this.form.selected_colors,
-          product_img: this.form.prod_img, //ค่อย comment อันนี้ตอนเชื่อม BE
-          // image: this.form.name_img,
+          color_id: colors,
+          image: this.form.name_img,
         };
+        // console.log(newProduct)
+        // console.log(this.form.prod_img)
         this.$store
-          .dispatch("addProduct", newProduct)
-          // this.$store
-          //   .dispatch("addProduct", {newProduct, this.preview_img})
+          .dispatch("addProduct", {
+            newProduct: newProduct,
+            image: this.form.prod_img,
+          })
           .catch((err) => console.log(err));
         (this.form.prod_name = ""),
           (this.form.prod_desc = ""),
@@ -299,40 +308,14 @@ export default {
           (this.form.selected_colors = []),
           (this.form.prod_img = ""),
           (this.preview_img = ""),
-          (this.name_img = "");
+          (this.form.name_img = "");
       } else {
       }
-      // const newProduct = {
-      //   product_name: this.prod_name,
-      //   product_desc: this.prod_desc,
-      //   price: this.prod_price,
-      //   product_brand: this.prod_brands,
-      //   product_type: this.prod_types,
-      //   release_date: this.prod_date,
-      //   colors: this.selected_colors,
-      //   product_img: this.prod_img, //ค่อย comment อันนี้ตอนเชื่อม BE
-      //   // image: this.name_img,
-      // };
-      // this.$store
-      //   .dispatch("addProduct", newProduct)
-      // // this.$store
-      // //   .dispatch("addProduct", newProduct, this.preview_img)
-      //   .catch((err) => console.log(err));
-      // (this.prod_name = ""),
-      //   (this.prod_desc = ""),
-      //   (this.prod_price = ""),
-      //   (this.prod_brands = ""),
-      //   (this.prod_types = ""),
-      //   (this.prod_date = ""),
-      //   (this.selected_colors = []),
-      //   (this.prod_img = ""),
-      //   (this.preview_img = ""),
-      //   (this.name_img = "");
     },
     changeImg() {
       this.form.prod_img = "";
       this.preview_img = "";
-      this.name_img = "";
+      this.form.name_img = "";
     },
   },
   created() {
@@ -461,7 +444,7 @@ label span {
 input {
   width: auto;
   border: none;
-  background: rgba(211, 211, 211, 0.25);
+  background: rgba(211, 211, 211, 0.55);
   height: 2.8rem;
   padding: 0.4rem 0.6rem;
   color: #333;
@@ -512,7 +495,7 @@ textarea {
   height: auto;
   resize: none;
   border: none;
-  background: rgba(211, 211, 211, 0.25);
+  background: rgba(211, 211, 211, 0.55);
 }
 
 textarea:focus {

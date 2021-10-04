@@ -156,7 +156,7 @@
                     <td>
                       <div
                         class="delete"
-                        @click="deleteColorById(color.id)"
+                        @click="deleteColorById(color.color_id)"
                         :style="{ display: 'inline' }"
                       >
                         Delete
@@ -164,7 +164,7 @@
                       |
                       <div
                         class="edit"
-                        @click="toggleEditColor(color.id)"
+                        @click="toggleEditColor(color.color_id)"
                         :style="{ display: 'inline' }"
                       >
                         Edit
@@ -246,14 +246,17 @@
               <!-- /editBrand -->
 
               <Table :ths="thsBrand">
-                <tbody v-for="(brand, index) in getAllBrands" :key="brand.id">
+                <tbody
+                  v-for="(brand, index) in getAllBrands"
+                  :key="brand.brand_id"
+                >
                   <tr>
                     <td>{{ index + 1 }}</td>
                     <td>{{ brand.brand_name }}</td>
                     <td>
                       <div
                         class="delete"
-                        @click="deleteBrandById(brand.id)"
+                        @click="deleteBrandById(brand.brand_id)"
                         :style="{ display: 'inline' }"
                       >
                         Delete
@@ -261,7 +264,7 @@
                       |
                       <div
                         class="edit"
-                        @click="toggleEditBrand(brand.id)"
+                        @click="toggleEditBrand(brand.brand_id)"
                         :style="{ display: 'inline' }"
                       >
                         Edit
@@ -294,6 +297,7 @@ export default {
   },
   data() {
     return {
+      colors: [],
       thsColor: ["No", "Color Name", "Color Code", "Example"],
       thsBrand: ["No", "Brand Name"],
       isShow: true,
@@ -319,8 +323,16 @@ export default {
       // brandsUrl: "http://localhost:3000/brands",
     };
   },
-  mounted() {
+  async mounted() {
     window.scrollTo(0, 0);
+    // fetch("http://localhost:9000/api/colors")
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     this.colors = data.data;
+    //   })
+    //   .catch((err) => console.log(err.message));
+    await this.getColorToStore();
+    await this.getBrandsToStore();
   },
   computed: mapGetters(["getColors", "getBrands"]),
   computed: {
@@ -338,7 +350,7 @@ export default {
     addColorCodeIsValid() {
       return (
         !!this.form.color_code &&
-        /^#([A-Fa-f0-9]{3}$)|([A-Fa-f0-9]{6}$)/.test(this.form.color_code)
+        /^#([A-Fa-f0-9]{3}$)|([A-Fa-f0-9]{6}$)/.test(this.form.color_code) && this.form.color_code.includes("#")
       );
     },
     addColorFormIsValid() {
@@ -374,8 +386,8 @@ export default {
           color_code: this.form.color_code,
           color_name: this.form.color_name,
         };
-        this.$store
-          .dispatch("addColor", newColor)
+        // this.colors.push(newColor);
+        this.$store.dispatch("addColor", newColor)
           .catch((err) => console.log(err));
         this.form.color_code = "";
         this.form.color_name = "";
@@ -384,8 +396,11 @@ export default {
     },
     deleteColorById(id) {
       if (confirm("Do you really want to delete? 👹")) {
-        const index = this.getAllColors.findIndex((color) => color.id == id);
+        const index = this.getAllColors.findIndex(
+          (color) => color.color_id == id
+        );
         if (index !== -1) {
+          // this.colors.splice(index, 1);
           this.getAllColors.splice(index, 1);
           this.$store.dispatch("deleteColor", id);
         }
@@ -394,14 +409,15 @@ export default {
     editColorById() {
       if (this.editColorFormIsValid) {
         const index = this.getAllColors.findIndex(
-          (color) => color.id == this.edit_color_id
+          (color) => color.color_id == this.edit_color_id
         );
         const editColor = {
-          id: this.edit_color_id,
+          color_id: this.edit_color_id,
           color_name: this.form.edit_color_name,
           color_code: this.form.edit_color_code,
         };
         if (index !== -1) {
+          // this.colors.splice(index, 1, editColor);
           this.getAllColors.splice(index, 1, editColor);
           this.$store.dispatch("editColor", editColor);
           this.edit_color_id = "";
@@ -414,7 +430,9 @@ export default {
     },
     toggleEditColor(id) {
       window.scrollTo(0, 0);
-      const index = this.getAllColors.findIndex((color) => color.id == id);
+      const index = this.getAllColors.findIndex(
+        (color) => color.color_id == id
+      );
       this.edit_color_id = id;
       this.form.edit_color_name = this.getAllColors[index].color_name;
       this.form.edit_color_code = this.getAllColors[index].color_code;
@@ -436,7 +454,9 @@ export default {
     },
     deleteBrandById(id) {
       if (confirm("Do you really want to delete? 👹")) {
-        const index = this.getAllBrands.findIndex((brand) => brand.id == id);
+        const index = this.getAllBrands.findIndex(
+          (brand) => brand.brand_id == id
+        );
         if (index !== -1) {
           this.getAllBrands.splice(index, 1);
           this.$store.dispatch("deleteBrand", id);
@@ -446,10 +466,10 @@ export default {
     editBrandById() {
       if (this.editBrandNameIsValid) {
         const index = this.getAllBrands.findIndex(
-          (brand) => brand.id == this.edit_brand_id
+          (brand) => brand.brand_id == this.edit_brand_id
         );
         const editBrand = {
-          id: this.edit_brand_id,
+          brand_id: this.edit_brand_id,
           brand_name: this.form.edit_brand_name,
         };
         if (index !== -1) {
@@ -457,23 +477,25 @@ export default {
           this.$store.dispatch("editBrand", editBrand);
           this.edit_brand_id = "";
           this.form.edit_brand_name = "";
-          this.isEditBrand = false;
+          this.isEditColor = false;
         }
       } else {
       }
     },
     toggleEditBrand(id) {
       window.scrollTo(0, 0);
-      const index = this.getAllBrands.findIndex((brand) => brand.id == id);
+      const index = this.getAllBrands.findIndex(
+        (brand) => brand.brand_id == id
+      );
       this.edit_brand_id = id;
       this.form.edit_brand_name = this.getAllBrands[index].brand_name;
       this.isEditBrand = !this.isEditBrand;
     },
   },
-  created() {
-    this.getColorToStore();
-    this.getBrandsToStore();
-  },
+  // async created() {
+  //   await this.getColorToStore();
+  //   await this.getBrandsToStore();
+  // },
 };
 </script>
 <style scoped>
@@ -605,7 +627,7 @@ tbody td {
   line-height: 1.8;
 }
 tbody:hover {
-  background-color: rgb(245, 244, 244);
+  background-color: rgb(230, 230, 230);
 }
 tbody td:nth-child(4) {
   height: 8rem;

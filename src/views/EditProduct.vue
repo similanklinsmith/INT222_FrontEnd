@@ -10,7 +10,7 @@
           <form @submit.prevent="editProductConfirm" action="#" class="form">
             <!-- component -->
             <div class="display-img">
-              <label class="add-img" for="upload" v-if="preview_img == ''">
+              <label class="add-img" for="upload" v-if="form.edit_img == ''">
                 <input
                   @change="uploadImage"
                   type="file"
@@ -27,9 +27,14 @@
               >
                 *required image
               </div>
-              <img :src="preview_img" alt="" v-else />
-              <div class="img-name" v-if="name_img != ''">
-                {{ name_img }}
+              <img
+                :src="urlImages"
+                alt=""
+                v-if="form.edit_img !== '' && preview_img == ''"
+              />
+              <img :src="preview_img" alt="" v-if="preview_img" />
+              <div class="img-name" v-if="form.edit_img != ''">
+                {{ form.edit_img }}
                 <span @click="changeImg"><i class="fas fa-times"></i></span>
               </div>
             </div>
@@ -143,7 +148,7 @@
                       v-for="color in colors"
                       :key="color.color_code"
                       v-model="form.edit_colors"
-                      :value="color"
+                      :value="color.color_id"
                       :style="{ backgroundColor: color.color_code }"
                     />
                   </div>
@@ -184,9 +189,10 @@ export default {
   props: ["id"],
   data() {
     return {
+      urlImages: this.$store.state.defaultUrl + "/image/" + this.id,
       editProduct: {},
-      urlProductShow: "http://localhost:3000/products/" + this.id,
-      urlColors: "http://localhost:3000/colors",
+      urlProductShow: this.$store.state.defaultUrl + "/products/" + this.id,
+      urlColors: this.$store.state.defaultUrl + "/colors",
       colors: [],
       editId: this.id,
       // edit product
@@ -198,6 +204,7 @@ export default {
         edit_types: "",
         edit_date: "",
         edit_img: "",
+        prod_img: "",
         // edit_img_name:"",
         edit_colors: [],
       },
@@ -221,34 +228,39 @@ export default {
     },
     uploadImage(e) {
       const image = e.target.files[0];
-      this.name_img = e.target.files[0].name;
+      this.form.prod_img = e.target.files[0];
+      this.form.edit_img = image.name;
       const reader = new FileReader();
       reader.readAsDataURL(image);
       reader.onload = (e) => {
         this.preview_img = e.target.result;
-        this.form.edit_img = e.target.result;
       };
     },
     editProductConfirm() {
+      let colors = [];
+      for (var i = 0; i < this.form.edit_colors.length; i++) {
+        colors.push({ id: this.form.edit_colors[i] });
+      }
+      // console.log(colors);
       if (this.formIsValid) {
         const editProduct = {
-          id: this.editId,
           product_name: this.form.edit_name,
           product_desc: this.form.edit_desc,
           price: this.form.edit_price,
-          brand: this.form.edit_brands,
-          category: this.form.edit_types,
+          brand_id: this.form.edit_brands.brand_id,
+          category_id: this.form.edit_types.category_id,
           release_date: this.form.edit_date,
-          colors: this.form.edit_colors,
-          product_img: this.form.edit_img, //ค่อย comment อันนี้ตอนเชื่อม BE
-          // image: this.edit_image,
+          color_id: colors,
+          image: this.form.edit_img,
         };
+        // console.log(editProduct)
         this.$store
-          .dispatch("editProduct", editProduct)
-          // this.$store
-          //   .dispatch("editProduct", {editProduct, this.preview_img})
+          .dispatch("editProduct", {
+            editProduct: editProduct,
+            image: this.form.prod_img,
+            product_id: this.editId,
+          })
           .catch((err) => console.log(err));
-
         (this.form.edit_name = ""),
           (this.form.edit_desc = ""),
           (this.form.edit_price = ""),
@@ -260,7 +272,7 @@ export default {
           (this.preview_img = ""),
           // (this.form.edit_img_name = ""),
           (this.name_img = "");
-        this.$router.push("/stores");
+        this.$router.push(`/stores/product/${this.id}`);
       } else {
       }
     },
@@ -289,7 +301,9 @@ export default {
     },
     prodPriceIsValid() {
       return (
-        typeof this.form.edit_price == "number" && this.form.edit_price > 0
+        typeof this.form.edit_price == "number" &&
+        this.form.edit_price > 0 &&
+        this.form.edit_price < 10000
       );
     },
     prodBrandIsValid() {
@@ -319,40 +333,48 @@ export default {
   },
   mounted() {
     window.scrollTo(0, 0);
+    // fetch(this.urlImages)
+    //   .then((res) => res)
+    //   .then((data) => (console.log(data)))
+    //   .catch((err) => console.log(err.message));
     fetch(this.urlColors)
       .then((res) => res.json())
-      .then((data) => (this.colors = data))
+      .then((data) => (this.colors = data.data))
       .catch((err) => console.log(err.message));
     // fetch product
     fetch(this.urlProductShow)
       .then((res) => res.json())
       .then((data) => {
-        (this.editProduct = data),
-          (this.form.edit_name = data.product_name),
-          (this.form.edit_desc = data.product_desc),
-          (this.form.edit_price = data.price),
-          (this.form.edit_brands = data.brand),
-          (this.form.edit_types = data.category),
-          (this.form.edit_date = data.release_date),
-          (this.form.edit_colors = data.colors),
-          (this.form.edit_img = data.product_img),
-          (this.preview_img = data.product_img),
-          // (this.edit_img_name = data.image),
-          (this.name_img = data.product_img.name);
+        // (this.editProduct = data.data),
+        for (let index = 0; index < data.data.productdetail.length; index++) {
+          // console.log(data.data.productdetail[index].color_id);
+          this.former_colors.push(data.data.productdetail[index].color_id);
+        }
+        (this.form.edit_name = data.data.product_name),
+          (this.form.edit_desc = data.data.product_desc),
+          (this.form.edit_price = data.data.price),
+          (this.form.edit_brands = data.data.brand),
+          (this.form.edit_types = data.data.category),
+          (this.form.edit_date = data.data.release_date),
+          (this.form.edit_colors = this.former_colors),
+          (this.form.edit_img = data.data.image);
       })
       .then(() => {
-        for (let index = 0; index < this.form.edit_colors.length; index++) {
-          this.former_colors.push(this.form.edit_colors[index]);
-        }
+        // for (let index = 0; index < this.form.edit_colors.length; index++) {
+        //   this.former_colors.push(this.form.edit_colors[index].color);
+        // }
+        console.log(this.former_colors);
         const checkboxInput = document.getElementsByClassName("checkbox");
         for (let index = 0; index < checkboxInput.length; index++) {
           if (checkboxInput[index].value == this.former_colors[index]) {
+            // console.log(this.former_colors[index] + "sdfasdf");
             checkboxInput[index].checked = true;
+            // console.log(index);
             continue;
           }
         }
-      })
-      .catch((err) => console.log(err.message));
+      });
+    // .catch((err) => console.log(err.message));
   },
   created() {
     this.getColorToStore();

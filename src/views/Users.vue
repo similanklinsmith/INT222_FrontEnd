@@ -139,7 +139,7 @@
                 <td>{{ user.username }}</td>
                 <td>{{ user.email }}</td>
                 <td>{{ user.password }}</td>
-                <td>{{ user.role }}</td>
+                <td>{{ user.role.role_name }}</td>
                 <td>
                   <div
                     class="delete"
@@ -184,6 +184,37 @@ export default {
   },
   data() {
     return {
+      spareUsers: [
+        {
+          first_name: "Similan",
+          last_name: "Klinsmith",
+          username: "deep",
+          email: "deep@gmail.com",
+          password: "62130500096",
+          role: {
+            role_name: "admin",
+          },
+          id: 1,
+        },
+        {
+          first_name: "Praepanwa",
+          last_name: "Tedprasit",
+          username: "phaeng",
+          email: "phaeng@gmail.com",
+          password: "62130500069",
+          role: { role_name: "deputy admin" },
+          id: 2,
+        },
+        {
+          first_name: "Noparat",
+          last_name: "Prasongdee",
+          username: "saimai",
+          email: "saimai@gmail.com",
+          password: "62130500126",
+          role: { role_name: "member" },
+          id: 3,
+        },
+      ],
       users: [],
       searchInput: "",
       selectedRole: "",
@@ -207,7 +238,7 @@ export default {
       this.deputyAdminFilter = false;
       this.memberFilter = false;
       this.adminFilter = !this.adminFilter;
-      if (this.adminFilter || this.selectedRole == "Admin") {
+      if (this.adminFilter ) {
         this.selectedRole = "Admin";
       } else {
         this.selectedRole = "";
@@ -250,10 +281,22 @@ export default {
     getAllUsers() {
       return this.$store.getters.getAccounts;
     },
+    // queryUsers() {
+    //   return this.getAllUsers.filter((user) => {
+    //     return (
+    //       user.role.role_name
+    //         .toLowerCase()
+    //         .includes(this.selectedRole.toLowerCase()) &&
+    //       user.username.toLowerCase().includes(this.searchInput)
+    //     );
+    //   });
+    // },
     queryUsers() {
-      return this.getAllUsers.filter((user) => {
+      return this.spareUsers.filter((user) => {
         return (
-          user.role.toLowerCase().includes(this.selectedRole.toLowerCase()) &&
+          user.role.role_name
+            .toLowerCase()
+            .includes(this.selectedRole.toLowerCase()) &&
           user.username.toLowerCase().includes(this.searchInput)
         );
       });
@@ -336,7 +379,7 @@ export default {
   cursor: pointer;
 }
 .filter-mb:hover {
-  filter: saturate(30%);
+  filter: saturate(100%);
 }
 .List {
   display: none;
@@ -384,7 +427,7 @@ label {
 input {
   width: 100%;
   border: none;
-  background: rgba(211, 211, 211, 0.25);
+  background: rgba(211, 211, 211, 0.45);
   height: 2.8rem;
   padding: 0 0.8rem;
   color: #333;

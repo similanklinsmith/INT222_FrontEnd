@@ -20,23 +20,23 @@
             >
               <i class="heart fas fa-heart"></i>
             </div>
-            <img :src="product.product_img" alt="" />
+            <img :src="urlImages" alt="" />
           </div>
           <div class="cloth-details">
             <div class="prod_name">
               {{ product.product_name }}
               <span class="brand">{{ brand }}</span>
             </div>
-            <div class="prod_date">({{ product.release_date }})</div>
+            <div class="prod_date">({{ date.toString().split('T')[0] }})</div>
             <div class="prod_price">฿{{ product.price }}</div>
             <div class="prod_colors">
               <div
                 class="color"
-                v-for="color in product.colors"
-                :key="color"
-                :style="{ backgroundColor: color.color_code }"
+                v-for="color in product.productdetail"
+                :key="color.color_id"
+                :style="{ backgroundColor: color.color.color_code }"
               >
-                <span class="tooltiptext">{{ color.color_name }}</span>
+                <span class="tooltiptext">{{ color.color.color_name }}</span>
               </div>
             </div>
             <div class="prod_desc">
@@ -73,9 +73,11 @@ export default {
   },
   data() {
     return {
-      urlProductShow: "http://localhost:3000/products/" + this.id,
+      urlImages: this.$store.state.defaultUrl+ "/image/" +this.id,
+      urlProductShow: this.$store.state.defaultUrl+ "/products/" + this.id,
       product: {},
       brand: "",
+      date:""
     };
   },
   methods: {
@@ -84,7 +86,7 @@ export default {
     },
     deleteProduct() {
       if (confirm("Do you really want to delete? 😲")) {
-        this.$store.dispatch("deleteProduct", this.product.id);
+        this.$store.dispatch("deleteProduct", this.product.product_id);
         this.$router.push("/stores");
       }
     },
@@ -98,8 +100,9 @@ export default {
     fetch(this.urlProductShow)
       .then((res) => res.json())
       .then((data) => {
-        this.product = data;
-        this.brand = data.brand.brand_name;
+        this.product = data.data;
+        this.brand = this.product.brand.brand_name;
+        this.date = data.data.release_date;
       })
       .catch((err) => console.log(err.message));
   },
@@ -277,7 +280,7 @@ export default {
 .like-icon {
   z-index: 99;
 }
-/* below 560px */
+/* below 870px */
 @media (max-width: 54em) {
   .section {
     margin-top: 2.4rem;
@@ -289,13 +292,14 @@ export default {
     grid-template-columns: 1fr;
   }
   .img-product {
-    width: 100%;
-    height: auto;
+    width: 80%;
+    height: 56rem;
     position: relative;
+    margin: 0 10%;
   }
   .img-product img {
     width: 100%;
-    height: 36rem;
+    height: 100%;
     margin: 0;
   }
   .prod_name {
@@ -323,6 +327,12 @@ export default {
   }
   .img-product img {
     width: 100%;
+    margin: 0;
+  }
+  .img-product {
+    width: 100%;
+    height: auto;
+    position: relative;
     margin: 0;
   }
   .cloth-details {

@@ -5,8 +5,7 @@
         <i class="icon fas fa-heart"></i>
       </div>
 
-      <img :src="product.product_img" alt="" @click="showDetails(product)" />
-      <!-- ../../src/assets/images/brand-logos/uniqlo-logo.jpg -->
+      <img :src="urlImages" alt="" @click="showDetails(product)" />
     </div>
     <div class="product-purchase">
       <div class="add-to-cart">
@@ -25,11 +24,11 @@
       <div class="product-colors">
         <div
           class="color"
-          v-for="color in product.colors"
-          :key="color.color_code"
-          :style="{ backgroundColor: color.color_code }"
+          v-for="color in product.productdetail"
+          :key="color.color.color_code"
+          :style="{ backgroundColor: color.color.color_code }"
         >
-          <span class="tooltiptext">{{ color.color_name }}</span>
+          <span class="tooltiptext">{{ color.color.color_name }}</span>
         </div>
       </div>
     </div>
@@ -43,8 +42,7 @@ export default {
     return {
       heart: false,
       allColors: [],
-      urlProductCard: "http://localhost:3000/products/" + this.product.id,
-      // productCard: {},
+      urlImages: this.$store.state.defaultUrl+"/image/"+this.product.product_id,
     };
   },
   methods: {
@@ -52,7 +50,7 @@ export default {
       this.heart = !this.heart
       // console.log(this.heart)
       const wishlist = {
-        product_id : this.product.id
+        product_id : this.product.product_id
       };
       this.$emit("toggleWishList", wishlist);
     },
@@ -60,16 +58,10 @@ export default {
       this.$router.push({
         name: "Product",
         params: {
-          id: product.id,
+          id: product.product_id,
         },
       });
     },
-  },
-  mounted() {
-    // fetch(this.urlProductCard)
-    //   .then((res) => res.json())
-    //   .then((data) => (this.productCard = data))
-    //   .catch((err) => console.log(err.message));
   },
   computed: {
     getAllColors() {
@@ -208,6 +200,14 @@ export default {
   z-index: 1;
   font-size: 1rem;
   margin-left: 0.4rem;
+}
+
+/* below 700px */
+@media (max-width: 44em) {
+  .product-name {
+  font-size: 1.4rem;
+line-height: 1.2;
+}
 }
 
 /* below 480px */

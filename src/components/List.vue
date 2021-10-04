@@ -3,9 +3,9 @@
     <div
       class="tab-color"
       :style="[
-        user.role == 'admin'
+        user.role.role_name == 'admin'
           ? { backgroundColor: '#ffd700' }
-          : user.role == 'deputy admin'
+          : user.role.role_name == 'deputy admin'
           ? { backgroundColor: '#FF6347' }
           : { backgroundColor: '#9400D3' },
       ]"
@@ -16,14 +16,14 @@
         <div
           class="role"
           :style="[
-            user.role == 'admin'
+            user.role.role_name == 'admin'
               ? { backgroundColor: '#ffd700' }
-              : user.role == 'deputy admin'
+              : user.role.role_name == 'deputy admin'
               ? { backgroundColor: '#FF6347' }
               : { backgroundColor: '#9400D3' },
           ]"
         >
-          {{ user.role }}
+          {{ user.role.role_name }}
         </div>
       </div>
       <div class="email">

@@ -346,7 +346,11 @@ export default {
           username: this.form.sign_up_username,
           email: this.form.sign_up_email,
           password: this.form.sign_up_password,
-          role: "member",
+          role: {
+            id: 1,
+            role_name: "admin", 
+            role_desc: "Able to [ADD/DELETE/EDIT] everything"
+          },
         };
         this.$store.dispatch("createAccount", newAccount);
         (this.form.sign_up_name = ""),
@@ -359,12 +363,13 @@ export default {
       } else {
       }
     },
-    // signIn() {
-    //   this.$store.dispatch("retrieveToken", {
-    //     email: this.email,
-    //     password: this.password,
-    //   });
-    // },
+    signIn() {
+      this.$store.dispatch('login')
+      // this.$store.dispatch("retrieveToken", {
+      //   email: this.email,
+      //   password: this.password,
+      // });
+    },
   },
 };
 </script>
@@ -621,14 +626,14 @@ export default {
 .input-name input {
   width: 80%;
   height: 3.6rem;
-  background: rgba(211, 211, 211, 0.25);
+  background: rgba(211, 211, 211, 0.45);
   border: none;
   padding: 0 0.8rem;
 }
 .input-surname input {
   width: 100%;
   height: 3.6rem;
-  background: rgba(211, 211, 211, 0.25);
+  background: rgba(211, 211, 211, 0.45);
   border: none;
   padding: 0 0.8rem;
 }
@@ -637,7 +642,7 @@ export default {
 .input-password input {
   width: 100%;
   height: 3.6rem;
-  background: rgba(211, 211, 211, 0.25);
+  background: rgba(211, 211, 211, 0.45);
   border: none;
   padding: 0 0.8rem;
 }

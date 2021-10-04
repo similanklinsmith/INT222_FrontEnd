@@ -98,10 +98,10 @@ export default {
     },
   },
   mounted() {
-    fetch(this.productUrl)
-      .then((res) => res.json())
-      .then((data) => (this.products = data))
-      .catch((err) => console.log(err.message));
+    // fetch(this.productUrl)
+    //   .then((res) => res.json())
+    //   .then((data) => (this.products = data))
+    //   .catch((err) => console.log(err.message));
     $(document).ready(function() {
       $(window).scroll(function() {
         if (this.scrollY > 1) {

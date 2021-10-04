@@ -296,7 +296,7 @@
               </div>
             </div>
             <div class="testimonials-slide">
-              <splide>
+              <splide :options="options">
                 <splide-slide
                   v-for="testimonial in testimonials"
                   :key="testimonial"

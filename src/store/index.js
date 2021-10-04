@@ -1,20 +1,36 @@
 import { createStore, storeKey } from "vuex";
+import AuthService from "../services/auth.service";
+const BASE_URL = "http://52.187.114.221:9000/api";
+const user = JSON.parse(localStorage.getItem("user"));
+// const initialState = user
+//   ? { status: { loggedIn: true }, user }
+//   : { status: { loggedIn: false }, user: null };
 export default createStore({
+  // authentication
+  // namespaced: true,
+  // stateUser: initialState,
   state: {
+    defaultUrl: "http://52.187.114.221:9000/api",
     products: [],
     colors: [],
     brands: [],
     categories: [],
     wishlists: [],
-    productUrl: "http://localhost:3000/products",
-    colorUrl: "http://localhost:3000/colors",
-    brandUrl: "http://localhost:3000/brands",
-    categoryUrl: "http://localhost:3000/categories",
+    productUrl: `${BASE_URL}/products`,
+    colorUrl: `${BASE_URL}/colors`,
+    brandUrl: `${BASE_URL}/brands`,
+    categoryUrl: `${BASE_URL}/categories`,
     wishlistUrl: "http://localhost:3000/wishlist",
 
     // account
     accounts: [],
     accountUrl: "http://localhost:3000/accounts",
+
+    // authentication
+    namespaced: true,
+    initialState: user
+      ? { status: { loggedIn: true }, user }
+      : { status: { loggedIn: false }, user: null },
   },
   mutations: {
     // products
@@ -38,7 +54,7 @@ export default createStore({
 
     UPDATE_PRODUCT(state, updateProduct) {
       const index = state.products.findIndex(
-        (product) => product.id === updateProduct.id
+        (product) => product.product_id === updateProduct.product_id
       );
       if (index !== -1) {
         state.products.splice(index, 1, updateProduct);
@@ -46,7 +62,9 @@ export default createStore({
     },
 
     DELETE_PRODUCT(state, id) {
-      const index = state.products.findIndex((product) => product.id == id);
+      const index = state.products.findIndex(
+        (product) => product.product_id == id
+      );
       if (index !== -1) {
         state.products.splice(index, 1);
       }
@@ -71,14 +89,16 @@ export default createStore({
     // colors
     GET_COLORS(state, colors) {
       state.colors = colors;
+      // console.log(state.colors)
     },
 
     ADD_COLOR(state, color) {
+      console.log(state.colors);
       state.colors.push(color);
     },
 
     DELETE_COLOR(state, id) {
-      const index = state.colors.findIndex((color) => color.id == id);
+      const index = state.colors.findIndex((color) => color.color_id == id);
       if (index !== -1) {
         state.colors.splice(index, 1);
       }
@@ -86,29 +106,30 @@ export default createStore({
 
     UPDATE_COLOR(state, updateColor) {
       const index = state.colors.findIndex(
-        (color) => color.id == updateColor.id
+        (color) => color.color_id == updateColor.color_id
       );
       if (index !== -1) {
         state.colors.splice(index, 1, updateColor);
       }
     },
-
     // brands
     GET_BRANDS(state, brands) {
       state.brands = brands;
     },
-    ADD_BRAND(state, color) {
-      state.brands.push(color);
+    ADD_BRAND(state, brand) {
+      // console.log(state.brands);
+      state.brands.push(brand);
     },
     DELETE_BRAND(state, id) {
-      const index = state.brands.findIndex((brand) => brand.id == id);
+      const index = state.brands.findIndex((brand) => brand.brand_id == id);
       if (index !== -1) {
         state.brands.splice(index, 1);
       }
     },
     UPDATE_BRAND(state, updateBrand) {
+      // console.log(state.brands);
       const index = state.brands.findIndex(
-        (brand) => brand.id == updateBrand.id
+        (brand) => brand.brand_id == updateBrand.brand_id
       );
       if (index !== -1) {
         state.brands.splice(index, 1, updateBrand);
@@ -127,19 +148,26 @@ export default createStore({
     ADD_ACCOUNT(state, newAccount) {
       state.accounts.push(newAccount);
     },
-    DELETE_ACCOUNT(state, id){
+    DELETE_ACCOUNT(state, id) {
       const index = state.accounts.findIndex((account) => account.id == id);
       if (index != -1) {
         state.accounts.splice(index, 1);
       }
-    }
+    },
+
+    // authentication
+    LOGIN_SUCCESS(state, user) {
+      state.initialState.status.loggedIn = true;
+      state.initialState.user = user;
+    },
   },
   actions: {
-    getProductsToStore(context) {
+    async getProductsToStore(context) {
       fetch(this.state.productUrl)
         .then((res) => res.json())
         .then((data) => {
-          context.commit("GET_PRODUCTS", data);
+          context.commit("GET_PRODUCTS", data.data);
+          console.log(data.data);
         })
         .catch((err) => console.log(err.message));
     },
@@ -162,27 +190,18 @@ export default createStore({
     //     .catch((err) => console.log(err));
     // },
 
-    addProduct(context, newProduct) {
-      // addProduct(context, {newProduct, image})
-      const jsonProduct = JSON.stringify(newProduct, {
+    addProduct(context, payload) {
+      console.log(payload.image);
+      const jsonProduct = JSON.stringify(payload.newProduct);
+      const blob = new Blob([jsonProduct], {
         type: "application/json",
       });
-      // หลังจากเชื่อม BE
-      // const jsonProduct = JSON.stringify(newProduct);
-      // const blob = new Blob([jsonProduct], {
-      //   type: "application/json",
-      // });
-      // ต้องรับ parameters 2 ตัวคือ product ก้อนนึงเเล้วก็ image
-      // const formData = new FormData();
-      // formData.append("imageFile", image);
-      // formData.append("newProduct", blob);
+      const formData = new FormData();
+      formData.append("imageFile", payload.image);
+      formData.append("newProduct", blob);
       fetch(this.state.productUrl, {
         method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: jsonProduct,
-        // body: formData
+        body: formData,
       })
         .then((res) => res.json())
         .then((data) => {
@@ -191,25 +210,19 @@ export default createStore({
         .catch((err) => console.log(err));
     },
 
-    editProduct(context, editProduct) {
-      // editProduct(context, {editProduct, image})
-      const jsonProduct = JSON.stringify(editProduct, {
+    editProduct(context, payload) {
+      const jsonEditProduct = JSON.stringify(payload.editProduct);
+      const blob = new Blob([jsonEditProduct], {
         type: "application/json",
       });
-      // หลังเชื่อม BE
-      // const jsonEditProduct = JSON.stringify(editProduct);
-      // const blob = new Blob([jsonEditProduct], {
-      //   type: 'application/json'
-      // });
-      // const formData = new FormData();
-      // formData.append("imageFile", image);
-      // formData.append("editedProduct",blob);
-      fetch(this.state.productUrl + "/" + editProduct.id, {
+      const formData = new FormData();
+      formData.append("imageFile", payload.image);
+      formData.append("editedProduct", blob);
+      console.log(payload.product_id);
+      console.log(payload.image);
+      fetch(this.state.productUrl + "/" + payload.product_id, {
         method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: jsonProduct,
+        body: formData,
       })
         .then((res) => res.json())
         .then((data) => {
@@ -270,7 +283,7 @@ export default createStore({
       fetch(this.state.colorUrl)
         .then((res) => res.json())
         .then((data) => {
-          context.commit("GET_COLORS", data);
+          context.commit("GET_COLORS", data.data);
         })
         .catch((err) => console.log(err.message));
     },
@@ -288,6 +301,7 @@ export default createStore({
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log(data);
           context.commit("ADD_COLOR", data);
         })
         .catch((err) => console.log(err));
@@ -304,14 +318,14 @@ export default createStore({
       const jsonColor = JSON.stringify(editcolor, {
         type: "application/json",
       });
-      fetch(this.state.colorUrl + "/" + editcolor.id, {
+      fetch(this.state.colorUrl + "/" + editcolor.color_id, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
         },
         body: jsonColor,
       })
-        .then((res) => res.json())
+        // .then((res) => res.json())
         .then((data) => {
           context.commit("UPDATE_COLOR", data);
         })
@@ -323,7 +337,7 @@ export default createStore({
       fetch(this.state.brandUrl)
         .then((res) => res.json())
         .then((data) => {
-          context.commit("GET_BRANDS", data);
+          context.commit("GET_BRANDS", data.data);
         })
         .catch((err) => console.log(err.message));
     },
@@ -340,6 +354,7 @@ export default createStore({
       })
         .then((res) => res.json())
         .then((data) => {
+          // console.log(data);
           context.commit("ADD_BRAND", data);
         })
         .catch((err) => console.log(err));
@@ -354,14 +369,13 @@ export default createStore({
       const jsonBrand = JSON.stringify(editBrand, {
         type: "application/json",
       });
-      fetch(this.state.brandUrl + "/" + editBrand.id, {
+      fetch(this.state.brandUrl + "/" + editBrand.brand_id, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
         },
         body: jsonBrand,
       })
-        .then((res) => res.json())
         .then((data) => {
           context.commit("UPDATE_BRAND", data);
         })
@@ -373,7 +387,7 @@ export default createStore({
       fetch(this.state.categoryUrl)
         .then((res) => res.json())
         .then((data) => {
-          context.commit("GET_CATEGORIES", data);
+          context.commit("GET_CATEGORIES", data.data);
         })
         .catch((err) => console.log(err.message));
     },
@@ -406,12 +420,26 @@ export default createStore({
         .catch((err) => console.log(err));
     },
 
-    deleteAccount(context, id){
+    deleteAccount(context, id) {
       fetch(this.state.accountUrl + "/" + id, {
         method: "DELETE",
       }).catch((err) => console.log(err.message));
       context.commit("DELETE_ACCOUNT", id);
-    }
+    },
+
+    // authentication
+    login(context, user) {
+      return AuthService.login(user).then(
+        (user) => {
+          context.commit("LOGIN_SUCCESS", user);
+          return Promise.resolve(user);
+        },
+        (error) => {
+          context.commit("LOGIN_FAILED");
+          return Promise.reject(error);
+        }
+      );
+    },
   },
   getters: {
     // product getters
@@ -419,7 +447,7 @@ export default createStore({
       return state.products;
     },
     getProductById: (state) => (id) => {
-      return state.products.find(product => product.id === id);
+      return state.products.find((product) => product.id === id);
     },
 
     // color getters
@@ -444,8 +472,8 @@ export default createStore({
 
     // account getters
     getAccounts(state) {
-      return state.accounts
-    }
+      return state.accounts;
+    },
   },
   modules: {},
 });

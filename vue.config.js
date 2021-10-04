@@ -1,12 +1,18 @@
+// module.exports = {
+//   devServer: {
+//     proxy: {
+//       "/api": {
+//         target: "http://52.187.114.221:9000/",
+//         pathRewrite: { "^/api": "" },
+//         changeOrigin: true,
+//         secure: false,
+//       },
+//     },
+//   },
+// };
 module.exports = {
   devServer: {
-    proxy: {
-      "/api": {
-        target: "http://localhost:3000",
-        pathRewrite: { "^/api": "" },
-        changeOrigin: true,
-        secure: false,
-      },
-    },
-  },
+      proxy: "http://localhost:9000/",
+      //proxy: "http://localhost:3000/backned
+  }
 };

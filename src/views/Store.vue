@@ -163,7 +163,7 @@
           <transition-group name="slide-fade">
             <Card
               v-for="product in queryProducts"
-              :key="product.id"
+              :key="product.product_id"
               :product="product"
               @deleteProduct="handleDelete"
               @toggleWishList="addWishList"
@@ -212,8 +212,8 @@ export default {
         rewind: true,
         autoplay: "playing",
       },
-      productUrl: "http://localhost:3000/products",
-      urlColors: "http://localhost:3000/colors",
+      productUrl: this.$store.state.defaultUrl + "/products",
+      // urlColors: "http://localhost:3000/colors",
       products: [],
       colors: [],
       searchInput: "",
@@ -250,16 +250,11 @@ export default {
     ]),
     handleDelete(id) {
       this.getAllproducts = this.getAllproducts.filter((product) => {
-        return product.id != id;
+        return product.product_id != id;
       });
     },
     addWishList(product) {
       this.$store.dispatch("addToWishList", product);
-      // for (let index = 0; index < this.getAllproducts.length; index++) {
-      //   if (this.getAllproducts[index].id == product.id) {
-      //     // this.getAllproducts[index].isWishList = !this.getAllproducts[index].isWishList;
-      //   }
-      // }
     },
     changeImage(id) {
       for (let index = 0; index < this.slotImages.length; index++) {
@@ -272,6 +267,7 @@ export default {
     },
   },
   mounted() {
+    window.scrollTo(0, 0);
     setInterval(() => {
       this.cursor++;
       if (this.cursor > 3) {
@@ -284,7 +280,12 @@ export default {
       }
       this.slotImages[this.cursor - 1].show = true;
     }, 5000);
-    window.scrollTo(0, 0);
+    fetch(this.productUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        this.products = data.data;
+      })
+      .catch((err) => console.log(err.message));
   },
   computed: mapGetters([
     "getProducts",
@@ -306,7 +307,7 @@ export default {
       return this.$store.getters.getCategories;
     },
     queryProducts() {
-      return this.getAllproducts.filter((product) => {
+      return this.products.filter((product) => {
         return (
           product != this.handleDelete &&
           product.brand.brand_name
@@ -648,7 +649,7 @@ select {
   cursor: pointer;
 }
 .filter-mb:hover {
-  filter: saturate(30%);
+  filter: saturate(100%);
 }
 
 .card-grid.grid {
