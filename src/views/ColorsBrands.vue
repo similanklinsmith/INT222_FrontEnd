@@ -477,7 +477,7 @@ export default {
           this.$store.dispatch("editBrand", editBrand);
           this.edit_brand_id = "";
           this.form.edit_brand_name = "";
-          this.isEditColor = false;
+          this.isEditBrand = false;
         }
       } else {
       }
