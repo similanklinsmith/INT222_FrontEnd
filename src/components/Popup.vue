@@ -1,19 +1,30 @@
 <template>
   <div class="pop-up">
     <div class="success-img">
-      <img
-        src="../../src/assets/images/success.png"
-        alt="success singup picture"
-      />
+      <img :src="imgSrc" :alt="altText" />
     </div>
-    <div class="success-text">
-      Sign-up Success!
+    <div
+      class="success-text"
+      :style="[isTrue ? { color: '#35e08e' } : { color: '#ff4026' }]"
+    >
+      {{ text }}
     </div>
-    <div class="btn btn--full" @click="closePopup">ok</div>
+    <div
+      class="btn btn--full"
+      :style="[
+        isTrue
+          ? { backgroundColor: '#35e08e' }
+          : { backgroundColor: '#ff4026' },
+      ]"
+      @click="closePopup"
+    >
+      ok
+    </div>
   </div>
 </template>
 <script>
 export default {
+  props: ["imgSrc", "text", "altText", "isTrue"],
   name: "Popup",
   methods: {
     closePopup() {
@@ -41,7 +52,6 @@ export default {
 .success-text {
   font-size: 2rem;
   font-weight: 700;
-  color: #35e08e;
   animation: appears-from-bottom 0.75s 1 ease;
 }
 .success-img {
@@ -57,9 +67,7 @@ export default {
   background-color: #35e08e;
 }
 .pop-up .btn--full:hover {
-  background-color: transparent;
-  color: #35e08e;
-  box-shadow: inset 0 0 0 1px #35e08e;
+  filter: saturate(2);
 }
 .btn--full,
 .btn--full:visited {
@@ -82,7 +90,7 @@ export default {
   border: none;
   cursor: pointer;
   text-transform: uppercase;
-  /* margin-top: 2.4rem; */
+  margin-top: 1.6rem;
   border-radius: 2.4rem;
 }
 
@@ -101,6 +109,11 @@ export default {
     width: 12rem;
     height: 12rem;
   }
+  .btn,
+  .btn:link,
+  .btn:visited {
+    margin-top: 1.2rem;
+  }
   /* below 470px */
   @media (max-width: 29em) {
     .pop-up {
@@ -114,6 +127,11 @@ export default {
     .success-img {
       width: 10rem;
       height: 10rem;
+    }
+    .btn,
+    .btn:link,
+    .btn:visited {
+      margin-top: 0.8rem;
     }
   }
 }

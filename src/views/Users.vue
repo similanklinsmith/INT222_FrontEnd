@@ -16,55 +16,187 @@
           </div>
           <div class="add-user">
             <div class="name">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" placeholder="John" />
+              <label for="name"
+                >Name
+
+                <span v-if="!editNameIsValid && form.name.length == 0"
+                  >*required </span
+                ><span
+                  v-if="editNameIsValid || 50 - form.name.length <= 0"
+                  :style="[
+                    50 - form.name.length <= 0
+                      ? { color: '#eb435f' }
+                      : { color: '#32CD32' },
+                  ]"
+                  >({{ 50 - form.name.length }}/50)</span
+                >
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="John"
+                v-model="form.name"
+              />
             </div>
             <div class="surname">
-              <label for="surname">Surname</label>
+              <label for="surname"
+                >Surname
+                <span v-if="!editSurnameIsValid && form.surname.length == 0"
+                  >*required </span
+                ><span
+                  v-if="editSurnameIsValid || 50 - form.surname.length <= 0"
+                  :style="[
+                    50 - form.surname.length <= 0
+                      ? { color: '#eb435f' }
+                      : { color: '#32CD32' },
+                  ]"
+                  >({{ 50 - form.surname.length }}/50)</span
+                >
+              </label>
               <input
                 type="text"
                 id="surname"
                 name="surname"
                 placeholder="Smith"
+                v-model="form.surname"
               />
             </div>
             <div class="username">
-              <label for="username">Username</label>
+              <label for="username"
+                >Username
+                <span v-if="!editUsernameIsValid && form.username.length == 0"
+                  >*required</span
+                >
+                <span v-if="!noSpecialChars"
+                  >no special characters(&amp;,&#60;,&#62; or commas)</span
+                >
+                <span
+                  v-if="
+                    (editUsernameIsValid && noSpecialChars) ||
+                      40 - form.username.length <= 0
+                  "
+                  :style="[
+                    40 - form.username.length <= 0
+                      ? { color: '#eb435f' }
+                      : { color: '#32CD32' },
+                  ]"
+                  >({{ 40 - form.username.length }}/40)</span
+                >
+              </label>
               <input
                 type="text"
                 id="username"
                 name="username"
                 placeholder="Smith123"
+                v-model="form.username"
               />
             </div>
             <div class="email">
-              <label for="email">Email</label>
+              <label for="email"
+                >Email
+                <span v-if="!editEmailIsValid">*required</span>
+              </label>
               <input
                 type="text"
                 id="email"
                 name="email"
                 placeholder="example@mail.com"
+                v-model="form.email"
               />
             </div>
             <div class="password">
-              <label for="password">Password</label>
+              <label for="password"
+                >Password
+                <span v-if="!editPasswordIsValid"
+                  >*required at least 8 chars</span
+                >
+                <span
+                  :style="{ color: '#FFD700' }"
+                  v-if="form.password.length >= 8 && form.password.length < 10"
+                  >good</span
+                >
+                <span
+                  :style="{ color: '#32CD32' }"
+                  v-if="form.password.length >= 10"
+                  >excellent</span
+                >
+              </label>
               <input
-                type="text"
+                :type="type"
                 id="password"
                 name="password"
-                placeholder="123456879"
+                placeholder="*********"
+                v-model="form.password"
+                :style="[
+                  form.password.length <= 0
+                    ? { backgroundColor: '' }
+                    : form.password.length < 8
+                    ? { backgroundColor: '#f9cede' }
+                    : form.password.length >= 8 && form.password.length < 10
+                    ? { backgroundColor: '#fff7cc' }
+                    : { backgroundColor: '#d6f5d6' },
+                ]"
               />
+              <div class="btn-eye" @click="togglePassword">
+                <div
+                  :style="[
+                    type === 'text' ? { display: 'none' } : { display: 'flex' },
+                  ]"
+                >
+                  <i class="fas fa-eye icon"></i>
+                </div>
+                <div
+                  :style="[
+                    type !== 'text' ? { display: 'none' } : { display: 'flex' },
+                  ]"
+                >
+                  <i class="fas fa-eye-slash icon"></i>
+                </div>
+              </div>
             </div>
             <div class="role">
-              <label for="role">Role</label>
-              <select name="role" id="role">
-                <option value="admin">Admin</option>
+              <label for="role"
+                >Role
+                <span v-if="!editRoleIsValid">*required</span>
+              </label>
+              <select name="role" id="role" v-model="form.role">
+                <option value="" selected>none</option>
+                <option value="admin" selected>Admin</option>
                 <option value="deputy admin">Deputy Admin</option>
               </select>
             </div>
-            <div class="btn btn--full">
+            <button
+              class="btn btn--full"
+              v-if="isEdit == false"
+              type="submit"
+              :style="[
+                editFormIsValid
+                  ? {}
+                  : { backgroundColor: '#707070', cursor: 'not-allowed' },
+              ]"
+            >
               Add
-            </div>
+            </button>
+            <button
+              class="btn btn--full edit-btn"
+              v-if="isEdit"
+              type="submit"
+              :style="[
+                editFormIsValid
+                  ? {}
+                  : { backgroundColor: '#707070', cursor: 'not-allowed' },
+              ]"
+            >
+              Confirm edit
+            </button>
+            <button
+              class="btn btn--full cancel-btn"
+              v-if="isEdit"
+              @click="toggleEditAccount"
+            >
+              Cancel
+            </button>
           </div>
         </div>
         <div class="filter">
@@ -151,7 +283,7 @@
                   |
                   <div
                     class="edit"
-                    @click="toggleEditColor(color.id)"
+                    @click="toggleEditAccount(user)"
                     :style="{ display: 'inline' }"
                   >
                     Edit
@@ -184,37 +316,8 @@ export default {
   },
   data() {
     return {
-      spareUsers: [
-        {
-          first_name: "Similan",
-          last_name: "Klinsmith",
-          username: "deep",
-          email: "deep@gmail.com",
-          password: "62130500096",
-          role: {
-            role_name: "admin",
-          },
-          id: 1,
-        },
-        {
-          first_name: "Praepanwa",
-          last_name: "Tedprasit",
-          username: "phaeng",
-          email: "phaeng@gmail.com",
-          password: "62130500069",
-          role: { role_name: "deputy admin" },
-          id: 2,
-        },
-        {
-          first_name: "Noparat",
-          last_name: "Prasongdee",
-          username: "saimai",
-          email: "saimai@gmail.com",
-          password: "62130500126",
-          role: { role_name: "member" },
-          id: 3,
-        },
-      ],
+      type: "password",
+      isEdit: false,
       users: [],
       searchInput: "",
       selectedRole: "",
@@ -230,15 +333,35 @@ export default {
         "Password",
         "Role",
       ],
+      form: {
+        // add
+
+        // edit
+        id: "",
+        name: "",
+        surname: "",
+        username: "",
+        email: "",
+        password: "",
+        role: "",
+      },
     };
   },
   methods: {
     ...mapActions(["getAccountsToSite"]),
+    togglePassword() {
+      if (this.type === "password") {
+        this.type = "text";
+      } else if (this.type === "text") {
+        this.type = "password";
+      }
+      // console.log(this.type);
+    },
     filterAdmin() {
       this.deputyAdminFilter = false;
       this.memberFilter = false;
       this.adminFilter = !this.adminFilter;
-      if (this.adminFilter ) {
+      if (this.adminFilter) {
         this.selectedRole = "Admin";
       } else {
         this.selectedRole = "";
@@ -264,12 +387,36 @@ export default {
         this.selectedRole = "";
       }
     },
+    toggleEditAccount(editAccount) {
+      window.scrollTo(0, 0);
+      this.isEdit = !this.isEdit;
+      if (this.isEdit == true) {
+        this.form.id = editAccount.id;
+        this.form.name = editAccount.first_name;
+        this.form.surname = editAccount.last_name;
+        this.form.username = editAccount.username;
+        this.form.email = editAccount.email;
+        this.form.password = editAccount.password;
+        this.form.role = editAccount.role.role_name;
+      } else {
+        this.form.id = "";
+        this.form.name = "";
+        this.form.surname = "";
+        this.form.username = "";
+        this.form.email = "";
+        this.form.password = "";
+        this.form.role = "";
+      }
+    },
+    // in the table
     deleteAccount(id) {
       if (confirm("Do you really want to delete? 😲")) {
         this.$store.dispatch("deleteAccount", id);
-        // this.$router.push("/stores");
       }
     },
+    editAccount() {},
+
+    // in card compo
     handleDelete(id) {
       this.getAllUsers = this.getAllUsers.filter((user) => {
         return user.id != id;
@@ -281,18 +428,8 @@ export default {
     getAllUsers() {
       return this.$store.getters.getAccounts;
     },
-    // queryUsers() {
-    //   return this.getAllUsers.filter((user) => {
-    //     return (
-    //       user.role.role_name
-    //         .toLowerCase()
-    //         .includes(this.selectedRole.toLowerCase()) &&
-    //       user.username.toLowerCase().includes(this.searchInput)
-    //     );
-    //   });
-    // },
     queryUsers() {
-      return this.spareUsers.filter((user) => {
+      return this.getAllUsers.filter((user) => {
         return (
           user.role.role_name
             .toLowerCase()
@@ -300,6 +437,43 @@ export default {
           user.username.toLowerCase().includes(this.searchInput)
         );
       });
+    },
+    editNameIsValid() {
+      return !!this.form.name && this.form.name.length <= 50;
+    },
+    editSurnameIsValid() {
+      return !!this.form.surname && this.form.surname.length <= 50;
+    },
+    editUsernameIsValid() {
+      return !!this.form.username && this.form.username.length <= 40;
+    },
+    noSpecialChars() {
+      return (
+        !this.form.username.includes("&") &&
+        !this.form.username.includes(",") &&
+        !this.form.username.includes("<") &&
+        !this.form.username.includes(">")
+      );
+    },
+    editEmailIsValid() {
+      return !!this.form.email;
+    },
+    editPasswordIsValid() {
+      return !!this.form.password && this.form.password.length >= 8;
+    },
+    editRoleIsValid() {
+      return !!this.form.role;
+    },
+    editFormIsValid() {
+      return (
+        this.editPasswordIsValid &&
+        this.editEmailIsValid &&
+        this.editUsernameIsValid &&
+        this.editSurnameIsValid &&
+        this.editNameIsValid &&
+        this.noSpecialChars &&
+        this.editRoleIsValid
+      );
     },
   },
   created() {
@@ -325,7 +499,7 @@ export default {
   margin: 0 10%;
   width: 80%;
   background-color: white;
-  height: 58rem;
+  height: auto;
   /* padding: 2rem 4rem; */
   grid-column: span 2;
   display: grid;
@@ -398,7 +572,7 @@ tbody td {
   line-height: 1.8;
 }
 tbody:hover {
-  background-color: rgb(245, 244, 244);
+  background-color: rgb(230, 230, 230);
 }
 tbody td:nth-child(4) {
   height: 8rem;
@@ -474,6 +648,22 @@ input::placeholder {
   color: #fff;
   line-height: 1.4;
 }
+.password {
+  position: relative;
+}
+.password .icon {
+  position: absolute;
+  right: 5%;
+  top: 42%;
+  font-size: 1.2rem;
+  color: #555;
+  cursor: pointer;
+  transition: 0.2s all ease-in-out;
+  align-self: center;
+}
+.password .icon:hover {
+  color: #333;
+}
 .btn {
   text-align: center;
   width: 100%;
@@ -486,7 +676,7 @@ input::placeholder {
   cursor: pointer;
   font-family: inherit;
   text-transform: uppercase;
-  margin-top: 2.4rem;
+  margin-top: 1.8rem;
   transition: 0.25s all ease-in-out;
 }
 
@@ -497,6 +687,17 @@ input::placeholder {
 .btn--full:hover {
   background-color: #3df53d;
 }
+.cancel-btn {
+  background-color: #eb435f;
+}
+.cancel-btn:hover {
+  background-color: #bc364c;
+}
+label span {
+  font-size: 1rem;
+  color: #eb435f;
+}
+/* below 880px */
 @media (max-width: 55em) {
   .table {
     display: none;
@@ -504,12 +705,15 @@ input::placeholder {
   .List {
     display: inline;
   }
+  .add-user {
+    padding: 4rem;
+  }
 }
 @media (max-width: 53em) {
   .form {
     display: grid;
     grid-template-columns: 1fr;
-    height: 72rem;
+    /* height: 72rem; */
   }
   .side-img {
     width: 100%;
@@ -563,6 +767,9 @@ input::placeholder {
   }
   .text .info {
     font-size: 1rem;
+  }
+  .add-user {
+    padding: 2rem;
   }
 }
 </style>

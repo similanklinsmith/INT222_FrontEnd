@@ -1,11 +1,17 @@
 <template>
   <div class="card-component">
     <div class="product-img">
-      <div class="like-icon" @click="toggleWishList" :style="$route.name == 'WishList' ? {color : '#eb435f'} : {color : 'grey'}">
+      <div
+        class="like-icon"
+        @click="toggleWishList"
+        :style="
+          $route.name == 'WishList' ? { color: '#eb435f' } : { color: 'grey' }
+        "
+      >
         <i class="icon fas fa-heart"></i>
       </div>
 
-      <img :src="urlImages" alt="" @click="showDetails(product)" />
+      <img :src="urlImages" @error="$event.target.src='http://www.grand-cordel.com/wp-content/uploads/2015/08/import_placeholder.png'"  alt="product images" @click="showDetails(product)"/>
     </div>
     <div class="product-purchase">
       <div class="add-to-cart">
@@ -40,17 +46,19 @@ export default {
   props: ["product"],
   data() {
     return {
+      notFoundImg: "../../src/assets/images/not-found.png",
       heart: false,
       allColors: [],
-      urlImages: this.$store.state.defaultUrl+"/image/"+this.product.product_id,
+      urlImages:
+        this.$store.state.defaultUrl + "/image/" + this.product.product_id,
     };
   },
   methods: {
     toggleWishList() {
-      this.heart = !this.heart
+      this.heart = !this.heart;
       // console.log(this.heart)
       const wishlist = {
-        product_id : this.product.product_id
+        product_id: this.product.product_id,
       };
       this.$emit("toggleWishList", wishlist);
     },
@@ -205,14 +213,14 @@ export default {
 /* below 700px */
 @media (max-width: 44em) {
   .product-name {
-  font-size: 1.4rem;
-line-height: 1.2;
-}
+    font-size: 1.4rem;
+    line-height: 1.2;
+  }
 }
 
 /* below 480px */
 @media (max-width: 30em) {
-  .product-img{
+  .product-img {
     height: 24rem;
   }
   .product-brand {
@@ -224,41 +232,47 @@ line-height: 1.2;
     height: 1.4rem;
   }
   .icon {
-  width: 3.6rem;
-  height: 3.6rem;
-  z-index: 999;
-  position: absolute;
-  top: 0%;
-  right: 0%;
-  margin: 1.2rem 1.2rem 0 0;
-  cursor: pointer;
-  background: #fff;
-  padding: 1rem;
-  border-radius: 50%;
-}
+    width: 3.6rem;
+    height: 3.6rem;
+    z-index: 999;
+    position: absolute;
+    top: 0%;
+    right: 0%;
+    margin: 1.2rem 1.2rem 0 0;
+    cursor: pointer;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 50%;
+  }
 }
 
 /* below 375px */
 @media (max-width: 24em) {
-    .product-img{
+  .product-img {
     height: 36rem;
+    width: 80%;
+    margin: 0 10%;
+  }
+  .product-purchase {
+    width: 80%;
+    margin: 0 10%;
   }
   .product-brand {
     width: 25%;
     margin: 0 37.5% 1.2rem 37.5%;
   }
   .icon {
-  width: 3.6rem;
-  height: 3.6rem;
-  z-index: 999;
-  position: absolute;
-  top: 0%;
-  right: 0%;
-  margin: 2.4rem 2.4rem 0 0;
-  cursor: pointer;
-  background: #fff;
-  padding: 1rem;
-  border-radius: 50%;
-}
+    width: 3.6rem;
+    height: 3.6rem;
+    z-index: 999;
+    position: absolute;
+    top: 0%;
+    right: 0%;
+    margin: 2.4rem 2.4rem 0 0;
+    cursor: pointer;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 50%;
+  }
 }
 </style>

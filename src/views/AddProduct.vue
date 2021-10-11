@@ -167,6 +167,15 @@
         </div>
       </div>
     </div>
+    <div class="modal" v-if="failedToAdd">
+      <Popup
+        @closePopup="failedToAdd = false"
+        :imgSrc="failedImg"
+        :text="failedSignUpText"
+        :altText="altFailed"
+        :isTrue="false"
+      />
+    </div>
     <Socials class="socials"></Socials>
     <Footer class="footer"></Footer>
   </div>
@@ -174,17 +183,23 @@
 <script>
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
+import Popup from "@/components/Popup.vue";
 import { mapGetters, mapActions } from "vuex";
-import Form from "@/components/Form.vue";
 export default {
   components: {
     Socials,
     Footer,
-    Form,
+    Popup,
   },
   data() {
     return {
+      failedToAdd: false,
+      failedImg: require("@/assets/images/failed.png"),
+      failedSignUpText: "this product name has already used",
+      altFailed: "Failed icon",
       colors: [],
+      productUrl: this.$store.state.defaultUrl + "/products",
+      products: [],
       form: {
         //add product
         prod_name: "",
@@ -211,6 +226,9 @@ export default {
     },
     allCategories() {
       return this.$store.getters.getCategories;
+    },
+    allProducts() {
+      return this.$store.getters.getProducts;
     },
 
     // validations
@@ -254,9 +272,22 @@ export default {
         this.prodColorsIsValid
       );
     },
+    checkUniqueProdName() {
+      for (let index = 0; index < this.products.length; index++) {
+        if (this.products[index].product_name == this.form.prod_name) {
+          return true;
+        }
+      }
+    },
   },
   mounted() {
     window.scrollTo(0, 0);
+    fetch(this.productUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        this.products = data.data;
+      })
+      .catch((err) => console.log(err.message));
   },
   methods: {
     ...mapActions([
@@ -280,7 +311,7 @@ export default {
       for (var i = 0; i < this.form.selected_colors.length; i++) {
         colors.push({ id: this.form.selected_colors[i].color_id });
       }
-      if (this.formIsValid) {
+      if (this.formIsValid && this.checkUniqueProdName != true) {
         const newProduct = {
           product_name: this.form.prod_name,
           product_desc: this.form.prod_desc,
@@ -310,6 +341,7 @@ export default {
           (this.preview_img = ""),
           (this.form.name_img = "");
       } else {
+        this.failedToAdd = true;
       }
     },
     changeImg() {
@@ -326,6 +358,17 @@ export default {
 };
 </script>
 <style scoped>
+.modal {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.25);
+  left: 0;
+  top: 0;
+  padding-top: 20rem;
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
 .add-product-section {
   margin: 2.4rem 0 6.4rem 0;
 }

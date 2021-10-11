@@ -1,14 +1,7 @@
 import { createStore, storeKey } from "vuex";
-import AuthService from "../services/auth.service";
+import { auth } from "./auth.module";
 const BASE_URL = "http://52.187.114.221:9000/api";
-const user = JSON.parse(localStorage.getItem("user"));
-// const initialState = user
-//   ? { status: { loggedIn: true }, user }
-//   : { status: { loggedIn: false }, user: null };
 export default createStore({
-  // authentication
-  // namespaced: true,
-  // stateUser: initialState,
   state: {
     defaultUrl: "http://52.187.114.221:9000/api",
     products: [],
@@ -25,12 +18,6 @@ export default createStore({
     // account
     accounts: [],
     accountUrl: "http://localhost:3000/accounts",
-
-    // authentication
-    namespaced: true,
-    initialState: user
-      ? { status: { loggedIn: true }, user }
-      : { status: { loggedIn: false }, user: null },
   },
   mutations: {
     // products
@@ -154,11 +141,11 @@ export default createStore({
         state.accounts.splice(index, 1);
       }
     },
-
-    // authentication
-    LOGIN_SUCCESS(state, user) {
-      state.initialState.status.loggedIn = true;
-      state.initialState.user = user;
+    UPDATE_ACCOUNT(state, updateAccount) {
+      const index = state.accounts.findIndex((account) => account.id == id);
+      if (index != -1) {
+        state.accounts.splice(index, 1, updateAccount);
+      }
     },
   },
   actions: {
@@ -167,7 +154,7 @@ export default createStore({
         .then((res) => res.json())
         .then((data) => {
           context.commit("GET_PRODUCTS", data.data);
-          console.log(data.data);
+          // console.log(data.data);
         })
         .catch((err) => console.log(err.message));
     },
@@ -427,18 +414,21 @@ export default createStore({
       context.commit("DELETE_ACCOUNT", id);
     },
 
-    // authentication
-    login(context, user) {
-      return AuthService.login(user).then(
-        (user) => {
-          context.commit("LOGIN_SUCCESS", user);
-          return Promise.resolve(user);
+    editAccount(context, editAccount) {
+      let jsonEditAccount = JSON.stringify(editAccount, {
+        type: "application/json",
+      });
+      fetch(this.state.accountUrl + "/" + editAccount.id, {
+        method: "PUT",
+        headers: {
+          ContentType: "application/json",
         },
-        (error) => {
-          context.commit("LOGIN_FAILED");
-          return Promise.reject(error);
-        }
-      );
+        body: jsonEditAccount,
+      })
+        .then((data) => {
+          context.commit("UPDATE_ACCOUNT", data);
+        })
+        .catch((err) => console.log(err));
     },
   },
   getters: {
@@ -475,5 +465,5 @@ export default createStore({
       return state.accounts;
     },
   },
-  modules: {},
+  modules: { auth },
 });

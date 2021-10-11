@@ -352,7 +352,9 @@
       "username": "deep",
       "email": "deep@gmail.com",
       "password": "62130500096",
-      "role": "admin",
+      "role": {
+        "role_name": "admin"
+      },
       "id": 1
     },
     {
@@ -361,7 +363,9 @@
       "username": "phaeng",
       "email": "phaeng@gmail.com",
       "password": "62130500069",
-      "role": "deputy admin",
+      "role": {
+        "role_name": "deputy admin"
+      },
       "id": 2
     },
     {
@@ -370,7 +374,9 @@
       "username": "saimai",
       "email": "saimai@gmail.com",
       "password": "62130500126",
-      "role": "member",
+      "role": {
+        "role_name": "member"
+      },
       "id": 3
     },
     {
@@ -379,8 +385,49 @@
       "username": "MeowLee123",
       "email": "example@gmail.com",
       "password": "0123456789",
-      "role": "member",
+      "role": {
+        "role_name": "member"
+      },
       "id": 4
+    },
+    {
+      "first_name": "asdf",
+      "last_name": "asdf",
+      "username": "asdf",
+      "email": "example@gmail.com",
+      "password": "asdfasdfasdfa",
+      "role": {
+        "id": 3,
+        "role_name": "member",
+        "role_desc": "Able to [ADD/DELETE] wishlists"
+      },
+      "id": 5
+    },
+    {
+      "first_name": "INT222",
+      "last_name": "asdfasdf",
+      "username": "asdfasdf",
+      "email": "deep2fasdf5952@gmail.com",
+      "password": "asdfsdggg",
+      "role": {
+        "id": 3,
+        "role_name": "member",
+        "role_desc": "Able to [ADD/DELETE] wishlists"
+      },
+      "id": 6
+    },
+    {
+      "first_name": "sdf",
+      "last_name": "sdf",
+      "username": "admin",
+      "email": "example@gmail.com",
+      "password": "sdfsdfsdf",
+      "role": {
+        "id": 3,
+        "role_name": "member",
+        "role_desc": "Able to [ADD/DELETE] wishlists"
+      },
+      "id": 9
     }
   ]
 }

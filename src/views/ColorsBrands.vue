@@ -244,7 +244,7 @@
                 </button>
               </form>
               <!-- /editBrand -->
-
+              
               <Table :ths="thsBrand">
                 <tbody
                   v-for="(brand, index) in getAllBrands"

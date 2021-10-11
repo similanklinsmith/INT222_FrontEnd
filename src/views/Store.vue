@@ -92,7 +92,7 @@
                   v-for="brand in allBrands"
                   :key="brand.id"
                   :value="brand.brand_name"
-                  >{{ brand.brand_name }}</option
+                  >{{ brand.brand_name }} ({{numberOfProductByBrand(brand.brand_name) }})</option
                 >
               </select>
             </div>
@@ -120,7 +120,7 @@
                   v-for="category in allCategories"
                   :key="category.id"
                   :value="category.category_name"
-                  >{{ category.category_name }}</option
+                  >{{ category.category_name }} ({{numberOfProductByCategory(category.category_name)}})</option
                 >
               </select>
             </div>
@@ -166,8 +166,8 @@
               :key="product.product_id"
               :product="product"
               @deleteProduct="handleDelete"
-              @toggleWishList="addWishList"
             ></Card>
+            <!-- @toggleWishList="addWishList" -->
             <!-- :style="
                 product.isWishList == true
                   ? { color: '#eb435f' }
@@ -264,6 +264,18 @@ export default {
       }
       this.cursor = id;
       this.slotImages[this.cursor - 1].show = true;
+    },
+    numberOfProductByBrand(name) {
+      var brandCount = this.products.filter((product) =>
+        product.brand.brand_name.toLowerCase().includes(name.toLowerCase())
+      );
+      return brandCount.length;
+    },
+    numberOfProductByCategory(category) {
+      var categoryCount = this.products.filter((product) =>
+        product.category.category_name.includes(category)
+      );
+      return categoryCount.length;
     },
   },
   mounted() {

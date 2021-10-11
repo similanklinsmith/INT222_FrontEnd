@@ -19,14 +19,14 @@
           <div class="back-btn" @click="goBack">
             <i class="fas fa-chevron-left"></i>
           </div>
-          <form class="form" @submit.prevent="signIn">
+          <form class="form" @submit.prevent="handleLogin">
             <div class="form-header">
               Sign in
             </div>
             <div class="input-username">
               <label for="username">Username</label>
               <input
-                type="email"
+                type="text"
                 name="username"
                 id="username"
                 placeholder="admin"
@@ -71,7 +71,6 @@
           </form>
         </div>
       </transition-group>
-
       <!-- Sign Up -->
       <transition-group name="fade">
         <div class="sign-up grid" v-if="isSignUp">
@@ -98,7 +97,7 @@
                         ? { color: '#eb435f' }
                         : { color: '#32CD32' },
                     ]"
-                    >({{ 50 - form.sign_up_name.length }} chars left)</span
+                    >({{ 50 - form.sign_up_name.length }}/50)</span
                   ></label
                 >
                 <input
@@ -127,7 +126,7 @@
                         ? { color: '#eb435f' }
                         : { color: '#32CD32' },
                     ]"
-                    >({{ 50 - form.sign_up_surname.length }} chars left)</span
+                    >({{ 50 - form.sign_up_surname.length }}/50)</span
                   >
                 </label>
                 <input
@@ -146,10 +145,14 @@
                   v-if="
                     !signUpUsernameIsValid && form.sign_up_username.length == 0
                   "
-                  >*required </span
-                ><span
+                  >*required</span
+                >
+                <span v-if="!noSpecialChars"
+                  >no special characters(&amp;,&#60;,&#62; or commas)</span
+                >
+                <span
                   v-if="
-                    signUpUsernameIsValid ||
+                    (signUpUsernameIsValid && noSpecialChars) ||
                       40 - form.sign_up_username.length <= 0
                   "
                   :style="[
@@ -157,7 +160,7 @@
                       ? { color: '#eb435f' }
                       : { color: '#32CD32' },
                   ]"
-                  >({{ 40 - form.sign_up_username.length }} chars left)</span
+                  >({{ 40 - form.sign_up_username.length }}/40)</span
                 >
               </label>
               <input
@@ -200,23 +203,45 @@
                   >excellent</span
                 >
               </label>
-              <input
-                type="text"
-                name="password"
-                id="password"
-                placeholder="*******"
-                v-model="form.sign_up_password"
-                :style="[
-                  form.sign_up_password.length <= 0
-                    ? { backgroundColor: '' }
-                    : form.sign_up_password.length < 8
-                    ? { backgroundColor: '#f9cede' }
-                    : form.sign_up_password.length >= 8 &&
-                      form.sign_up_password.length < 10
-                    ? { backgroundColor: '#fff7cc' }
-                    : { backgroundColor: '#d6f5d6' },
-                ]"
-              />
+              <div class="show-hide-passwod">
+                <input
+                  :type="type"
+                  name="password"
+                  id="password"
+                  placeholder="*******"
+                  v-model="form.sign_up_password"
+                  :style="[
+                    form.sign_up_password.length <= 0
+                      ? { backgroundColor: '' }
+                      : form.sign_up_password.length < 8
+                      ? { backgroundColor: '#f9cede' }
+                      : form.sign_up_password.length >= 8 &&
+                        form.sign_up_password.length < 10
+                      ? { backgroundColor: '#fff7cc' }
+                      : { backgroundColor: '#d6f5d6' },
+                  ]"
+                />
+                <div class="btn-eye" @click="togglePassword">
+                  <div
+                    :style="[
+                      type === 'text'
+                        ? { display: 'none' }
+                        : { display: 'flex' },
+                    ]"
+                  >
+                    <i class="fas fa-eye icon"></i>
+                  </div>
+                  <div
+                    :style="[
+                      type !== 'text'
+                        ? { display: 'none' }
+                        : { display: 'flex' },
+                    ]"
+                  >
+                    <i class="fas fa-eye-slash icon"></i>
+                  </div>
+                </div>
+              </div>
             </div>
             <button
               class="btn btn--full"
@@ -253,8 +278,23 @@
       </transition-group>
     </div>
     <!-- component  popup -->
-    <div class="modal" v-if="success">
-      <Popup @closePopup="success = false" />
+    <div class="modal" v-if="successSignUp">
+      <Popup
+        @closePopup="successSignUp = false"
+        :imgSrc="successImg"
+        :text="successSignUpText"
+        :altText="altSuccess"
+        :isTrue="true"
+      />
+    </div>
+    <div class="modal" v-if="failedSignUp">
+      <Popup
+        @closePopup="failedSignUp = false"
+        :imgSrc="failedImg"
+        :text="failedSignUpText"
+        :altText="altFailed"
+        :isTrue="false"
+      />
     </div>
     <!-- /component  popup -->
     <Socials class="socials"></Socials>
@@ -267,6 +307,7 @@
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
 import Popup from "@/components/Popup.vue";
+import { mapGetters, mapActions } from "vuex";
 export default {
   components: {
     Socials,
@@ -275,8 +316,18 @@ export default {
   },
   data() {
     return {
+      successSignUp: false,
+      failedSignUp: false,
+      successImg: require("@/assets/images/success.png"),
+      successSignUpText: "Congratulations, your account is ready!",
+      altSuccess: "Success icon",
+      failedImg: require("@/assets/images/failed.png"),
+      failedSignUpText: "this username has already used",
+      altFailed: "Failed icon",
+      loading: false,
+      message: "",
       type: "password",
-      success: false,
+      successful: false,
       isSignUp: false,
       form: {
         // sign-in
@@ -291,10 +342,30 @@ export default {
       },
     };
   },
+  computed: mapGetters(["getAccounts"]),
   mounted() {
     window.scrollTo(0, 0);
+    if (this.loggedIn) {
+      this.$router.push("/stores");
+    }
+    this.getAccountsToSite();
+  },
+  created() {
+    if (this.loggedIn) {
+      this.$router.push("/stores");
+    }
   },
   computed: {
+    getAllUsers() {
+      return this.$store.getters.getAccounts;
+    },
+    checkUniqueUsername() {
+      for (let index = 0; index < this.getAllUsers.length; index++) {
+        if (this.getAllUsers[index].username == this.form.sign_up_username) {
+          return true;
+        }
+      }
+    },
     signUpNameIsValid() {
       return !!this.form.sign_up_name && this.form.sign_up_name.length <= 50;
     },
@@ -306,6 +377,14 @@ export default {
     signUpUsernameIsValid() {
       return (
         !!this.form.sign_up_username && this.form.sign_up_username.length <= 40
+      );
+    },
+    noSpecialChars() {
+      return (
+        !this.form.sign_up_username.includes("&") &&
+        !this.form.sign_up_username.includes(",") &&
+        !this.form.sign_up_username.includes("<") &&
+        !this.form.sign_up_username.includes(">")
       );
     },
     signUpEmailIsValid() {
@@ -322,11 +401,16 @@ export default {
         this.signUpEmailIsValid &&
         this.signUpUsernameIsValid &&
         this.signUpSurnameIsValid &&
-        this.signUpNameIsValid
+        this.signUpNameIsValid &&
+        this.noSpecialChars
       );
+    },
+    loggedIn() {
+      return this.$store.state.auth.status.loggedIn;
     },
   },
   methods: {
+    ...mapActions(["getAccountsToSite"]),
     goBack() {
       this.$router.go(-1);
     },
@@ -336,10 +420,9 @@ export default {
       } else if (this.type === "text") {
         this.type = "password";
       }
-      console.log(this.type);
     },
     createAccount() {
-      if (this.signUpFormIsValid) {
+      if (this.signUpFormIsValid && this.checkUniqueUsername != true) {
         const newAccount = {
           first_name: this.form.sign_up_name,
           last_name: this.form.sign_up_surname,
@@ -347,28 +430,59 @@ export default {
           email: this.form.sign_up_email,
           password: this.form.sign_up_password,
           role: {
-            id: 1,
-            role_name: "admin", 
-            role_desc: "Able to [ADD/DELETE/EDIT] everything"
+            id: 3,
+            role_name: "member",
+            role_desc: "Able to [ADD/DELETE] wishlists",
           },
         };
-        this.$store.dispatch("createAccount", newAccount);
+        this.$store.dispatch("auth/register", newAccount);
         (this.form.sign_up_name = ""),
           (this.form.sign_up_surname = ""),
           (this.form.sign_up_username = ""),
           (this.form.sign_up_email = ""),
           (this.form.sign_up_password = "");
-        this.success = true;
+        this.successSignUp = true;
         // alert("Create Account Success🎉🎉");
       } else {
+        this.failedSignUp = true;
       }
     },
-    signIn() {
-      this.$store.dispatch('login')
-      // this.$store.dispatch("retrieveToken", {
-      //   email: this.email,
-      //   password: this.password,
-      // });
+    handleLogin(user) {
+      this.loading = true;
+      this.$store.dispatch("auth/login", user).then(
+        () => {
+          this.$router.push("/stores");
+        },
+        (err) => {
+          this.loading = false;
+          this.message =
+            (err.respose && err.response.data && err.response.data.message) ||
+            err.message ||
+            err.toString();
+        }
+      );
+    },
+    handleRegister(user) {
+      this.message = "";
+      this.successful = false;
+      this.loading = true;
+      this.$store.dispatch("auth/register", user).then(
+        (data) => {
+          this.message = data.message;
+          this.successful = true;
+          this.loading = false;
+        },
+        (error) => {
+          this.message =
+            (error.respose.data &&
+              error.respose.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+          this.successful = false;
+          this.loading = false;
+        }
+      );
     },
   },
 };
@@ -780,6 +894,9 @@ a:active {
     transform: translateY(-7rem);
     background-color: #eb435f;
   }
+  .sign-up span {
+    color: #6b202d;
+  }
   .sign-up .form-header {
     color: white;
   }
@@ -802,7 +919,7 @@ a:active {
   .sign-up .btn--full:visited {
     width: 26rem;
     background-color: white;
-    color: #333;
+    color: white;
     transition: 0.3s all ease-in-out;
   }
 

@@ -20,7 +20,7 @@
             >
               <i class="heart fas fa-heart"></i>
             </div>
-            <img :src="urlImages" alt="" />
+            <img :src="urlImages" @error="$event.target.src='http://www.grand-cordel.com/wp-content/uploads/2015/08/import_placeholder.png'" alt="product image" />
           </div>
           <div class="cloth-details">
             <div class="prod_name">
