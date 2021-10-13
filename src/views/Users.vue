@@ -162,14 +162,19 @@
               </label>
               <select name="role" id="role" v-model="form.role">
                 <option value="" selected>none</option>
-                <option value="admin" selected>Admin</option>
-                <option value="deputy admin">Deputy Admin</option>
+                <option
+                  :value="role"
+                  v-for="role in getAdminRoles"
+                  :key="role.id"
+                  >{{ role.role_name }}</option
+                >
               </select>
             </div>
             <button
               class="btn btn--full"
               v-if="isEdit == false"
               type="submit"
+              @click="createAccount"
               :style="[
                 editFormIsValid
                   ? {}
@@ -182,6 +187,7 @@
               class="btn btn--full edit-btn"
               v-if="isEdit"
               type="submit"
+              @click="editAccount"
               :style="[
                 editFormIsValid
                   ? {}
@@ -204,9 +210,12 @@
             <label for="colors">ROLES</label>
             <select v-model="selectedRole">
               <option value="">none</option>
-              <option value="Admin">Admin</option>
-              <option value="Deputy Admin">Deputy Admin</option>
-              <option value="Member">Member</option>
+              <option
+                v-for="role in getAllRoles"
+                :key="role.id"
+                :value="role.role_name"
+                >{{ role.role_name }}</option
+              >
             </select>
           </div>
           <div class="role-filter-mb">
@@ -255,15 +264,16 @@
           <!-- component -->
           <List
             class="List"
-            v-for="user in queryUsers"
+            v-for="user in getAllUsers"
             :key="user.id"
             :user="user"
             @deleteAccountById="handleDelete"
+            @editAccountById="toggleEditAccount(user)"
           ></List>
         </transition-group>
         <transition-group name="slide-fade">
           <Table :ths="ths" class="table" :key="ths">
-            <tbody v-for="(user, index) in queryUsers" :key="user.id">
+            <tbody v-for="(user, index) in getAllUsers" :key="user.id">
               <tr>
                 <td>{{ index + 1 }}</td>
                 <td>{{ user.first_name }}</td>
@@ -334,9 +344,6 @@ export default {
         "Role",
       ],
       form: {
-        // add
-
-        // edit
         id: "",
         name: "",
         surname: "",
@@ -348,23 +355,22 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["getAccountsToSite"]),
+    ...mapActions(["getAccountsToSite", "getRolesToSite"]),
     togglePassword() {
       if (this.type === "password") {
         this.type = "text";
       } else if (this.type === "text") {
         this.type = "password";
       }
-      // console.log(this.type);
     },
     filterAdmin() {
       this.deputyAdminFilter = false;
       this.memberFilter = false;
       this.adminFilter = !this.adminFilter;
       if (this.adminFilter) {
-        this.selectedRole = "Admin";
+        this.selectedRole = this.getAllRoles[0].role_name;
       } else {
-        this.selectedRole = "";
+        this.selectedRole = null;
       }
     },
     filterDeputyAdmin() {
@@ -372,9 +378,9 @@ export default {
       this.memberFilter = false;
       this.deputyAdminFilter = !this.deputyAdminFilter;
       if (this.deputyAdminFilter) {
-        this.selectedRole = "Deputy Admin";
+        this.selectedRole = this.getAllRoles[1].role_name;
       } else {
-        this.selectedRole = "";
+        this.selectedRole = null;
       }
     },
     filterMember() {
@@ -382,9 +388,9 @@ export default {
       this.deputyAdminFilter = false;
       this.memberFilter = !this.memberFilter;
       if (this.memberFilter) {
-        this.selectedRole = "Member";
+        this.selectedRole = this.getAllRoles[2].role_name;
       } else {
-        this.selectedRole = "";
+        this.selectedRole = null;
       }
     },
     toggleEditAccount(editAccount) {
@@ -397,7 +403,7 @@ export default {
         this.form.username = editAccount.username;
         this.form.email = editAccount.email;
         this.form.password = editAccount.password;
-        this.form.role = editAccount.role.role_name;
+        this.form.role = editAccount.role;
       } else {
         this.form.id = "";
         this.form.name = "";
@@ -414,30 +420,101 @@ export default {
         this.$store.dispatch("deleteAccount", id);
       }
     },
-    editAccount() {},
-
+    editAccount() {
+      if (this.editFormIsValid) {
+        const index = this.getAllUsers.findIndex(
+          (account) => account.id == this.form.id
+        );
+        if (index !== -1) {
+          const editAccount = {
+            id: this.form.id,
+            first_name: this.form.name,
+            last_name: this.form.surname,
+            username: this.form.username,
+            email: this.form.email,
+            password: this.form.password,
+            role: this.form.role,
+          };
+          // console.log(this.form.id);
+          this.getAllUsers.splice(index, 1, editAccount);
+          // console.log(this.queryUsers);
+          this.$store.dispatch("editAccount", editAccount);
+          this.isEdit = false;
+          this.form.id = "";
+          this.form.name = "";
+          this.form.surname = "";
+          this.form.username = "";
+          this.form.email = "";
+          this.form.password = "";
+          this.form.role = "";
+        }
+      } else {
+      }
+    },
+    createAccount() {
+      if (this.editFormIsValid) {
+        const newAccount = {
+          first_name: this.form.name,
+          last_name: this.form.surname,
+          username: this.form.username,
+          email: this.form.email,
+          password: this.form.password,
+          role: this.form.role,
+        };
+        this.$store
+          .dispatch("createAccount", newAccount)
+          .catch((err) => console.log(err));
+        this.form.name = "";
+        this.form.surname = "";
+        this.form.username = "";
+        this.form.email = "";
+        this.form.password = "";
+        this.form.role = "";
+      } else {
+      }
+    },
     // in card compo
     handleDelete(id) {
       this.getAllUsers = this.getAllUsers.filter((user) => {
         return user.id != id;
       });
     },
+    handleEdit(user){
+    }
   },
-  computed: mapGetters(["getAccounts"]),
+  computed: mapGetters(["getAccounts", "getRoles"]),
   computed: {
     getAllUsers() {
+      if (this.searchInput || this.selectedRole) {
+        return this.$store.getters.getAccounts.filter((user) => {
+          return (
+            user.role.role_name
+              .toLowerCase()
+              .includes(this.selectedRole.toLowerCase()) &&
+            user.username.toLowerCase().includes(this.searchInput)
+          );
+        });
+      }
       return this.$store.getters.getAccounts;
     },
-    queryUsers() {
-      return this.getAllUsers.filter((user) => {
-        return (
-          user.role.role_name
-            .toLowerCase()
-            .includes(this.selectedRole.toLowerCase()) &&
-          user.username.toLowerCase().includes(this.searchInput)
-        );
+    getAllRoles() {
+      return this.$store.getters.getRoles;
+    },
+    getAdminRoles() {
+      return this.$store.getters.getRoles.filter((roles) => {
+        return roles.role_name != "member";
       });
     },
+    // queryUsers() {
+    //   return this.getAllUsers.filter((user) => {
+    //     return (
+    //       user.role.role_name
+    //         .toLowerCase()
+    //         .includes(this.selectedRole.toLowerCase()) &&
+    //       user.username.toLowerCase().includes(this.searchInput)
+    //     );
+    //   });
+    // },
     editNameIsValid() {
       return !!this.form.name && this.form.name.length <= 50;
     },
@@ -476,11 +553,14 @@ export default {
       );
     },
   },
-  created() {
-    this.getAccountsToSite();
-  },
-  mounted() {
+  // created() {
+  //   this.getAccountsToSite();
+  //   this.getRolesToSite();
+  // },
+  async mounted() {
     window.scrollTo(0, 0);
+    await this.getAccountsToSite();
+    await this.getRolesToSite();
   },
 };
 </script>
@@ -697,8 +777,11 @@ label span {
   font-size: 1rem;
   color: #eb435f;
 }
-/* below 880px */
-@media (max-width: 55em) {
+/* below 928px */
+@media (max-width: 58em) {
+  .form {
+    column-gap: 0rem;
+  }
   .table {
     display: none;
   }

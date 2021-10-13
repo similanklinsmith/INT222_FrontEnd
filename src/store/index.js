@@ -18,6 +18,8 @@ export default createStore({
     // account
     accounts: [],
     accountUrl: "http://localhost:3000/accounts",
+    roles: [],
+    roleUrl: "http://localhost:3000/roles",
   },
   mutations: {
     // products
@@ -142,11 +144,17 @@ export default createStore({
       }
     },
     UPDATE_ACCOUNT(state, updateAccount) {
-      const index = state.accounts.findIndex((account) => account.id == id);
-      if (index != -1) {
+      const index = state.accounts.findIndex(
+        (account) => account.id == updateAccount.id
+      );
+      if (index !== -1) {
         state.accounts.splice(index, 1, updateAccount);
       }
     },
+    // roles
+    GET_ROLES(state, roles) {
+      state.roles = roles;
+    }
   },
   actions: {
     async getProductsToStore(context) {
@@ -415,13 +423,13 @@ export default createStore({
     },
 
     editAccount(context, editAccount) {
-      let jsonEditAccount = JSON.stringify(editAccount, {
+      const jsonEditAccount = JSON.stringify(editAccount, {
         type: "application/json",
       });
       fetch(this.state.accountUrl + "/" + editAccount.id, {
         method: "PUT",
         headers: {
-          ContentType: "application/json",
+          "Content-type": "application/json",
         },
         body: jsonEditAccount,
       })
@@ -430,6 +438,16 @@ export default createStore({
         })
         .catch((err) => console.log(err));
     },
+
+    // roles
+    getRolesToSite(context) {
+      fetch(this.state.roleUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        context.commit("GET_ROLES", data);
+      })
+      .catch((err) => console.log(err.message));
+    }
   },
   getters: {
     // product getters
@@ -463,6 +481,11 @@ export default createStore({
     // account getters
     getAccounts(state) {
       return state.accounts;
+    },
+
+    // role getters
+    getRoles(state) {
+      return state.roles;
     },
   },
   modules: { auth },

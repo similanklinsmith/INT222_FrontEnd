@@ -41,9 +41,9 @@
           <span class="delete-text">delete</span
           ><i class="delete fas fa-trash-alt"></i>
         </div>
-        <div class="btn">
+        <button class="btn" type="submit" @click="editAccount">
           <span class="edit-text">edit</span><i class="edit fas fa-pen"></i>
-        </div>
+        </button>
       </div>
     </div>
   </div>
@@ -59,6 +59,9 @@ export default {
         this.$emit("deleteAccountById", id);
       }
     },
+    editAccount(){
+      this.$emit("editAccountById")
+    }
   },
 };
 </script>
@@ -71,11 +74,9 @@ export default {
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   transition: 0.3s all ease-in-out;
 }
-
 .list:hover {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
-
 .tab-color {
   width: 1rem;
   background-color: #ffd700;
@@ -83,14 +84,12 @@ export default {
   left: 0;
   position: absolute;
 }
-
 .profile-info {
   margin: 2rem 4rem;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
 }
-
 .name {
   font-size: 1.8rem;
   font-weight: 700;
@@ -100,7 +99,6 @@ export default {
   display: inline;
   position: relative;
 }
-
 .role {
   display: inline;
   font-size: 1.2rem;
@@ -113,30 +111,25 @@ export default {
   right: 0%;
   text-transform: capitalize;
 }
-
 .email,
 .password,
 .username {
   font-size: 1.4rem;
 }
-
 .icon {
   color: rgba(85, 85, 85, 0.35);
   margin-right: 0.8rem;
 }
-
 .email span,
 .password span,
 .username span {
   color: #555;
 }
-
 .action-btn {
   display: flex;
   gap: 1.2rem;
   align-self: flex-end;
 }
-
 .action-btn .btn {
   background-color: red;
   width: 8.6rem;
@@ -147,39 +140,33 @@ export default {
   cursor: pointer;
   transition: 0.25s all ease-in-out;
 }
-
 .action-btn .btn:hover {
   background-color: rgb(151, 0, 0);
 }
 
 .action-btn .btn:last-child {
-  box-shadow: inset 0 0 0 1px #333;
+  /* box-shadow: inset 0 0 0 1px #333; */
   background-color: transparent;
   color: #333;
 }
-
 .action-btn .btn:last-child:hover {
   box-shadow: inset 0 0 0 1px #333;
   background-color: #333;
   color: #fff !important;
 }
-
 .action-btn .delete-text {
   font-size: 1.4rem;
   margin-right: 0.4rem;
   color: #fff;
 }
-
 .action-btn .edit-text {
   font-size: 1.4rem;
   margin-right: 0.4rem;
 }
-
 .action-btn .delete {
   font-size: 1.2rem;
   color: #fff;
 }
-
 .action-btn .edit {
   font-size: 1.2rem;
 }
@@ -195,7 +182,6 @@ export default {
     font-size: 1rem;
   }
 }
-
 /* below 680px */
 @media (max-width: 43em) {
   .profile-info {
@@ -203,9 +189,6 @@ export default {
   }
   .role {
     font-size: 1.2rem;
-  }
-  .name {
-    font-size: 2rem;
   }
 }
 </style>

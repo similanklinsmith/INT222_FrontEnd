@@ -432,7 +432,7 @@ export default {
           role: {
             id: 3,
             role_name: "member",
-            role_desc: "Able to [ADD/DELETE] wishlists",
+            role_desc: "Able to [ADD/DELETE/GET] Wishlist and [GET] Products"
           },
         };
         this.$store.dispatch("auth/register", newAccount);
