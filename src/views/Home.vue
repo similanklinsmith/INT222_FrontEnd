@@ -216,7 +216,7 @@
                     >
                   </li>
                   <li class="see-more">
-                    <a href="#">See more <span>&rarr;</span></a>
+                    <a @click="$router.push('/stores')">See more <span>&rarr;</span></a>
                   </li>
                 </ul>
               </div>
@@ -523,7 +523,7 @@ export default {
         {
           id: 2,
           fullname: "Steve Miller",
-          headerText: "NerdyStyle is a life saver!",
+          headerText: "NerdyStyle is my life saver! Help me a lot",
           ratings: 4,
           selected: false,
         },
@@ -1132,6 +1132,7 @@ TESTIMONIALS SECION
 .testimonial-header-text {
   font-size: 2rem;
   font-weight: 900;
+  line-height: 1.2;
 }
 .ratings {
   flex-direction: row;
