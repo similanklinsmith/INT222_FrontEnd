@@ -4,7 +4,7 @@
       <div class="container">
         <div class="Form">
           <div>
-            <div class="sub-heading">make it better</div>
+            <div class="sub-heading">make it better </div>
             <div class="secondary-header">Edit product</div>
           </div>
           <form @submit.prevent="editProductConfirm" action="#" class="form">
@@ -171,6 +171,13 @@
         </div>
       </div>
     </div>
+    <div class="modal" v-if="failedToEdit">
+      <Popup
+        @closePopup="failedToEdit = false"
+        :text="failedEditProductText"
+        :isTrue="false"
+      />
+    </div>
     <Socials class="socials"></Socials>
     <Footer class="footer"></Footer>
   </div>
@@ -178,17 +185,19 @@
 <script>
 import Socials from "@/components/Socials.vue";
 import Footer from "@/components/Footer.vue";
+import Popup from "@/components/Popup.vue";
 import { mapGetters, mapActions } from "vuex";
-// import Form from "@/components/Form.vue";
 export default {
   components: {
     Socials,
     Footer,
-    // Form,
+    Popup,
   },
   props: ["id"],
   data() {
     return {
+      failedToEdit: false,
+      failedEditProductText: "This product name has already used",
       urlImages: this.$store.state.defaultUrl + "/image/" + this.id,
       editProduct: {},
       urlProductShow: this.$store.state.defaultUrl + "/products/" + this.id,
@@ -220,6 +229,7 @@ export default {
       "getColorToStore",
       "getBrandsToStore",
       "getCategoriesToStore",
+      "getProductsToStore"
     ]),
     changeImg() {
       this.form.edit_img = "";
@@ -229,6 +239,7 @@ export default {
     uploadImage(e) {
       const image = e.target.files[0];
       this.form.prod_img = e.target.files[0];
+      // console.log(this.form.prod_img);
       this.form.edit_img = image.name;
       const reader = new FileReader();
       reader.readAsDataURL(image);
@@ -242,7 +253,7 @@ export default {
         colors.push({ id: this.form.edit_colors[i] });
       }
       // console.log(colors);
-      if (this.formIsValid) {
+      if (this.formIsValid && this.checkUniqueProdName != true) {
         const editProduct = {
           product_name: this.form.edit_name,
           product_desc: this.form.edit_desc,
@@ -274,10 +285,11 @@ export default {
           (this.name_img = "");
         this.$router.push(`/stores/product/${this.id}`);
       } else {
+        this.failedToEdit = true;
       }
     },
   },
-  computed: mapGetters(["getColors", "getBrands", "getCategories"]),
+  computed: mapGetters(["getColors", "getBrands", "getCategories","getProducts"]),
   computed: {
     allColors() {
       return this.$store.getters.getColors;
@@ -287,6 +299,9 @@ export default {
     },
     allCategories() {
       return this.$store.getters.getCategories;
+    },
+    allProducts() {
+      return this.$store.getters.getProducts;
     },
 
     // validations
@@ -330,13 +345,19 @@ export default {
         this.prodColorsIsValid
       );
     },
+    checkUniqueProdName() {
+      for (let index = 0; index < this.allProducts.length; index++) {
+        if (
+          this.allProducts[index].product_name == this.form.edit_name &&
+          this.allProducts[index].product_id != this.id
+        ) {
+          return true;
+        }
+      }
+    },
   },
   mounted() {
     window.scrollTo(0, 0);
-    // fetch(this.urlImages)
-    //   .then((res) => res)
-    //   .then((data) => (console.log(data)))
-    //   .catch((err) => console.log(err.message));
     fetch(this.urlColors)
       .then((res) => res.json())
       .then((data) => (this.colors = data.data))
@@ -347,7 +368,6 @@ export default {
       .then((data) => {
         // (this.editProduct = data.data),
         for (let index = 0; index < data.data.productdetail.length; index++) {
-          // console.log(data.data.productdetail[index].color_id);
           this.former_colors.push(data.data.productdetail[index].color_id);
         }
         (this.form.edit_name = data.data.product_name),
@@ -360,16 +380,10 @@ export default {
           (this.form.edit_img = data.data.image);
       })
       .then(() => {
-        // for (let index = 0; index < this.form.edit_colors.length; index++) {
-        //   this.former_colors.push(this.form.edit_colors[index].color);
-        // }
-        console.log(this.former_colors);
         const checkboxInput = document.getElementsByClassName("checkbox");
         for (let index = 0; index < checkboxInput.length; index++) {
           if (checkboxInput[index].value == this.former_colors[index]) {
-            // console.log(this.former_colors[index] + "sdfasdf");
             checkboxInput[index].checked = true;
-            // console.log(index);
             continue;
           }
         }
@@ -380,10 +394,22 @@ export default {
     this.getColorToStore();
     this.getBrandsToStore();
     this.getCategoriesToStore();
+    this.getProductsToStore();
   },
 };
 </script>
 <style scoped>
+.modal {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.25);
+  left: 0;
+  top: 0;
+  padding-top: 20rem;
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
 .edit-product-section {
   margin: 2.4rem 0 6.4rem 0;
 }

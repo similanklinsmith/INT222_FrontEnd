@@ -170,9 +170,7 @@
     <div class="modal" v-if="failedToAdd">
       <Popup
         @closePopup="failedToAdd = false"
-        :imgSrc="failedImg"
-        :text="failedSignUpText"
-        :altText="altFailed"
+        :text="failedAddProductText"
         :isTrue="false"
       />
     </div>
@@ -194,9 +192,9 @@ export default {
   data() {
     return {
       failedToAdd: false,
-      failedImg: require("@/assets/images/failed.png"),
-      failedSignUpText: "this product name has already used",
-      altFailed: "Failed icon",
+      // failedImg: require("@/assets/images/failed.png"),
+      failedAddProductText: "This product name has already used",
+      // altFailed: "Failed icon",
       colors: [],
       productUrl: this.$store.state.defaultUrl + "/products",
       products: [],
@@ -216,7 +214,7 @@ export default {
       preview_img: "",
     };
   },
-  computed: mapGetters(["getColors", "getBrands", "getCategories"]),
+  computed: mapGetters(["getColors", "getBrands", "getCategories","getProducts"]),
   computed: {
     allColors() {
       return this.$store.getters.getColors;
@@ -322,8 +320,8 @@ export default {
           color_id: colors,
           image: this.form.name_img,
         };
-        // console.log(newProduct)
-        // console.log(this.form.prod_img)
+        console.log(newProduct)
+        console.log(this.form.prod_img)
         this.$store
           .dispatch("addProduct", {
             newProduct: newProduct,
