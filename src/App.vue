@@ -102,17 +102,13 @@ export default {
     //   .then((res) => res.json())
     //   .then((data) => (this.products = data))
     //   .catch((err) => console.log(err.message));
-    $(document).ready(function() {
-      $(window).scroll(function() {
-        if (this.scrollY > 1) {
-          $("#nav").addClass("sticky");
-          // document.getElementById("nav").style.position = "relative";
-        } else {
-          $("#nav").removeClass("sticky");
-          // document.getElementById("nav").style.position = "absolute";
-        }
-      });
-    });
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > document.getElementById("nav").offsetTop) {
+        document.getElementById("nav").classList.add("sticky");
+      } else {
+        document.getElementById("nav").classList.remove("sticky");
+      }
+    })
     document.querySelector(".logo").addEventListener("click", () => {
       window.scrollTo(0, 0);
     });
