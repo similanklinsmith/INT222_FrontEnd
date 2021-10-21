@@ -372,6 +372,7 @@ export default {
 
 .store-header {
   width: 100%;
+  height: 48rem;
   position: relative;
   overflow: hidden;
 }

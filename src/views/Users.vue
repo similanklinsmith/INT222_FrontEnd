@@ -665,6 +665,7 @@ tbody td:nth-child(4) {
 .edit {
   cursor: pointer;
   transition: 0.2s all ease-in-out;
+  text-decoration: underline;
 }
 .delete:hover {
   color: #eb435f;

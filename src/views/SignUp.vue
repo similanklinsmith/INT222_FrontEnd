@@ -281,18 +281,14 @@
     <div class="modal" v-if="successSignUp">
       <Popup
         @closePopup="successSignUp = false"
-        :imgSrc="successImg"
         :text="successSignUpText"
-        :altText="altSuccess"
         :isTrue="true"
       />
     </div>
     <div class="modal" v-if="failedSignUp">
       <Popup
         @closePopup="failedSignUp = false"
-        :imgSrc="failedImg"
         :text="failedSignUpText"
-        :altText="altFailed"
         :isTrue="false"
       />
     </div>
@@ -318,12 +314,12 @@ export default {
     return {
       successSignUp: false,
       failedSignUp: false,
-      successImg: require("@/assets/images/success.png"),
+      // successImg: require("@/assets/images/success.png"),
       successSignUpText: "Congratulations, your account is ready!",
-      altSuccess: "Success icon",
-      failedImg: require("@/assets/images/failed.png"),
+      // altSuccess: "Success icon",
+      // failedImg: require("@/assets/images/failed.png"),
       failedSignUpText: "this username has already used",
-      altFailed: "Failed icon",
+      // altFailed: "Failed icon",
       loading: false,
       message: "",
       type: "password",

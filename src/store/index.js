@@ -211,10 +211,13 @@ export default createStore({
         type: "application/json",
       });
       const formData = new FormData();
-      formData.append("imageFile", payload.image);
+      if (payload.image != "") {
+          formData.append("imageFile", payload.image);
+          // console.log("yey");
+      }
       formData.append("editedProduct", blob);
-      console.log(payload.product_id);
-      console.log(payload.image);
+      // console.log(payload.product_id);
+      // console.log(payload.image);
       fetch(this.state.productUrl + "/" + payload.product_id, {
         method: "PUT",
         body: formData,

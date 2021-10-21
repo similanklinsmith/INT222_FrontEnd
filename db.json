@@ -423,6 +423,19 @@
         "role_name": "deputy admin",
         "role_desc": "Able to [EDIT/GET] Products/Profile and [GET] Products/Colors/Brands/User"
       }
+    },
+    {
+      "first_name": "asdasd",
+      "last_name": "asdasd",
+      "username": "asdfasdf2",
+      "email": "example@gmail.com",
+      "password": "sdfsdfsdfsdf",
+      "role": {
+        "id": 3,
+        "role_name": "member",
+        "role_desc": "Able to [ADD/DELETE/GET] Wishlist and [GET] Products"
+      },
+      "id": 7
     }
   ],
   "roles": [
@@ -442,4 +455,5 @@
       "role_desc": "Able to [ADD/DELETE/GET] Wishlist and [GET] Products"
     }
   ]
+  
 }
